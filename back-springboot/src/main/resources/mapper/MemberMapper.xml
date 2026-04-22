@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.mapper.MemberMapper">
+
+    <resultMap id="memberResultMap" type="org.best.entity.Member">
+        <id property="memberId"   column="member_id"/>
+        <result property="loginId"    column="login_id"/>
+        <result property="password"   column="password"/>
+        <result property="name"       column="name"/>
+        <result property="birthDate"  column="birth_date"/>
+        <result property="gender"     column="gender"/>
+        <result property="phone"      column="phone"/>
+        <result property="address"    column="address"/>
+        <result property="email"      column="email"/>
+        <result property="referrerId" column="referrer_id"/>
+        <result property="createdAt"  column="created_at"/>
+        <result property="updatedAt"  column="updated_at"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="memberId">
+        INSERT INTO member (
+            login_id, password, name, birth_date,
+            gender, phone, address, email, referrer_id
+        ) VALUES (
+                     #{loginId}, #{password}, #{name}, #{birthDate},
+                     #{gender}, #{phone}, #{address}, #{email}, #{referrerId}
+                 )
+    </insert>
+
+    <select id="findById" resultMap="memberResultMap">
+        SELECT * FROM member
+        WHERE member_id = #{memberId}
+    </select>
+
+    <select id="findAll" resultMap="memberResultMap">
+        SELECT * FROM member
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findByLoginId" resultMap="memberResultMap">
+        SELECT * FROM member
+        WHERE login_id = #{loginId}
+    </select>
+
+    <update id="update">
+        UPDATE member
+        <set>
+            <if test="dto.name    != null">name    = #{dto.name},</if>
+            <if test="dto.phone   != null">phone   = #{dto.phone},</if>
+            <if test="dto.address != null">address = #{dto.address},</if>
+            <if test="dto.email   != null">email   = #{dto.email},</if>
+        </set>
+        WHERE member_id = #{memberId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM member
+        WHERE member_id = #{memberId}
+    </delete>
+
+</mapper>

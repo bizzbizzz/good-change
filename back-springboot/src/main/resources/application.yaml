@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: local  # 기본값 로컬
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: org.best.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+jwt:
+  secret: good-change-secret-key-must-be-at-least-256-bits-long-for-security
+  expiration: 86400000
