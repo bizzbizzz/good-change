@@ -150,3 +150,15 @@ CREATE TABLE settlement (
     INDEX idx_settlement_date            (settlement_date),
     INDEX idx_settlement_business_number (business_number)
 );
+
+
+CREATE TABLE member_role (
+    role_id    BIGINT      NOT NULL AUTO_INCREMENT,
+    member_id  BIGINT      NOT NULL,
+    role       VARCHAR(20) NOT NULL,
+    PRIMARY KEY (role_id),
+    CONSTRAINT fk_member_role
+        FOREIGN KEY (member_id)
+        REFERENCES member (member_id)
+        ON DELETE CASCADE
+);
