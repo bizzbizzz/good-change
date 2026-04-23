@@ -1,0 +1,176 @@
+
+	.briefPopUp-background {
+		position: fixed;
+		height: 100%;
+		width: 100%;
+		background: #000;
+		background: rgba(0,0,0,.6);
+		z-index: 100;
+		display: none;
+		top: 0;
+		left: 0;
+		}
+
+		.briefPopUp-modal {
+		    visibility: hidden;
+		    top: 8%;
+		    width: 60%;
+		    background: #fff;
+		    position: absolute;
+		    left: 0;
+		    right: 0;
+		    margin-left: auto;
+		    margin-right: auto;
+		    z-index: 101;
+		    /* padding: 40px 40px 34px; */
+		    /* border-radius: 5px; */
+		    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+		    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+		    -box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+		}
+
+		.briefPopUp-modal1 {
+		    visibility: hidden;
+		    top: 8%;
+		    width: 900px;
+		    background: #fff;
+		    position: absolute;
+		    left: 0;
+		    right: 0;
+		    margin-left: auto;
+		    margin-right: auto;
+		    z-index: 101;
+		    /* padding: 40px 40px 34px; */
+		    /* border-radius: 5px; */
+		    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+		    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+		    -box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+		}
+
+.modal-body > p {
+    line-height: 30px;
+    font-family: "NotoSansKR-Regular";
+    font-size: 20px;
+    text-align: center;
+}
+
+.modal-body > p:nth-child(1) {
+    margin-top: 20px;
+}
+
+
+.modal-body > p > a > .btn {
+    margin: 20px 0;
+    padding: 8px 50px;
+    border: none;
+}
+.modal-body > p > a > .btn:hover {
+    background-color: #ff844a;
+    color: #fff;
+}
+.modal-body > p > input {
+    width: 250px;
+    height: 25px;
+    margin-top: 10px;
+}
+
+
+	.briefPopUp-modal.small 		{ width: 200px; margin-left: -140px;}
+	.briefPopUp-modal.medium 		{ width: 400px; margin-left: -240px;}
+	.briefPopUp-modal.large 		{ width: 600px; margin-left: -340px;}
+	.briefPopUp-modal.xlarge 		{ width: 800px; margin-left: -440px;}
+
+	.briefPopUp-modal .close-briefPopUp-modal{
+		font-size: 22px;
+    line-height: .5;
+    position: absolute;
+    top: -25px;
+    right: 11px;
+    color: #fff;
+    text-shadow: 0 -1px 1px rbga(0,0,0,.6);
+    font-weight: bold;
+    cursor: pointer;
+		}
+
+
+.briefPopUp-modal1.small 		{ width: 200px; margin-left: -140px;}
+	.briefPopUp-modal1.medium 		{ width: 400px; margin-left: -240px;}
+	.briefPopUp-modal1.large 		{ width: 600px; margin-left: -340px;}
+	.briefPopUp-modal1.xlarge 		{ width: 800px; margin-left: -440px;}
+
+	.briefPopUp-modal1 .close-briefPopUp-modal{
+		font-size: 22px;
+		line-height: .5;
+		position: absolute;
+		top: 12px;
+		right: 11px;
+		color: #333;
+		text-shadow: 0 -1px 1px rbga(0,0,0,.6);
+		font-weight: bold;
+		cursor: pointer;
+		}
+
+	.close-briefPopUp-modal1{
+		font-size: 22px;
+    line-height: .5;
+    position: absolute;
+    top: -25px;
+    right: 11px;
+    color: #fff;
+    text-shadow: 0 -1px 1px rbga(0,0,0,.6);
+    font-weight: bold;
+    cursor: pointer;
+
+		}
+
+.pwpoptext {
+	text-align: center;
+	font-size: 16px;
+	font-weight: 400;
+	padding-top: 20px;
+}
+
+.popbox1 {
+	width:  98%;
+	margin: 20px auto;
+}
+.tttttewrw {
+	float: left;
+	margin-right: 15px;
+	padding-top: 5px;
+	display: inline-block;
+}
+
+.popbtnok{
+	width: 70px;
+	margin: 10px auto 5px;
+	overflow-y: hidden;
+}
+.poptextbox {
+
+	text-align: center;
+	font-size: 18px;
+	padding: 10px 0;
+	font-weight: 600;
+	background-color: #f5f5f5;
+  color: #333;
+  margin: 0;
+  margin-bottom: 3%;
+}
+.okvbr {
+	width: 70px;
+	float: left;
+	height: 30px;
+	border: 0;
+	background-color: #333;
+	color:#fff;
+	font-size: 16px;
+	margin-top: 20px;
+	/* border-radius: 20px; */
+	cursor: pointer;
+	-webkit-appearance: none;
+  -moz-appearance:none;
+  appearance: none;
+  border-radius: 0px;
+
+}
