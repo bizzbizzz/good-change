@@ -5,6 +5,10 @@ spring:
     password: 0816abcd
     driver-class-name: com.mysql.jdbc.Driver
 
+cors:
+  allowed-origins:
+    - http://117.52.20.250:20005
+
 logging:
   level:
     org.best: INFO

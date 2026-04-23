@@ -1,6 +1,8 @@
 package org.best.backspringboot.service;
 
 import lombok.RequiredArgsConstructor;
+import org.best.backspringboot.dto.PageResponse;
+import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.member.MemberCreateDto;
 import org.best.backspringboot.dto.member.MemberLoginDto;
 import org.best.backspringboot.dto.member.MemberResponseDto;
@@ -41,10 +43,18 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemberResponseDto> getAll() {
-        return memberMapper.findAll().stream()
+    public PageResponse<MemberResponseDto> getAll(SearchBase searchBase) {
+        PageResponse<MemberResponseDto> pageResponse = new PageResponse<>();
+        pageResponse.setPage(searchBase.getPage());
+        pageResponse.setSize(searchBase.getSize());
+
+        List<MemberResponseDto> content = memberMapper.findAll(searchBase).stream()
                 .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
+
+        long totalCount = memberMapper.countAll();
+        pageResponse.setPageInfo(content, totalCount);
+        return pageResponse;
     }
 
     @Transactional

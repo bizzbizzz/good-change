@@ -32,6 +32,7 @@ public class MemberCreateDto {
     private String gender;
 
     @NotBlank
+    @Pattern(regexp = "^01[0-9]{8,9}$", message = "휴대폰번호 형식이 올바르지 않습니다. (예: 01012341234)")
     @Size(max = 20)
     private String phone;
 

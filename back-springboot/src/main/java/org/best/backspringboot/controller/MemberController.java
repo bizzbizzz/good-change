@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.best.backspringboot.dto.PageResponse;
+import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.member.MemberCreateDto;
 import org.best.backspringboot.dto.member.MemberLoginDto;
 import org.best.backspringboot.dto.member.MemberResponseDto;
@@ -48,10 +50,10 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getById(memberId));
     }
 
-    @Operation(summary = "회원 전체 조회")
+    @Operation(summary = "회원 전체 조회 (페이징)")
     @GetMapping
-    public ResponseEntity<List<MemberResponseDto>> getAll() {
-        return ResponseEntity.ok(memberService.getAll());
+    public ResponseEntity<PageResponse<MemberResponseDto>> getAll(SearchBase searchBase) {
+        return ResponseEntity.ok(memberService.getAll(searchBase));
     }
 
     @Operation(summary = "회원 수정")
