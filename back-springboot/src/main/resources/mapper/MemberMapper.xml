@@ -37,6 +37,7 @@
     <select id="findAll" resultMap="memberResultMap">
         SELECT * FROM member
         ORDER BY created_at DESC
+            LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="findByLoginId" resultMap="memberResultMap">
@@ -58,4 +59,8 @@
     <delete id="delete">
         DELETE FROM member WHERE login_id = #{loginId}
     </delete>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM member
+    </select>
 </mapper>

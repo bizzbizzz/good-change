@@ -5,6 +5,9 @@ spring:
     password: 0816abcd
     driver-class-name: com.mysql.jdbc.Driver
 
+cors:
+  allowed-origins: http://localhost:8081,http://localhost:3000
+
 logging:
   level:
     org.best: DEBUG
