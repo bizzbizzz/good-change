@@ -12,7 +12,7 @@ public interface MemberMapper {
     void insert(MemberCreateDto dto);
     Optional<Member> findById(Long memberId);
     List<Member> findAll();
-    void update(Long memberId, MemberUpdateDto dto);
-    void delete(Long memberId);
+    void update(String loginId, MemberUpdateDto dto);
+    void delete(String loginId);
     Optional<Member> findByLoginId(String loginId);
 }

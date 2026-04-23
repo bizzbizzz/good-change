@@ -5,11 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDate;
 
 @Getter
 public class MemberCreateDto {
-
+    private Long memberId;
     @NotBlank
     @Size(max = 50)
     private String loginId;
@@ -41,4 +43,8 @@ public class MemberCreateDto {
     private String email;
 
     private Long referrerId;
+
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
+    }
 }
