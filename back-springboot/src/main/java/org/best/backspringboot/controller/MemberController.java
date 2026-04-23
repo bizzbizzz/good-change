@@ -1,6 +1,7 @@
 package org.best.backspringboot.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.member.MemberCreateDto;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "멤버", description = "멤버 관련 API")
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
@@ -53,17 +55,17 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 수정")
-    @PatchMapping("/{memberId}")
-    public ResponseEntity<Void> update(@PathVariable Long memberId,
+    @PatchMapping("/{loginId}")
+    public ResponseEntity<Void> update(@PathVariable String loginId,
                                        @Valid @RequestBody MemberUpdateDto dto) {
-        memberService.update(memberId, dto);
+        memberService.update(loginId, dto);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "회원 삭제")
-    @DeleteMapping("/{memberId}")
-    public ResponseEntity<Void> delete(@PathVariable Long memberId) {
-        memberService.delete(memberId);
+    @DeleteMapping("/{loginId}")
+    public ResponseEntity<Void> delete(@PathVariable String loginId) {
+        memberService.delete(loginId);
         return ResponseEntity.ok().build();
     }
 }

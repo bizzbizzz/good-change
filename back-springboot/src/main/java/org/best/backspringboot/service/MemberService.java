@@ -29,6 +29,7 @@ public class MemberService {
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 사용 중인 아이디입니다."); });
         // 비밀번호 암호화
         // dto의 password를 암호화해서 저장하려면 별도 처리 필요 (setter or 빌더 패턴 권장)
+        dto.encodePassword(passwordEncoder);
         memberMapper.insert(dto);
     }
 
@@ -47,17 +48,17 @@ public class MemberService {
     }
 
     @Transactional
-    public void update(Long memberId, MemberUpdateDto dto) {
-        memberMapper.findById(memberId)
+    public void update(String loginId, MemberUpdateDto dto) {
+        memberMapper.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        memberMapper.update(memberId, dto);
+        memberMapper.update(loginId, dto);
     }
 
     @Transactional
-    public void delete(Long memberId) {
-        memberMapper.findById(memberId)
+    public void delete(String loginId) {
+        memberMapper.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        memberMapper.delete(memberId);
+        memberMapper.delete(loginId);
     }
 
     // 아이디 중복체크 (true = 사용가능, false = 중복)
@@ -76,5 +77,4 @@ public class MemberService {
 
         return jwtUtil.generateToken(member.getMemberId(), member.getLoginId());
     }
-
 }
