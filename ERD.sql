@@ -153,3 +153,13 @@ CREATE TABLE settlement (
 );
 
 
+CREATE TABLE allowed_ip (
+                            ip_id      BIGINT       NOT NULL AUTO_INCREMENT,
+                            ip_address VARCHAR(50)  NOT NULL,
+                            description VARCHAR(100) NULL,
+                            created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+                            PRIMARY KEY (ip_id),
+                            UNIQUE KEY uq_ip_address (ip_address)
+);
