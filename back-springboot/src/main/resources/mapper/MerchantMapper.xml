@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.MerchantMapper">
+
+    <resultMap id="merchantResultMap" type="org.best.backspringboot.entity.Merchant">
+        <id property="merchantId"      column="merchant_id"/>
+        <result property="loginId"        column="login_id"/>
+        <result property="password"       column="password"/>
+        <result property="merchantName"   column="merchant_name"/>
+        <result property="representative" column="representative"/>
+        <result property="businessNumber" column="business_number"/>
+        <result property="contact"        column="contact"/>
+        <result property="phone"          column="phone"/>
+        <result property="address"        column="address"/>
+        <result property="homepage"       column="homepage"/>
+        <result property="managerName"    column="manager_name"/>
+        <result property="email"          column="email"/>
+        <result property="referrerId"     column="referrer_id"/>
+        <result property="terminalId"     column="terminal_id"/>
+        <result property="createdAt"      column="created_at"/>
+        <result property="updatedAt"      column="updated_at"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
+        INSERT INTO merchant (
+            login_id, password, merchant_name, representative,
+            business_number, contact, phone, address,
+            homepage, manager_name, email, referrer_id, terminal_id
+        ) VALUES (
+                     #{loginId}, #{password}, #{merchantName}, #{representative},
+                     #{businessNumber}, #{contact}, #{phone}, #{address},
+                     #{homepage}, #{managerName}, #{email}, #{referrerId}, #{terminalId}
+                 )
+    </insert>
+
+    <select id="findById" resultMap="merchantResultMap">
+        SELECT * FROM merchant WHERE merchant_id = #{merchantId}
+    </select>
+
+    <select id="findAll" resultMap="merchantResultMap">
+        SELECT * FROM merchant ORDER BY created_at DESC
+    </select>
+
+    <select id="findByLoginId" resultMap="merchantResultMap">
+        SELECT * FROM merchant WHERE login_id = #{loginId}
+    </select>
+
+    <select id="findByBusinessNumber" resultMap="merchantResultMap">
+        SELECT * FROM merchant WHERE business_number = #{businessNumber}
+    </select>
+
+    <update id="update">
+        UPDATE merchant
+        <set>
+            <if test="dto.merchantName   != null">merchant_name   = #{dto.merchantName},</if>
+            <if test="dto.representative != null">representative  = #{dto.representative},</if>
+            <if test="dto.contact        != null">contact         = #{dto.contact},</if>
+            <if test="dto.phone          != null">phone           = #{dto.phone},</if>
+            <if test="dto.address        != null">address         = #{dto.address},</if>
+            <if test="dto.homepage       != null">homepage        = #{dto.homepage},</if>
+            <if test="dto.managerName    != null">manager_name    = #{dto.managerName},</if>
+            <if test="dto.email          != null">email           = #{dto.email},</if>
+            <if test="dto.terminalId     != null">terminal_id     = #{dto.terminalId},</if>
+        </set>
+        WHERE merchant_id = #{merchantId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM merchant WHERE merchant_id = #{merchantId}
+    </delete>
+
+    <insert id="insertCategory">
+        INSERT INTO merchant_category (merchant_id, category_name)
+        VALUES (#{merchantId}, #{categoryName})
+    </insert>
+
+    <delete id="deleteCategories">
+        DELETE FROM merchant_category WHERE merchant_id = #{merchantId}
+    </delete>
+
+    <select id="findCategoriesByMerchantId" resultType="String">
+        SELECT category_name FROM merchant_category
+        WHERE merchant_id = #{merchantId}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM merchant
+    </select>
+</mapper>
