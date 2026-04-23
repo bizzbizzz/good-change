@@ -52,12 +52,10 @@
             <if test="dto.address != null">address = #{dto.address},</if>
             <if test="dto.email   != null">email   = #{dto.email},</if>
         </set>
-        WHERE member_id = #{memberId}
+        WHERE login_id = #{loginId}
     </update>
 
     <delete id="delete">
-        DELETE FROM member
-        WHERE member_id = #{memberId}
+        DELETE FROM member WHERE login_id = #{loginId}
     </delete>
-
 </mapper>
