@@ -9,6 +9,7 @@ CREATE TABLE member (
     phone       VARCHAR(20)     NOT NULL,
     address     VARCHAR(255)    NOT NULL,
     email       VARCHAR(100)    NULL,
+    role           VARCHAR(20) NOT NULL DEFAULT 'USER',
     referrer_id BIGINT          NULL,
     created_at  DATETIME       NOT NULL,
     updated_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -149,4 +150,16 @@ CREATE TABLE settlement (
         ON DELETE RESTRICT,
     INDEX idx_settlement_date            (settlement_date),
     INDEX idx_settlement_business_number (business_number)
+);
+
+
+CREATE TABLE allowed_ip (
+                            ip_id      BIGINT       NOT NULL AUTO_INCREMENT,
+                            ip_address VARCHAR(50)  NOT NULL,
+                            description VARCHAR(100) NULL,
+                            created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+                            PRIMARY KEY (ip_id),
+                            UNIQUE KEY uq_ip_address (ip_address)
 );
