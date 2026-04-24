@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.SettlementMapper">
+
+    <resultMap id="settlementResultMap" type="org.best.backspringboot.entity.Settlement">
+        <id  property="settlementId"     column="settlement_id"/>
+        <result property="merchantId"        column="merchant_id"/>
+        <result property="merchantName"      column="merchant_name"/>
+        <result property="businessNumber"    column="business_number"/>
+        <result property="loginId"           column="login_id"/>
+        <result property="settlementMonth"   column="settlement_month"/>
+        <result property="settlementAmount"  column="settlement_amount"/>
+        <result property="status"            column="status"/>
+        <result property="statusChangedAt"   column="status_changed_at"/>
+        <result property="createdAt"         column="created_at"/>
+        <result property="updatedAt"         column="updated_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="settlementResultMap">
+        SELECT * FROM settlement
+        <where>
+            <if test="startMonth != null and startMonth != ''">
+                AND settlement_month >= #{startMonth}
+            </if>
+            <if test="endMonth != null and endMonth != ''">
+                AND settlement_month &lt;= #{endMonth}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="businessNumber != null and businessNumber != ''">
+                AND business_number = #{businessNumber}
+            </if>
+        </where>
+        ORDER BY settlement_month DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM settlement
+        <where>
+            <if test="startMonth != null and startMonth != ''">
+                AND settlement_month >= #{startMonth}
+            </if>
+            <if test="endMonth != null and endMonth != ''">
+                AND settlement_month &lt;= #{endMonth}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="businessNumber != null and businessNumber != ''">
+                AND business_number = #{businessNumber}
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" resultMap="settlementResultMap">
+        SELECT * FROM settlement WHERE settlement_id = #{settlementId}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE settlement
+        SET status = #{status},
+            status_changed_at = NOW()
+        WHERE settlement_id = #{settlementId}
+    </update>
+
+</mapper>
