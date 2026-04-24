@@ -49,4 +49,8 @@ public class MemberCreateDto {
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
+
+    public void encodePhone(PasswordEncoder passwordEncoder) {
+        this.phone = passwordEncoder.encode(this.phone);
+    }
 }
