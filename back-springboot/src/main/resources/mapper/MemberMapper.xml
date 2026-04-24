@@ -62,6 +62,10 @@
         WHERE status = 'DISABLED'
     </select>
 
+    <update id="updatePoint">
+        UPDATE member SET point = #{point} WHERE member_id = #{memberId}
+    </update>
+
     <select id="findByLoginId" resultMap="memberResultMap">
         SELECT * FROM member
         WHERE login_id = #{loginId}

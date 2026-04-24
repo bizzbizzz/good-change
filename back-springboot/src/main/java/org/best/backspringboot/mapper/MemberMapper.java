@@ -17,4 +17,5 @@ public interface MemberMapper {
     void delete(String loginId);
     Optional<Member> findByLoginId(String loginId);
     long countAll();
+    void updatePoint(Long memberId, Long point);
 }
