@@ -28,8 +28,8 @@ public class MemberService {
         memberMapper.findByLoginId(dto.getLoginId())
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 사용 중인 아이디입니다."); });
         // 비밀번호 암호화
-        // dto의 password를 암호화해서 저장하려면 별도 처리 필요 (setter or 빌더 패턴 권장)
         dto.encodePassword(passwordEncoder);
+        dto.encodePhone(passwordEncoder);
         memberMapper.insert(dto);
     }
 

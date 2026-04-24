@@ -16,11 +16,9 @@ public class MerchantResponseDto {
     private String representative;
     private String businessNumber;
     private String contact;
-    private String phone;
     private String address;
-    private String homepage;
-    private String managerName;
     private String email;
+    private String status;          // ✅ 추가
     private Long referrerId;
     private String terminalId;
     private LocalDateTime createdAt;
@@ -34,11 +32,9 @@ public class MerchantResponseDto {
                 .representative(merchant.getRepresentative())
                 .businessNumber(merchant.getBusinessNumber())
                 .contact(merchant.getContact())
-                .phone(merchant.getPhone())
                 .address(merchant.getAddress())
-                .homepage(merchant.getHomepage())
-                .managerName(merchant.getManagerName())
                 .email(merchant.getEmail())
+                .status(merchant.getStatus())       // ✅ 추가
                 .referrerId(merchant.getReferrerId())
                 .terminalId(merchant.getTerminalId())
                 .createdAt(merchant.getCreatedAt())
