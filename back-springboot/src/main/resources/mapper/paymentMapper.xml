@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.PaymentMapper">
+
+    <resultMap id="paymentResultMap" type="org.best.backspringboot.entity.Payment">
+        <id  property="paymentId"                column="payment_id"/>
+        <result property="cardId"                column="card_id"/>
+        <result property="kocessIp"              column="koces_ip"/>
+        <result property="messageNumber"         column="message_number"/>
+        <result property="institutionCode"       column="institution_code"/>
+        <result property="transmissionDate"      column="transmission_date"/>
+        <result property="traceNumber"           column="trace_number"/>
+        <result property="terminalId"            column="terminal_id"/>
+        <result property="businessNumber"        column="business_number"/>
+        <result property="merchantNumber"        column="merchant_number"/>
+        <result property="merchantName"          column="merchant_name"/>
+        <result property="representative"        column="representative"/>
+        <result property="phone"                 column="phone"/>
+        <result property="address"               column="address"/>
+        <result property="cardType"              column="card_type"/>
+        <result property="inputMethod"           column="input_method"/>
+        <result property="track"                 column="track"/>
+        <result property="amount"                column="amount"/>
+        <result property="transactionType"       column="transaction_type"/>
+        <result property="approvalNumber"        column="approval_number"/>
+        <result property="responseCode"          column="response_code"/>
+        <result property="cancelCode"            column="cancel_code"/>
+        <result property="originalTradeDate"     column="original_trade_date"/>
+        <result property="originalApprovalNumber" column="original_approval_number"/>
+        <result property="acquirerCode"          column="acquirer_code"/>
+        <result property="acquirerName"          column="acquirer_name"/>
+        <result property="filterValue"           column="filter_value"/>
+        <result property="status"                column="status"/>
+        <result property="createdAt"             column="created_at"/>
+        <result property="updatedAt"             column="updated_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="paymentResultMap">
+        SELECT * FROM payment
+        <where>
+            <if test="startDate != null and startDate != ''">
+                AND transmission_date >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND transmission_date &lt;= #{endDate}
+            </if>
+            <if test="transactionType != null and transactionType != ''">
+                AND transaction_type = #{transactionType}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="approvalNumber != null and approvalNumber != ''">
+                AND approval_number = #{approvalNumber}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM payment
+        <where>
+            <if test="startDate != null and startDate != ''">
+                AND transmission_date >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND transmission_date &lt;= #{endDate}
+            </if>
+            <if test="transactionType != null and transactionType != ''">
+                AND transaction_type = #{transactionType}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="approvalNumber != null and approvalNumber != ''">
+                AND approval_number = #{approvalNumber}
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" resultMap="paymentResultMap">
+        SELECT * FROM payment WHERE payment_id = #{paymentId}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE payment
+        SET status = #{status}
+        WHERE payment_id = #{paymentId}
+    </update>
+
+</mapper>
