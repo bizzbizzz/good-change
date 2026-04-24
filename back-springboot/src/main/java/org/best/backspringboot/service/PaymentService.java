@@ -2,12 +2,21 @@ package org.best.backspringboot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
+import org.best.backspringboot.dto.payment.PaymentCreateDto;
 import org.best.backspringboot.dto.payment.PaymentResponseDto;
 import org.best.backspringboot.dto.payment.PaymentSearchDto;
+import org.best.backspringboot.entity.Card;
+import org.best.backspringboot.entity.Member;
+import org.best.backspringboot.entity.Payment;
+import org.best.backspringboot.mapper.CardMapper;
 import org.best.backspringboot.mapper.MemberMapper;
 import org.best.backspringboot.mapper.PaymentMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,12 +50,6 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
     }
 
-    @Transactional
-    public void cancel(Long paymentId) {
-        paymentMapper.findById(paymentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
-        paymentMapper.updateStatus(paymentId, "CANCELED");
-    }
 
     @Transactional
     public PaymentResponseDto pay(PaymentCreateDto dto) {
@@ -82,16 +85,15 @@ public class PaymentService {
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
 
         // 8. payment INSERT
-        Payment payment = new Payment();
-        payment.setCardId(card.getCardId());
-        payment.setInstitutionCode("bizline");
-        payment.setMessageNumber(messageNumber);
-        payment.setTransmissionDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-        payment.setAmount(dto.getAmount());
-        payment.setTransactionType("사용");
-        payment.setApprovalNumber(approvalNumber);
-        payment.setStatus("SUCCESS");
-
+        Payment payment = Payment.builder().cardId(card.getCardId())
+                        .institutionCode("bizline")
+                        .messageNumber(messageNumber)
+                        .transmissionDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                        .amount(dto.getAmount())
+                        .transactionType("사용")
+                        .approvalNumber(approvalNumber)
+                        .status("SUCCESS")
+                                .build();
         paymentMapper.insert(payment);
 
         // 9. 포인트 차감
