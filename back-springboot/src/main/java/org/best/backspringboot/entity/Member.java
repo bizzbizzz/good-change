@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class Member {
     private Long memberId;
     private String loginId;
+    private Long roleId;
     private String password;
     private String name;
     private LocalDate birthDate;
@@ -20,4 +21,6 @@ public class Member {
     private Long referrerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String status;
+    private LocalDateTime deletedAt;
 }
