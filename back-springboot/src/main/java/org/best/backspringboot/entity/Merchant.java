@@ -14,11 +14,9 @@ public class Merchant {
     private String representative;
     private String businessNumber;
     private String contact;
-    private String phone;
     private String address;
-    private String homepage;
-    private String managerName;
     private String email;
+    private String status;          // ✅ 추가
     private Long referrerId;
     private String terminalId;
     private LocalDateTime createdAt;

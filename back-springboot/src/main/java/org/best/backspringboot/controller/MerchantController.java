@@ -13,6 +13,8 @@ import org.best.backspringboot.service.MerchantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Tag(name = "가맹점", description = "가맹점 관련 API")
 @RestController
 @RequestMapping("/api/merchants")
@@ -26,6 +28,18 @@ public class MerchantController {
     public ResponseEntity<Void> create(@Valid @RequestBody MerchantCreateDto dto) {
         merchantService.create(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "아이디 중복체크")
+    @GetMapping("/check-id")
+    public ResponseEntity<Boolean> checkLoginId(@RequestParam String loginId) {
+        return ResponseEntity.ok(merchantService.isLoginIdAvailable(loginId));
+    }
+
+    @Operation(summary = "로그인")
+    @PostMapping("/login")
+    public ResponseEntity<MerchantResponseDto> login(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(merchantService.login(body.get("loginId"), body.get("password")));
     }
 
     @Operation(summary = "가맹점 단건 조회")

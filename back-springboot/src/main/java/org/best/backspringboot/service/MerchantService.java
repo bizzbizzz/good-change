@@ -29,6 +29,8 @@ public class MerchantService {
         merchantMapper.findByBusinessNumber(dto.getBusinessNumber())
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 등록된 사업자번호입니다."); });
 
+        // 비밀번호 암호화
+        dto.encodePassword(passwordEncoder);
         merchantMapper.insert(dto);
 
         // 업종 등록
@@ -65,6 +67,7 @@ public class MerchantService {
     public void update(Long merchantId, MerchantUpdateDto dto) {
         merchantMapper.findById(merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+
         merchantMapper.update(merchantId, dto);
     }
 
@@ -73,5 +76,20 @@ public class MerchantService {
         merchantMapper.findById(merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
         merchantMapper.delete(merchantId);
+    }
+
+    // 아이디 중복체크
+    @Transactional(readOnly = true)
+    public boolean isLoginIdAvailable(String loginId) {
+        return merchantMapper.findByLoginId(loginId).isEmpty();
+    }
+
+    // 로그인
+    @Transactional(readOnly = true)
+    public MerchantResponseDto login(String loginId, String password) {
+        return merchantMapper.findByLoginId(loginId)
+                .filter(m -> passwordEncoder.matches(password, m.getPassword()))
+                .map(m -> MerchantResponseDto.from(m, merchantMapper.findCategoriesByMerchantId(m.getMerchantId())))
+                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다."));
     }
 }
