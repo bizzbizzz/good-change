@@ -12,4 +12,6 @@ public interface PaymentMapper {
     long countAll(PaymentSearchDto dto);
     Optional<Payment> findById(Long paymentId);
     void updateStatus(Long paymentId, String status);
+    void insert(Payment payment);
+    Optional<Payment> findByApprovalNumber(String approvalNumber);
 }

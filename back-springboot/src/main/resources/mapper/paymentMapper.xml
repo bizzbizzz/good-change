@@ -91,4 +91,24 @@
         WHERE payment_id = #{paymentId}
     </update>
 
+    <insert id="insert" useGeneratedKeys="true" keyProperty="paymentId">
+        INSERT INTO payment (
+            card_id, institution_code, message_number,
+            transmission_date, terminal_id,
+            card_type, amount, transaction_type,
+            approval_number, merchant_number,
+            merchant_name, status, created_at
+        ) VALUES (
+                     #{cardId}, #{institutionCode}, #{messageNumber},
+                     #{transmissionDate}, #{terminalId},
+                     #{cardType}, #{amount}, #{transactionType},
+                     #{approvalNumber}, #{merchantNumber},
+                     #{merchantName}, #{status}, NOW()
+                 )
+    </insert>
+
+    <select id="findByApprovalNumber" resultMap="paymentResultMap">
+        SELECT * FROM payment WHERE approval_number = #{approvalNumber}
+    </select>
+
 </mapper>
