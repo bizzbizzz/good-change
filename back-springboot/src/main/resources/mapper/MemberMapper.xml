@@ -22,10 +22,10 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="memberId">
         INSERT INTO member (
             login_id, password, name, birth_date,
-            gender, phone, address, email, referrer_id, created_at
+            gender, phone, address, email, referrer_id, role_id, created_at
         ) VALUES (
                      #{loginId}, #{password}, #{name}, #{birthDate},
-                     #{gender}, #{phone}, #{address}, #{email}, #{referrerId}, NOW()
+                     #{gender}, #{phone}, #{address}, #{email}, #{referrerId}, #{roleId}, NOW()
                  )
     </insert>
 

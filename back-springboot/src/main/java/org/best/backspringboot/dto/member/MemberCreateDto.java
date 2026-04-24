@@ -15,6 +15,7 @@ public class MemberCreateDto {
     @NotBlank
     @Size(max = 50)
     private String loginId;
+    private Long roleId;
 
     @NotBlank
     @Size(max = 255)

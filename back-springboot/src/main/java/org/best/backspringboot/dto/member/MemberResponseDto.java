@@ -20,6 +20,7 @@ public class MemberResponseDto {
     private String email;
     private Long referrerId;
     private LocalDateTime createdAt;
+    private LocalDateTime deletedAt;
 
     public static MemberResponseDto from(Member member) {
         return MemberResponseDto.builder()
@@ -33,6 +34,7 @@ public class MemberResponseDto {
                 .email(member.getEmail())
                 .referrerId(member.getReferrerId())
                 .createdAt(member.getCreatedAt())
+                .deletedAt(member.getDeletedAt())
                 .build();
     }
 }
