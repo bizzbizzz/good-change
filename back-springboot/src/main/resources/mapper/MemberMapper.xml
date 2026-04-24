@@ -14,10 +14,7 @@
         <result property="phone"      column="phone"/>
         <result property="address"    column="address"/>
         <result property="email"      column="email"/>
-        <result property="role"      column="role"/>
-        <result property="status"      column="status"/>
         <result property="referrerId" column="referrer_id"/>
-        <result property="deletedAt"      column="deletedAt"/>
         <result property="createdAt"  column="created_at"/>
         <result property="updatedAt"  column="updated_at"/>
     </resultMap>
@@ -37,10 +34,8 @@
         WHERE member_id = #{memberId}
     </select>
 
-    <!-- 전체 목록은 ACTIVE만 -->
     <select id="findAll" resultMap="memberResultMap">
         SELECT * FROM member
-        WHERE status = 'ACTIVE' AND role != 'ADMIN'
         ORDER BY created_at DESC
             LIMIT #{size} OFFSET #{offset}
     </select>
@@ -61,28 +56,11 @@
         WHERE login_id = #{loginId}
     </update>
 
-    <update id="delete">
-        UPDATE member
-        SET status = 'DISABLED',
-            deleted_at = NOW()
-        WHERE login_id = #{loginId}
-    </update>
+    <delete id="delete">
+        DELETE FROM member WHERE login_id = #{loginId}
+    </delete>
 
     <select id="countAll" resultType="long">
         SELECT COUNT(*) FROM member
-        WHERE status = 'ACTIVE'
-        AND role != 'ADMIN'
     </select>
-
-    <select id="findLeaveList" resultMap="memberResultMap">
-        SELECT * FROM member
-        WHERE status = 'DISABLED'
-        ORDER BY deleted_at DESC
-            LIMIT #{size} OFFSET #{offset}
-    </select>
-
-    <select id="countLeave" resultType="long">
-        SELECT COUNT(*) FROM member WHERE status = 'DISABLED'
-    </select>
-
 </mapper>

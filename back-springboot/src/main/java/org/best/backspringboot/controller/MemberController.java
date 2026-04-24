@@ -70,10 +70,4 @@ public class MemberController {
         memberService.delete(loginId);
         return ResponseEntity.ok().build();
     }
-
-    @Operation(summary = "탈퇴 회원 목록")
-    @GetMapping("/leave")
-    public ResponseEntity<PageResponse<MemberResponseDto>> getLeaveList(SearchBase searchBase) {
-        return ResponseEntity.ok(memberService.getLeaveList(searchBase));
-    }
 }

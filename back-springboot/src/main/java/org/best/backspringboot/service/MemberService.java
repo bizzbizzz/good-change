@@ -87,19 +87,4 @@ public class MemberService {
 
         return jwtUtil.generateToken(member.getMemberId(), member.getLoginId());
     }
-
-    @Transactional(readOnly = true)
-    public PageResponse<MemberResponseDto> getLeaveList(SearchBase searchBase) {
-        PageResponse<MemberResponseDto> pageResponse = new PageResponse<>();
-        pageResponse.setPage(searchBase.getPage());
-        pageResponse.setSize(searchBase.getSize());
-
-        List<MemberResponseDto> content = memberMapper.findLeaveList(searchBase).stream()
-                .map(MemberResponseDto::from)
-                .collect(Collectors.toList());
-
-        long totalCount = memberMapper.countLeave();
-        pageResponse.setPageInfo(content, totalCount);
-        return pageResponse;
-    }
 }

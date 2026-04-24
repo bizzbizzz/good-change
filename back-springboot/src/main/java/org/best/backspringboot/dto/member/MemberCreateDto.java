@@ -15,7 +15,6 @@ public class MemberCreateDto {
     @NotBlank
     @Size(max = 50)
     private String loginId;
-
     private Long roleId;
 
     @NotBlank
@@ -37,9 +36,6 @@ public class MemberCreateDto {
     @Pattern(regexp = "^01[0-9]{8,9}$", message = "휴대폰번호 형식이 올바르지 않습니다. (예: 01012341234)")
     @Size(max = 20)
     private String phone;
-
-    @Size(max = 100)
-    private String role;
 
     @NotBlank
     @Size(max = 255)

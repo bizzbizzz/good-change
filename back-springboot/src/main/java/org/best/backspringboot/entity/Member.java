@@ -21,6 +21,4 @@ public class Member {
     private Long referrerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String status;
-    private LocalDateTime deletedAt;
 }
