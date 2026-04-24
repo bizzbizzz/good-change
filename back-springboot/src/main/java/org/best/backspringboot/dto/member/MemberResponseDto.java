@@ -14,13 +14,16 @@ public class MemberResponseDto {
     private String loginId;
     private String name;
     private LocalDate birthDate;
+    private Long roleId;
     private String gender;
     private String phone;
     private String address;
     private String email;
     private Long referrerId;
+    private String status;
     private LocalDateTime createdAt;
-    private LocalDateTime deletedAt;
+    private Long point;
+
 
     public static MemberResponseDto from(Member member) {
         return MemberResponseDto.builder()
@@ -33,8 +36,10 @@ public class MemberResponseDto {
                 .address(member.getAddress())
                 .email(member.getEmail())
                 .referrerId(member.getReferrerId())
+                .roleId(member.getRoleId())       // ✅ 추가
+                .point(member.getPoint())          // ✅ 추가
+                .status(member.getStatus())        // ✅ 추가
                 .createdAt(member.getCreatedAt())
-                .deletedAt(member.getDeletedAt())
                 .build();
     }
 }

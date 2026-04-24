@@ -21,4 +21,6 @@ public class Member {
     private Long referrerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long point;         // ✅ 추가 (보유포인트)
+    private String status;      // 기존 있음
 }
