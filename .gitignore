@@ -52,3 +52,8 @@ build/
 *.eot
 *.ttf
 *.otf
+
+*.ai
+*.xlsx
+*.docx
+*.pptx
