@@ -1,6 +1,6 @@
+-- member 테이블에서 card_number 제거
 CREATE TABLE member (
     member_id   BIGINT          NOT NULL AUTO_INCREMENT,
-    role_id     BIGINT          NULL,
     login_id    VARCHAR(50)     NOT NULL,
     password    VARCHAR(255)    NOT NULL,
     name        VARCHAR(50)     NOT NULL,
@@ -9,21 +9,17 @@ CREATE TABLE member (
     phone       VARCHAR(20)     NOT NULL,
     address     VARCHAR(255)    NOT NULL,
     email       VARCHAR(100)    NULL,
-    status      VARCHAR(20)     NOT NULL DEFAULT 'ACTIVE',
+    role           VARCHAR(20) NOT NULL DEFAULT 'USER',
     referrer_id BIGINT          NULL,
-    created_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at  DATETIME       NOT NULL,
     updated_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (member_id),
     UNIQUE KEY uq_login_id (login_id),
-    CONSTRAINT fk_member_role
-        FOREIGN KEY (role_id)
-            REFERENCES role (role_id)
-            ON DELETE SET NULL,
     CONSTRAINT fk_member_referrer
         FOREIGN KEY (referrer_id)
-            REFERENCES member (member_id)
-            ON DELETE SET NULL
+        REFERENCES member (member_id)
+        ON DELETE SET NULL
 );
 
 -- 카드 테이블 (member 다음에 생성)
@@ -166,15 +162,4 @@ CREATE TABLE allowed_ip (
 
                             PRIMARY KEY (ip_id),
                             UNIQUE KEY uq_ip_address (ip_address)
-);
-
--- role 테이블 생성
-CREATE TABLE role (
-      role_id     BIGINT          NOT NULL AUTO_INCREMENT,
-      role_name   VARCHAR(20)     NOT NULL,
-      description VARCHAR(100)    NULL,
-      created_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-      PRIMARY KEY (role_id),
-      UNIQUE KEY uq_role_name (role_name)
 );

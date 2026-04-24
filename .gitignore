@@ -54,6 +54,6 @@ build/
 *.otf
 
 *.ai
+*.pptx
 *.xlsx
 *.docx
-*.pptx
