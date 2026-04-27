@@ -2,8 +2,10 @@ package org.best.backspringboot.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
+import org.best.backspringboot.dto.payment.PaymentCreateDto;
 import org.best.backspringboot.dto.payment.PaymentResponseDto;
 import org.best.backspringboot.dto.payment.PaymentSearchDto;
 import org.best.backspringboot.service.PaymentService;
@@ -17,6 +19,12 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+
+    @Operation(summary = "결제")
+    @PostMapping
+    public ResponseEntity<PaymentResponseDto> pay(@Valid @RequestBody PaymentCreateDto dto) {
+        return ResponseEntity.ok(paymentService.pay(dto));
+    }
 
     @Operation(summary = "결제 내역 조회 (페이징 + 검색)")
     @GetMapping
