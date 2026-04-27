@@ -46,6 +46,7 @@ CREATE TABLE card (
                       card_number CHAR(16)    NOT NULL,
                       card_alias  VARCHAR(50) NULL,
                       is_primary  TINYINT     NOT NULL DEFAULT 0,
+                      card_type VARCHAR(255)  NOT NULL,
                       status      ENUM('ACTIVE', 'BLOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
                       created_at  DATETIME    NOT NULL,
                       updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -98,6 +99,9 @@ CREATE TABLE payment (
                          phone                    VARCHAR(20)  NULL,
                          address                  VARCHAR(255) NULL,
                          card_number              CHAR(16)     NULL,
+                         card_type                VARCHAR(20)  NULL,  -- ✅ 추가
+                         input_method             VARCHAR(20)  NULL,  -- ✅ 추가
+                         track                    VARCHAR(255) NULL,  -- ✅ 추가
                          amount                   BIGINT       NULL,
                          transaction_type         VARCHAR(20)  NULL,
                          approval_number          VARCHAR(50)  NULL,
@@ -107,7 +111,9 @@ CREATE TABLE payment (
                          original_approval_number VARCHAR(50)  NULL,
                          original_amount          BIGINT       NULL,
                          remaining_point          BIGINT       NULL,
+                         acquirer_code            VARCHAR(20)  NULL,  -- ✅ 추가
                          acquirer_name            VARCHAR(100) NULL,
+                         filter_value             VARCHAR(255) NULL,  -- ✅ 추가
                          status                   ENUM('SUCCESS', 'FAILED', 'CANCELED') NOT NULL DEFAULT 'SUCCESS',
                          created_at               DATETIME     NOT NULL,
                          updated_at               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
