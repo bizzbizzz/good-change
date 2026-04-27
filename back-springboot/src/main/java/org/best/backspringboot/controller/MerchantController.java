@@ -13,8 +13,6 @@ import org.best.backspringboot.service.MerchantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @Tag(name = "가맹점", description = "가맹점 관련 API")
 @RestController
 @RequestMapping("/api/merchants")
@@ -30,22 +28,16 @@ public class MerchantController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "아이디 중복체크")
-    @GetMapping("/check-id")
-    public ResponseEntity<Boolean> checkLoginId(@RequestParam String loginId) {
-        return ResponseEntity.ok(merchantService.isLoginIdAvailable(loginId));
-    }
-
-    @Operation(summary = "로그인")
-    @PostMapping("/login")
-    public ResponseEntity<MerchantResponseDto> login(@RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(merchantService.login(body.get("loginId"), body.get("password")));
-    }
-
     @Operation(summary = "가맹점 단건 조회")
     @GetMapping("/{merchantId}")
     public ResponseEntity<MerchantResponseDto> getById(@PathVariable Long merchantId) {
         return ResponseEntity.ok(merchantService.getById(merchantId));
+    }
+
+    @Operation(summary = "member_id로 가맹점 조회")
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<MerchantResponseDto> getByMemberId(@PathVariable Long memberId) {
+        return ResponseEntity.ok(merchantService.getByMemberId(memberId));
     }
 
     @Operation(summary = "가맹점 전체 조회 (페이징)")

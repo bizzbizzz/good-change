@@ -8,15 +8,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Merchant {
     private Long merchantId;
-    private String loginId;
-    private String password;
+    private Long memberId;          // ✅ loginId, password 제거 → memberId 추가
     private String merchantName;
     private String representative;
     private String businessNumber;
     private String contact;
     private String address;
     private String email;
-    private String status;          // ✅ 추가
+    private String status;
     private Long referrerId;
     private String terminalId;
     private LocalDateTime createdAt;

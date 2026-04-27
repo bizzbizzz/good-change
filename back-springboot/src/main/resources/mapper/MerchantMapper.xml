@@ -5,9 +5,8 @@
 <mapper namespace="org.best.backspringboot.mapper.MerchantMapper">
 
     <resultMap id="merchantResultMap" type="org.best.backspringboot.entity.Merchant">
-        <id property="merchantId"      column="merchant_id"/>
-        <result property="loginId"        column="login_id"/>
-        <result property="password"       column="password"/>
+        <id  property="merchantId"      column="merchant_id"/>
+        <result property="memberId"       column="member_id"/>
         <result property="merchantName"   column="merchant_name"/>
         <result property="representative" column="representative"/>
         <result property="businessNumber" column="business_number"/>
@@ -23,19 +22,26 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
         INSERT INTO merchant (
-            login_id, password, merchant_name, representative,
+            member_id, merchant_name, representative,
             business_number, contact, address,
             email, referrer_id, terminal_id, status, created_at
         ) VALUES (
-                     #{loginId}, #{password}, #{merchantName}, #{representative},
+                     #{memberId}, #{merchantName}, #{representative},
                      #{businessNumber}, #{contact}, #{address},
                      #{email}, #{referrerId}, #{terminalId}, 'ACTIVE', NOW()
                  )
     </insert>
 
     <select id="findById" resultMap="merchantResultMap">
-        SELECT * FROM merchant
-        WHERE merchant_id = #{merchantId}
+        SELECT * FROM merchant WHERE merchant_id = #{merchantId}
+    </select>
+
+    <select id="findByMemberId" resultMap="merchantResultMap">
+        SELECT * FROM merchant WHERE member_id = #{memberId}
+    </select>
+
+    <select id="findByBusinessNumber" resultMap="merchantResultMap">
+        SELECT * FROM merchant WHERE business_number = #{businessNumber}
     </select>
 
     <select id="findAll" resultMap="merchantResultMap">
@@ -46,23 +52,14 @@
     </select>
 
     <select id="countAll" resultType="long">
-        SELECT COUNT(*) FROM merchant
-        WHERE status = 'ACTIVE'
-    </select>
-
-    <select id="findByLoginId" resultMap="merchantResultMap">
-        SELECT * FROM merchant
-        WHERE login_id = #{loginId}
-    </select>
-
-    <select id="findByBusinessNumber" resultMap="merchantResultMap">
-        SELECT * FROM merchant
-        WHERE business_number = #{businessNumber}
+        SELECT COUNT(*) FROM merchant WHERE status = 'ACTIVE'
     </select>
 
     <update id="update">
         UPDATE merchant
         <set>
+            <if test="dto.merchantName   != null">merchant_name   = #{dto.merchantName},</if>
+            <if test="dto.representative != null">representative  = #{dto.representative},</if>
             <if test="dto.contact        != null">contact         = #{dto.contact},</if>
             <if test="dto.address        != null">address         = #{dto.address},</if>
             <if test="dto.email          != null">email           = #{dto.email},</if>
@@ -72,24 +69,8 @@
     </update>
 
     <update id="delete">
-        UPDATE merchant
-        SET status = 'DISABLED'
+        UPDATE merchant SET status = 'DISABLED'
         WHERE merchant_id = #{merchantId}
     </update>
-
-    <insert id="insertCategory">
-        INSERT INTO merchant_category (merchant_id, category_name, created_at)
-        VALUES (#{merchantId}, #{categoryName}, NOW())
-    </insert>
-
-    <delete id="deleteCategories">
-        DELETE FROM merchant_category
-        WHERE merchant_id = #{merchantId}
-    </delete>
-
-    <select id="findCategoriesByMerchantId" resultType="String">
-        SELECT category_name FROM merchant_category
-        WHERE merchant_id = #{merchantId}
-    </select>
 
 </mapper>

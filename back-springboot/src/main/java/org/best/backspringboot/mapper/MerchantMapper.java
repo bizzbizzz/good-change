@@ -12,13 +12,10 @@ import java.util.Optional;
 public interface MerchantMapper {
     void insert(MerchantCreateDto dto);
     Optional<Merchant> findById(Long merchantId);
+    Optional<Merchant> findByMemberId(Long memberId);
+    Optional<Merchant> findByBusinessNumber(String businessNumber);
     List<Merchant> findAll(SearchBase searchBase);
+    long countAll();
     void update(Long merchantId, MerchantUpdateDto dto);
     void delete(Long merchantId);
-    Optional<Merchant> findByLoginId(String loginId);
-    Optional<Merchant> findByBusinessNumber(String businessNumber);
-    void insertCategory(Long merchantId, String categoryName);
-    void deleteCategories(Long merchantId);
-    List<String> findCategoriesByMerchantId(Long merchantId);
-    long countAll();
 }
