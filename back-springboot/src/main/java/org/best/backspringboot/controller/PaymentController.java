@@ -36,4 +36,11 @@ public class PaymentController {
         paymentService.cancel(paymentId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "결제 내역 삭제 (관리자용)")
+    @DeleteMapping("/{paymentId}")
+    public ResponseEntity<Void> delete(@PathVariable Long paymentId) {
+        paymentService.delete(paymentId);
+        return ResponseEntity.ok().build();
+    }
 }
