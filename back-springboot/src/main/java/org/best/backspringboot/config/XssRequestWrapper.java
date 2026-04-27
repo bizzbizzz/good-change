@@ -1,14 +1,7 @@
 package org.best.backspringboot.config;
 
-import jakarta.servlet.ReadListener;
-import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class XssRequestWrapper extends HttpServletRequestWrapper {
 
@@ -39,23 +32,6 @@ public class XssRequestWrapper extends HttpServletRequestWrapper {
                 .replace("<",  "&lt;")
                 .replace(">",  "&gt;")
                 .replace("\"", "&quot;")
-                .replace("'",  "&#x27;")
-                .replace("/",  "&#x2F;");
-    }
-
-
-    @Override
-    public ServletInputStream getInputStream() throws IOException {
-        InputStream in = super.getInputStream();
-        String body = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        String sanitized = sanitize(body);
-        byte[] bytes = sanitized.getBytes(StandardCharsets.UTF_8);
-        return new ServletInputStream() {
-            private final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-            public int read() { return bis.read(); }
-            public boolean isFinished() { return bis.available() == 0; }
-            public boolean isReady() { return true; }
-            public void setReadListener(ReadListener l) {}
-        };
+                .replace("'",  "&#x27;");
     }
 }
