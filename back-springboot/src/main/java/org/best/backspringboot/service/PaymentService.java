@@ -103,6 +103,13 @@ public class PaymentService {
     }
 
     @Transactional
+    public void delete(Long paymentId) {
+        paymentMapper.findById(paymentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
+        paymentMapper.updateStatus(paymentId, "DELETED");
+    }
+
+    @Transactional
     public void cancel(Long paymentId) {
         // 1. 결제 조회
         Payment payment = paymentMapper.findById(paymentId)

@@ -111,4 +111,10 @@
         SELECT * FROM payment WHERE approval_number = #{approvalNumber}
     </select>
 
+    <update id="delete">
+        UPDATE payment
+        SET status = 'DELETED'
+        WHERE payment_id = #{paymentId}
+    </update>
+
 </mapper>

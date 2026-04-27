@@ -14,4 +14,5 @@ public interface PaymentMapper {
     void updateStatus(Long paymentId, String status);
     void insert(Payment payment);
     Optional<Payment> findByApprovalNumber(String approvalNumber);
+    void delete(Long paymentId);
 }
