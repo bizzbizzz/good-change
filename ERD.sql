@@ -76,7 +76,6 @@ CREATE TABLE merchant (
                           created_at      DATETIME     NOT NULL,
                           apply_date    DATETIME NULL,
                           approve_date  DATETIME NULL,
-                          ip           VARCHAR(50) NOT NULL,
                           updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
                           PRIMARY KEY (merchant_id),
