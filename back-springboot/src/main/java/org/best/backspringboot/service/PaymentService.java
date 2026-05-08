@@ -103,6 +103,13 @@ public class PaymentService {
     }
 
     @Transactional
+    public void delete(Long paymentId) {
+        paymentMapper.findById(paymentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
+        paymentMapper.updateStatus(paymentId, "DELETED");
+    }
+
+    @Transactional
     public void cancel(Long paymentId) {
         // 1. 결제 조회
         Payment payment = paymentMapper.findById(paymentId)
@@ -113,7 +120,15 @@ public class PaymentService {
             throw new IllegalArgumentException("취소 가능한 결제가 아닙니다.");
         }
 
-        // 3. 카드 조회 → 회원 조회
+        // 3. 15일 초과 체크 ✅
+        if (payment.getCreatedAt() != null) {
+            LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
+            if (payment.getCreatedAt().isBefore(fifteenDaysAgo)) {
+                throw new IllegalArgumentException("결제일로부터 15일이 지난 결제는 취소할 수 없습니다.");
+            }
+        }
+
+        // 4. 카드 조회 → 회원 조회
         Card card = cardMapper.findById(payment.getCardId())
                 .orElseThrow(() -> new IllegalArgumentException("카드 정보를 찾을 수 없습니다."));
 

@@ -19,6 +19,63 @@
         SELECT * FROM card WHERE card_number = #{cardNumber}
     </select>
 
+    <insert id="insert" useGeneratedKeys="true" keyProperty="cardId">
+        INSERT INTO card (
+            member_id, card_number, card_alias,
+            is_primary, status, created_at
+        ) VALUES (
+                     #{memberId}, #{cardNumber}, #{cardAlias},
+                     #{isPrimary}, 'ACTIVE', NOW()
+                 )
+    </insert>
+
+    <select id="countByMemberId" resultType="long">
+        SELECT COUNT(*) FROM card
+        WHERE member_id = #{memberId}
+          AND status != 'DELETED'
+    </select>
+
+    <update id="delete">
+        UPDATE card
+        SET status = 'DELETED'
+        WHERE card_id = #{cardId}
+    </update>
+
+    <select id="findAll" resultMap="cardResultMap">
+        SELECT * FROM card
+        <where>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="memberId != null">
+                AND member_id = #{memberId}
+            </if>
+            AND status != 'DELETED'
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM card
+        <where>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="memberId != null">
+                AND member_id = #{memberId}
+            </if>
+            AND status != 'DELETED'
+        </where>
+    </select>
+
+    <select id="findByMemberId" resultMap="cardResultMap">
+        SELECT * FROM card
+        WHERE member_id = #{memberId}
+          AND status != 'DELETED'
+        ORDER BY created_at DESC
+    </select>
+
     <select id="findById" resultMap="cardResultMap">
         SELECT * FROM card WHERE card_id = #{cardId}
     </select>
