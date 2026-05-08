@@ -28,6 +28,8 @@ CREATE TABLE member (
                         point       BIGINT       NOT NULL DEFAULT 0,
                         status      VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
                         referrer_id BIGINT       NULL,
+                        apply_date    DATETIME NULL,
+                        approve_date  DATETIME NULL,
                         created_at  DATETIME     NOT NULL,
                         updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -72,6 +74,8 @@ CREATE TABLE merchant (
                           referrer_id     BIGINT       NULL,
                           terminal_id     VARCHAR(100) NULL,
                           created_at      DATETIME     NOT NULL,
+                          apply_date    DATETIME NULL,
+                          approve_date  DATETIME NULL,
                           updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
                           PRIMARY KEY (merchant_id),
@@ -378,7 +382,7 @@ ON SCHEDULE EVERY 1 MONTH
 STARTS '2026-05-01 04:00:00'
 DO
     CALL sp_drop_old_partitions();
-    
+
 
 -- 등록된 이벤트 확인
 SHOW EVENTS;
