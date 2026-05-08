@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.AllowedIpMapper">
+
+    <resultMap id="allowedIpResultMap" type="org.best.backspringboot.entity.AllowedIp">
+        <id  property="ipId"       column="ip_id"/>
+        <result property="ipAddress"  column="ip_address"/>
+        <result property="merchantId" column="merchant_id"/>
+        <result property="description" column="description"/>
+        <result property="createdAt"  column="created_at"/>
+        <result property="updatedAt"  column="updated_at"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="ipId">
+        INSERT INTO allowed_ip (
+            ip_address, merchant_id, description, created_at
+        ) VALUES (
+                     #{ipAddress}, #{merchantId}, #{description}, NOW()
+                 )
+    </insert>
+
+    <select id="findAll" resultMap="allowedIpResultMap">
+        SELECT * FROM allowed_ip ORDER BY created_at DESC
+    </select>
+
+    <select id="existsByIp" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM allowed_ip
+        WHERE ip_address = #{ipAddress}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM allowed_ip WHERE ip_id = #{ipId}
+    </delete>
+
+</mapper>
