@@ -20,6 +20,8 @@ public class MerchantResponseDto {
     private Long referrerId;
     private String terminalId;
     private LocalDateTime createdAt;
+    private LocalDateTime applyDate;
+    private LocalDateTime approveDate;
 
     public static MerchantResponseDto from(Merchant merchant) {
         return MerchantResponseDto.builder()
@@ -35,6 +37,8 @@ public class MerchantResponseDto {
                 .referrerId(merchant.getReferrerId())
                 .terminalId(merchant.getTerminalId())
                 .createdAt(merchant.getCreatedAt())
+                .applyDate(merchant.getApplyDate())
+                .approveDate(merchant.getApproveDate())
                 .build();
     }
 }

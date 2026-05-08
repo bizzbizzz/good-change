@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class MerchantCreateDto {
@@ -40,4 +42,7 @@ public class MerchantCreateDto {
 
     @Size(max = 100)
     private String terminalId;
+
+    private LocalDateTime applyDate;
+    private LocalDateTime approveDate;
 }
