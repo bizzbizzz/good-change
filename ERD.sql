@@ -62,28 +62,28 @@ CREATE TABLE card (
 
 -- 4. merchant 테이블
 CREATE TABLE merchant (
-                          merchant_id     BIGINT       NOT NULL AUTO_INCREMENT,
-                          member_id       BIGINT       NOT NULL,
-                          merchant_name   VARCHAR(100) NOT NULL,
-                          representative  VARCHAR(50)  NOT NULL,
-                          business_number VARCHAR(20)  NOT NULL,
-                          contact         VARCHAR(20)  NULL,
-                          address         VARCHAR(255) NOT NULL,
-                          email           VARCHAR(100) NULL,
-                          status          VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
-                          referrer_id     BIGINT       NULL,
-                          terminal_id     VARCHAR(100) NULL,
-                          created_at      DATETIME     NOT NULL,
-                          apply_date    DATETIME NULL,
-                          approve_date  DATETIME NULL,
-                          updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    merchant_id     BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id       BIGINT       NOT NULL,
+    merchant_name   VARCHAR(100) NOT NULL,
+    representative  VARCHAR(50)  NOT NULL,
+    business_number VARCHAR(20)  NOT NULL,
+    contact         VARCHAR(20)  NULL,
+    address         VARCHAR(255) NOT NULL,
+    email           VARCHAR(100) NULL,
+    status          VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
+    referrer_id     BIGINT       NULL,
+    terminal_id     VARCHAR(100) NULL,
+    created_at      DATETIME     NOT NULL,
+    apply_date    DATETIME NULL,
+    approve_date  DATETIME NULL,
+    updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-                          PRIMARY KEY (merchant_id),
-                          UNIQUE KEY uq_merchant_business_number (business_number),
-                          CONSTRAINT fk_merchant_member
-                              FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
-                          CONSTRAINT fk_merchant_referrer
-                              FOREIGN KEY (referrer_id) REFERENCES merchant (merchant_id) ON DELETE SET NULL
+    PRIMARY KEY (merchant_id),
+    UNIQUE KEY uq_merchant_business_number (business_number),
+    CONSTRAINT fk_merchant_member
+        FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
+    CONSTRAINT fk_merchant_referrer
+        FOREIGN KEY (referrer_id) REFERENCES merchant (merchant_id) ON DELETE SET NULL
 );
 
 -- 5. payment 테이블
@@ -123,9 +123,7 @@ CREATE TABLE payment (
     updated_at               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (payment_id, transmission_date)  -- ✅ 파티션 키 포함
-);
-
-
+)
 PARTITION BY RANGE COLUMNS (transmission_date) (
     PARTITION p20260426 VALUES LESS THAN ('20260427'),
     PARTITION p20260427 VALUES LESS THAN ('20260428'),
@@ -151,7 +149,7 @@ CREATE TABLE settlement (
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (settlement_id, settlement_date)  -- ✅ 파티션 키 포함
-);
+)
 PARTITION BY RANGE COLUMNS (settlement_date) (
     PARTITION p20260426 VALUES LESS THAN ('20260427'),
     PARTITION p20260427 VALUES LESS THAN ('20260428'),
@@ -163,14 +161,19 @@ PARTITION BY RANGE COLUMNS (settlement_date) (
 
 -- 7. allowed_ip 테이블
 CREATE TABLE allowed_ip (
-                            ip_id       BIGINT       NOT NULL AUTO_INCREMENT,
-                            ip_address  VARCHAR(50)  NOT NULL,
-                            description VARCHAR(100) NULL,
-                            created_at  DATETIME     NOT NULL,
-                            updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ip_id       BIGINT       NOT NULL AUTO_INCREMENT,
+    ip_address  VARCHAR(50)  NOT NULL,
+    merchant_id BIGINT       NULL,
+    description VARCHAR(100) NULL,
+    created_at  DATETIME     NOT NULL,
+    updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-                            PRIMARY KEY (ip_id),
-                            UNIQUE KEY uq_ip_address (ip_address)
+    PRIMARY KEY (ip_id),
+    UNIQUE KEY uq_ip_address (ip_address),
+    CONSTRAINT fk_allowed_ip_merchant
+        FOREIGN KEY (merchant_id)
+        REFERENCES merchant (merchant_id)
+        ON DELETE SET NULL    -- ✅ 가맹점 삭제 시 IP는 NULL 처리
 );
 
 
