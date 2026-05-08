@@ -18,17 +18,22 @@
         <result property="terminalId"     column="terminal_id"/>
         <result property="createdAt"      column="created_at"/>
         <result property="updatedAt"      column="updated_at"/>
+        <result property="ip"          column="ip"/>
+        <result property="applyDate"   column="apply_date"/>
+        <result property="approveDate" column="approve_date"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
         INSERT INTO merchant (
             member_id, merchant_name, representative,
-            business_number, contact, address,
-            email, referrer_id, terminal_id, status, created_at
+            business_number, ip, contact, address,
+            email, status, referrer_id, terminal_id,
+            apply_date, approve_date, created_at
         ) VALUES (
                      #{memberId}, #{merchantName}, #{representative},
-                     #{businessNumber}, #{contact}, #{address},
-                     #{email}, #{referrerId}, #{terminalId}, 'ACTIVE', NOW()
+                     #{businessNumber}, #{ip}, #{contact}, #{address},
+                     #{email}, 'ACTIVE', #{referrerId}, #{terminalId},
+                     #{applyDate}, #{approveDate}, NOW()
                  )
     </insert>
 
