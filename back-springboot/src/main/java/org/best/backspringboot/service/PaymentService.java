@@ -120,7 +120,15 @@ public class PaymentService {
             throw new IllegalArgumentException("취소 가능한 결제가 아닙니다.");
         }
 
-        // 3. 카드 조회 → 회원 조회
+        // 3. 15일 초과 체크 ✅
+        if (payment.getCreatedAt() != null) {
+            LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
+            if (payment.getCreatedAt().isBefore(fifteenDaysAgo)) {
+                throw new IllegalArgumentException("결제일로부터 15일이 지난 결제는 취소할 수 없습니다.");
+            }
+        }
+
+        // 4. 카드 조회 → 회원 조회
         Card card = cardMapper.findById(payment.getCardId())
                 .orElseThrow(() -> new IllegalArgumentException("카드 정보를 찾을 수 없습니다."));
 
