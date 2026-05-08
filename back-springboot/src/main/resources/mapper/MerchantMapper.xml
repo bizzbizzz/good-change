@@ -26,12 +26,12 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
         INSERT INTO merchant (
             member_id, merchant_name, representative,
-            business_number, ip, contact, address,
+            business_number, contact, address,
             email, status, referrer_id, terminal_id,
             apply_date, approve_date, created_at
         ) VALUES (
                      #{memberId}, #{merchantName}, #{representative},
-                     #{businessNumber}, #{ip}, #{contact}, #{address},
+                     #{businessNumber}, #{contact}, #{address},
                      #{email}, 'ACTIVE', #{referrerId}, #{terminalId},
                      #{applyDate}, #{approveDate}, NOW()
                  )

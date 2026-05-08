@@ -43,7 +43,6 @@ public class MerchantCreateDto {
     @Size(max = 100)
     private String terminalId;
 
-    private String ip;
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;
 }

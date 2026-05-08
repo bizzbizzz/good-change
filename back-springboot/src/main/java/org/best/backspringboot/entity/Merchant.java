@@ -22,5 +22,4 @@ public class Merchant {
     private LocalDateTime updatedAt;
     private LocalDateTime applyDate;    // 가입신청일자
     private LocalDateTime approveDate;  // 가입승인일자
-    private String ip;
 }
