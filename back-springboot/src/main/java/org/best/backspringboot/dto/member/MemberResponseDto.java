@@ -23,6 +23,8 @@ public class MemberResponseDto {
     private String status;
     private LocalDateTime createdAt;
     private Long point;
+    private LocalDateTime applyDate;
+    private LocalDateTime approveDate;
 
 
     public static MemberResponseDto from(Member member) {
@@ -39,6 +41,8 @@ public class MemberResponseDto {
                 .roleId(member.getRoleId())       // ✅ 추가
                 .point(member.getPoint())          // ✅ 추가
                 .status(member.getStatus())        // ✅ 추가
+                .applyDate(member.getApplyDate())
+                .approveDate(member.getApproveDate())
                 .createdAt(member.getCreatedAt())
                 .build();
     }

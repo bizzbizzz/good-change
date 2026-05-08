@@ -8,6 +8,7 @@ import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 public class MemberCreateDto {
@@ -49,6 +50,9 @@ public class MemberCreateDto {
     private String email;
 
     private Long referrerId;
+
+    private LocalDateTime applyDate;
+    private LocalDateTime approveDate;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
