@@ -23,4 +23,6 @@ public class Member {
     private LocalDateTime updatedAt;
     private Long point;         // ✅ 추가 (보유포인트)
     private String status;      // 기존 있음
+    private LocalDateTime applyDate;    // 가입신청일자
+    private LocalDateTime approveDate;  // 가입승인일자
 }
