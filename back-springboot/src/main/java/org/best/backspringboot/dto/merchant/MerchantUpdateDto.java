@@ -3,6 +3,8 @@ package org.best.backspringboot.dto.merchant;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class MerchantUpdateDto {
 
@@ -23,4 +25,6 @@ public class MerchantUpdateDto {
 
     @Size(max = 100)
     private String terminalId;
+
+    private List<String> categories;
 }
