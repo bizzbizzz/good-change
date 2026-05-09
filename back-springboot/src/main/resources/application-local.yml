@@ -4,9 +4,31 @@ spring:
     username: root
     password: 0816abcd
     driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      maximum-pool-size: 200
+      minimum-idle: 200
+      connection-timeout: 10000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: HikariPool-GoodChange
 
 cors:
   allowed-origins: http://localhost:8081,http://localhost:3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    enable:
+      hikaricp: true    # ✅ 추가
+      jvm: true        # ✅ 추가
+      process: true    # ✅ 추가
+      system: true     # ✅ 추가
 
 logging:
   level:
