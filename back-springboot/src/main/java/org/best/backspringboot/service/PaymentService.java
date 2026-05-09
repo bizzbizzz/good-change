@@ -50,7 +50,6 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
     }
 
-
     @Transactional
     public PaymentResponseDto pay(PaymentCreateDto dto) {
 
@@ -85,21 +84,24 @@ public class PaymentService {
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
 
         // 8. payment INSERT
-        Payment payment = Payment.builder().cardId(card.getCardId())
-                        .institutionCode("bizline")
-                        .messageNumber(messageNumber)
-                        .transmissionDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
-                        .amount(dto.getAmount())
-                        .transactionType("사용")
-                        .approvalNumber(approvalNumber)
-                        .status("SUCCESS")
-                                .build();
+        Payment payment = Payment.builder()
+                .cardId(card.getCardId())
+                .institutionCode("bizline")
+                .messageNumber(messageNumber)
+                .transmissionDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                .amount(dto.getAmount())
+                .transactionType("사용")
+                .approvalNumber(approvalNumber)
+                .status("SUCCESS")
+                .build();
+
         paymentMapper.insert(payment);
 
         // 9. 포인트 차감
         memberMapper.updatePoint(member.getMemberId(), member.getPoint() - dto.getAmount());
 
-        return PaymentResponseDto.from(payment);
+        // ✅ card, member 객체 함께 전달
+        return PaymentResponseDto.from(payment, card, member);
     }
 
     @Transactional
@@ -120,7 +122,7 @@ public class PaymentService {
             throw new IllegalArgumentException("취소 가능한 결제가 아닙니다.");
         }
 
-        // 3. 15일 초과 체크 ✅
+        // 3. 15일 초과 체크
         if (payment.getCreatedAt() != null) {
             LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
             if (payment.getCreatedAt().isBefore(fifteenDaysAgo)) {
@@ -135,10 +137,10 @@ public class PaymentService {
         Member member = memberMapper.findById(card.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
-        // 4. 결제 취소 처리
+        // 5. 결제 취소 처리
         paymentMapper.updateStatus(paymentId, "CANCELED");
 
-        // 5. 포인트 복원
+        // 6. 포인트 복원
         memberMapper.updatePoint(member.getMemberId(), member.getPoint() + payment.getAmount());
     }
 }
