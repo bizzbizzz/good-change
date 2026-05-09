@@ -133,31 +133,40 @@ PARTITION BY RANGE COLUMNS (transmission_date) (
     PARTITION p_future  VALUES LESS THAN (MAXVALUE)
 );
 
--- 6. settlement 테이블
+-- payment 필수 인덱스
+ALTER TABLE payment ADD INDEX idx_card_id (card_id);
+ALTER TABLE payment ADD INDEX idx_approval_number (approval_number);
 
+
+-- 6. settlement 테이블
 CREATE TABLE settlement (
     settlement_id     BIGINT       NOT NULL AUTO_INCREMENT,
     merchant_id       BIGINT       NOT NULL,
     merchant_name     VARCHAR(100) NOT NULL,
     business_number   VARCHAR(20)  NOT NULL,
     settlement_month  VARCHAR(7)   NOT NULL,
-    settlement_date   VARCHAR(8)   NOT NULL,
     settlement_amount BIGINT       NOT NULL,
     status            ENUM('PENDING', 'COMPLETED', 'FAILED', 'DELETED') NOT NULL DEFAULT 'PENDING',
     status_changed_at DATETIME     NULL,
     created_at        DATETIME     NOT NULL,
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (settlement_id, settlement_date)  -- ✅ 파티션 키 포함
+    PRIMARY KEY (settlement_id, settlement_month)  -- ✅ 파티션 키 포함
 )
-PARTITION BY RANGE COLUMNS (settlement_date) (
-    PARTITION p20260426 VALUES LESS THAN ('20260427'),
-    PARTITION p20260427 VALUES LESS THAN ('20260428'),
-    PARTITION p20260428 VALUES LESS THAN ('20260429'),
-    PARTITION p20260429 VALUES LESS THAN ('20260430'),
-    PARTITION p20260430 VALUES LESS THAN ('20260501'),
-    PARTITION p_future  VALUES LESS THAN (MAXVALUE)
+PARTITION BY RANGE COLUMNS (settlement_month) (
+    PARTITION p202604 VALUES LESS THAN ('2026-05'),
+    PARTITION p202605 VALUES LESS THAN ('2026-06'),
+    PARTITION p202606 VALUES LESS THAN ('2026-07'),
+    PARTITION p202607 VALUES LESS THAN ('2026-08'),
+    PARTITION p202608 VALUES LESS THAN ('2026-09'),
+    PARTITION p202609 VALUES LESS THAN ('2026-10'),
+    PARTITION p202610 VALUES LESS THAN ('2026-11'),
+    PARTITION p202611 VALUES LESS THAN ('2026-12'),
+    PARTITION p202612 VALUES LESS THAN ('2027-01'),
+    PARTITION p_future VALUES LESS THAN (MAXVALUE)
 );
+
+ALTER TABLE settlement ADD INDEX idx_merchant_name (merchant_name);
 
 -- 7. allowed_ip 테이블
 CREATE TABLE allowed_ip (
