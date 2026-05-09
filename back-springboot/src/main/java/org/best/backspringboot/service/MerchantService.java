@@ -5,6 +5,7 @@ import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.merchant.MerchantCreateDto;
 import org.best.backspringboot.dto.merchant.MerchantResponseDto;
+import org.best.backspringboot.dto.merchant.MerchantSearchDto;
 import org.best.backspringboot.dto.merchant.MerchantUpdateDto;
 import org.best.backspringboot.mapper.MerchantMapper;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class MerchantService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<MerchantResponseDto> getAll(SearchBase searchBase) {
+    public PageResponse<MerchantResponseDto> getAll(MerchantSearchDto searchBase) {
         PageResponse<MerchantResponseDto> pageResponse = new PageResponse<>();
         pageResponse.setPage(searchBase.getPage());
         pageResponse.setSize(searchBase.getSize());

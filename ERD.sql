@@ -60,19 +60,6 @@ CREATE TABLE card (
                       INDEX idx_card_member_id (member_id)
 );
 
-CREATE TABLE merchant_category (
-    category_id   BIGINT      NOT NULL AUTO_INCREMENT,
-    merchant_id   BIGINT      NOT NULL,
-    category_name VARCHAR(50) NOT NULL,
-    created_at    DATETIME    NOT NULL,
-    updated_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    PRIMARY KEY (category_id),
-    CONSTRAINT fk_merchant_category
-        FOREIGN KEY (merchant_id) REFERENCES merchant (merchant_id) ON DELETE CASCADE,
-    INDEX idx_merchant_id (merchant_id),
-    INDEX idx_category_name (category_name)
-);
 
 -- 4. merchant 테이블
 CREATE TABLE merchant (
@@ -98,6 +85,20 @@ CREATE TABLE merchant (
         FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
     CONSTRAINT fk_merchant_referrer
         FOREIGN KEY (referrer_id) REFERENCES merchant (merchant_id) ON DELETE SET NULL
+);
+
+CREATE TABLE merchant_category (
+    category_id   BIGINT      NOT NULL AUTO_INCREMENT,
+    merchant_id   BIGINT      NOT NULL,
+    category_name VARCHAR(50) NOT NULL,
+    created_at    DATETIME    NOT NULL,
+    updated_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (category_id),
+    CONSTRAINT fk_merchant_category
+        FOREIGN KEY (merchant_id) REFERENCES merchant (merchant_id) ON DELETE CASCADE,
+    INDEX idx_merchant_id (merchant_id),
+    INDEX idx_category_name (category_name)
 );
 
 -- 5. payment 테이블
