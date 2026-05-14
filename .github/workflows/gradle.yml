@@ -1,0 +1,84 @@
+name: Build & Deploy Spring Boot
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 소스 체크아웃
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # 2. JDK 17 세팅
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Gradle 캐시
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
+      # 4. Gradle 빌드 (테스트 스킵)
+      - name: Build with Gradle
+        run: |
+          cd back-springboot
+          chmod +x gradlew
+          ./gradlew clean build -x test
+          echo "✅ 빌드 완료"
+
+      # 5. JAR 파일 서버 전송
+      - name: Upload JAR to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "back-springboot/build/libs/*.jar"
+          target: "~/springboot"
+          strip_components: 3
+
+      # 6. SSH로 서비스 재시작
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/springboot
+
+            echo "🔁 기존 프로세스 종료..."
+            EXISTING_PID=$(pgrep -f "back-springboot")
+            if [ -n "$EXISTING_PID" ]; then
+              pkill -f "back-springboot"
+              sleep 3
+              echo "기존 프로세스 종료 완료 (PID: $EXISTING_PID)"
+            else
+              echo "실행 중인 프로세스 없음"
+            fi
+
+            echo "🚀 서버 시작..."
+            JAR_FILE=$(ls *.jar | head -1)
+            LOG_FILE="logs/logs-$(date '+%Y%m%d_%H%M%S').log"
+            mkdir -p logs
+            nohup java -jar $JAR_FILE --spring.profiles.active=prod > $LOG_FILE 2>&1 &
+
+            echo "PID: $!"
+            echo "✅ 배포 완료!"
+            echo "로그: tail -f $LOG_FILE"
