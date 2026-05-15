@@ -18,7 +18,6 @@
         <result property="terminalId"     column="terminal_id"/>
         <result property="createdAt"      column="created_at"/>
         <result property="updatedAt"      column="updated_at"/>
-        <result property="ip"          column="ip"/>
         <result property="applyDate"   column="apply_date"/>
         <result property="approveDate" column="approve_date"/>
     </resultMap>
@@ -37,6 +36,20 @@
                  )
     </insert>
 
+    <select id="findCategoriesByMerchantId" resultType="string">
+        SELECT category_name FROM merchant_category
+        WHERE merchant_id = #{merchantId}
+    </select>
+
+    <insert id="insertCategory">
+        INSERT INTO merchant_category (merchant_id, category_name, created_at)
+        VALUES (#{merchantId}, #{categoryName}, NOW())
+    </insert>
+
+    <delete id="deleteCategories">
+        DELETE FROM merchant_category WHERE merchant_id = #{merchantId}
+    </delete>
+
     <select id="findById" resultMap="merchantResultMap">
         SELECT * FROM merchant WHERE merchant_id = #{merchantId}
     </select>
@@ -50,10 +63,24 @@
     </select>
 
     <select id="findAll" resultMap="merchantResultMap">
-        SELECT * FROM merchant
-        WHERE status = 'ACTIVE'
-        ORDER BY created_at DESC
-            LIMIT #{size} OFFSET #{offset}
+        SELECT DISTINCT m.* FROM merchant m
+        <if test="categoryName != null and categoryName != ''">
+            JOIN merchant_category mc ON m.merchant_id = mc.merchant_id
+        </if>
+        <where>
+            <if test="merchantName != null and merchantName != ''">
+                AND m.merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="businessNumber != null and businessNumber != ''">
+                AND m.business_number = #{businessNumber}
+            </if>
+            <if test="categoryName != null and categoryName != ''">
+                AND mc.category_name = #{categoryName}
+            </if>
+            AND m.status = 'ACTIVE'
+        </where>
+        ORDER BY m.created_at DESC
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="long">

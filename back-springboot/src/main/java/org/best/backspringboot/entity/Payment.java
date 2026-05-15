@@ -1,12 +1,14 @@
 package org.best.backspringboot.entity;
 
-import aQute.bnd.annotation.headers.BundleCategory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 public class Payment {
     private Long paymentId;

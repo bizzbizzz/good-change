@@ -5,6 +5,7 @@ import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.merchant.MerchantCreateDto;
 import org.best.backspringboot.dto.merchant.MerchantResponseDto;
+import org.best.backspringboot.dto.merchant.MerchantSearchDto;
 import org.best.backspringboot.dto.merchant.MerchantUpdateDto;
 import org.best.backspringboot.mapper.MerchantMapper;
 import org.springframework.stereotype.Service;
@@ -20,34 +21,35 @@ public class MerchantService {
 
     @Transactional
     public void create(MerchantCreateDto dto) {
-        // 사업자번호 중복 체크
         merchantMapper.findByBusinessNumber(dto.getBusinessNumber())
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 등록된 사업자번호입니다."); });
         merchantMapper.insert(dto);
+
+        // ✅ 카테고리 등록
+        if (dto.getCategories() != null) {
+            for (String category : dto.getCategories()) {
+                merchantMapper.insertCategory(dto.getMerchantId(), category);
+            }
+        }
     }
 
     @Transactional(readOnly = true)
     public MerchantResponseDto getById(Long merchantId) {
         return merchantMapper.findById(merchantId)
-                .map(MerchantResponseDto::from)
+                .map(m -> MerchantResponseDto.from(m,
+                        merchantMapper.findCategoriesByMerchantId(merchantId)))
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
     }
 
     @Transactional(readOnly = true)
-    public MerchantResponseDto getByMemberId(Long memberId) {
-        return merchantMapper.findByMemberId(memberId)
-                .map(MerchantResponseDto::from)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
-    }
-
-    @Transactional(readOnly = true)
-    public PageResponse<MerchantResponseDto> getAll(SearchBase searchBase) {
+    public PageResponse<MerchantResponseDto> getAll(MerchantSearchDto searchBase) {
         PageResponse<MerchantResponseDto> pageResponse = new PageResponse<>();
         pageResponse.setPage(searchBase.getPage());
         pageResponse.setSize(searchBase.getSize());
 
         List<MerchantResponseDto> content = merchantMapper.findAll(searchBase).stream()
-                .map(MerchantResponseDto::from)
+                .map(m -> MerchantResponseDto.from(m,
+                        merchantMapper.findCategoriesByMerchantId(m.getMerchantId())))
                 .collect(Collectors.toList());
 
         long totalCount = merchantMapper.countAll();
@@ -60,6 +62,14 @@ public class MerchantService {
         merchantMapper.findById(merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
         merchantMapper.update(merchantId, dto);
+
+        // ✅ 카테고리 수정 (삭제 후 재등록)
+        if (dto.getCategories() != null) {
+            merchantMapper.deleteCategories(merchantId);
+            for (String category : dto.getCategories()) {
+                merchantMapper.insertCategory(merchantId, category);
+            }
+        }
     }
 
     @Transactional

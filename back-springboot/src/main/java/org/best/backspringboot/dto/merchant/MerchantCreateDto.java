@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -42,6 +43,8 @@ public class MerchantCreateDto {
 
     @Size(max = 100)
     private String terminalId;
+
+    private List<String> categories;  // ✅ 추가
 
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;

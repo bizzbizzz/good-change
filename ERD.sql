@@ -3,8 +3,7 @@ CREATE TABLE role (
                       role_id     BIGINT       NOT NULL AUTO_INCREMENT,
                       role_name   VARCHAR(20)  NOT NULL,
                       description VARCHAR(100) NULL,
-                      created_at  DATETIME    NOT NULL DEFAULT NOW(),
-
+                      created_at DATETIME NOT NULL DEFAULT NOW(),
                       PRIMARY KEY (role_id),
                       UNIQUE KEY uq_role_name (role_name)
 );
@@ -15,67 +14,66 @@ INSERT INTO role (role_name, description, created_at) VALUES ('MERCHANT', '가�
 
 -- 2. member 테이블
 CREATE TABLE member (
-    member_id   BIGINT       NOT NULL AUTO_INCREMENT,
-    role_id     BIGINT       NULL,
-    login_id    VARCHAR(50)  NOT NULL,
-    password    VARCHAR(255) NOT NULL,
-    name        VARCHAR(50)  NOT NULL,
-    birth_date  DATE         NOT NULL,
-    gender      ENUM('MALE', 'FEMALE') NOT NULL,
-    phone       VARCHAR(255)  NOT NULL,
-    address     VARCHAR(255) NULL,
-    email       VARCHAR(255) NULL,
-    point       BIGINT       NOT NULL DEFAULT 0,
-    status      VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
-    referrer_id BIGINT       NULL,
-    apply_date    DATETIME NULL,
-    approve_date  DATETIME NULL,
-    created_at  DATETIME    NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            member_id   BIGINT       NOT NULL AUTO_INCREMENT,
+            role_id     BIGINT       NULL,
+            login_id    VARCHAR(50)  NOT NULL,
+            password    VARCHAR(255) NOT NULL,
+            name        VARCHAR(50)  NOT NULL,
+            birth_date  DATE         NOT NULL,
+            gender      ENUM('MALE', 'FEMALE') NOT NULL,
+            phone       VARCHAR(255)  NOT NULL,
+            address     VARCHAR(255) NULL,
+            email       VARCHAR(255) NULL,
+            point       BIGINT       NOT NULL DEFAULT 0,
+            status      VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
+            referrer_id BIGINT       NULL,
+            apply_date    DATETIME NULL,
+            approve_date  DATETIME NULL,
+            created_at DATETIME NOT NULL DEFAULT NOW(),
+            updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (member_id),
-    UNIQUE KEY uq_login_id (login_id),
-    CONSTRAINT fk_member_role
-        FOREIGN KEY (role_id) REFERENCES role (role_id) ON DELETE SET NULL,
-    CONSTRAINT fk_member_referrer
-        FOREIGN KEY (referrer_id) REFERENCES member (member_id) ON DELETE SET NULL
+            PRIMARY KEY (member_id),
+            UNIQUE KEY uq_login_id (login_id),
+            CONSTRAINT fk_member_role
+                FOREIGN KEY (role_id) REFERENCES role (role_id) ON DELETE SET NULL,
+            CONSTRAINT fk_member_referrer
+                FOREIGN KEY (referrer_id) REFERENCES member (member_id) ON DELETE SET NULL
 );
 
 -- 3. card 테이블
 CREATE TABLE card (
-    card_id     BIGINT      NOT NULL AUTO_INCREMENT,
-    member_id   BIGINT      NOT NULL,
-    card_number CHAR(16)    NOT NULL,
-    card_alias  VARCHAR(50) NULL,
-    is_primary  TINYINT     NOT NULL DEFAULT 0,
-    card_type VARCHAR(255)  NOT NULL,
-    status      ENUM('ACTIVE', 'BLOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-    created_at  DATETIME    NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          card_id     BIGINT      NOT NULL AUTO_INCREMENT,
+          member_id   BIGINT      NOT NULL,
+          card_number CHAR(16)    NOT NULL,
+          card_alias  VARCHAR(50) NULL,
+          is_primary  TINYINT     NOT NULL DEFAULT 0,
+          card_type VARCHAR(255)  NOT NULL,
+          status      ENUM('ACTIVE', 'BLOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
+          created_at DATETIME NOT NULL DEFAULT NOW(),
+          updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (card_id),
-    UNIQUE KEY uq_card_number (card_number),
-    CONSTRAINT fk_card_member
-        FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
-    INDEX idx_card_member_id (member_id)
+          PRIMARY KEY (card_id),
+          UNIQUE KEY uq_card_number (card_number),
+          CONSTRAINT fk_card_member
+              FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
+          INDEX idx_card_member_id (member_id)
 );
 
-
 CREATE TABLE merchant_category (
-    category_id   BIGINT       NOT NULL AUTO_INCREMENT,
-    category_name VARCHAR(50)  NOT NULL,
-    description   VARCHAR(100) NULL,
-    created_at    DATETIME     NOT NULL DEFAULT NOW(),
+       category_id   BIGINT       NOT NULL AUTO_INCREMENT,
+       category_name VARCHAR(50)  NOT NULL,
+       description   VARCHAR(100) NULL,
+       created_at    DATETIME     NOT NULL DEFAULT NOW(),
 
-    PRIMARY KEY (category_id),
-    UNIQUE KEY uq_category_name (category_name)
+       PRIMARY KEY (category_id),
+       UNIQUE KEY uq_category_name (category_name)
 );
 
 -- 4. merchant 테이블
 CREATE TABLE merchant (
     merchant_id     BIGINT       NOT NULL AUTO_INCREMENT,
     member_id       BIGINT       NOT NULL,
-    category_id     BIGINT       NULL,
+    category_id BIGINT NULL,
     merchant_name   VARCHAR(100) NOT NULL,
     representative  VARCHAR(50)  NOT NULL,
     business_number VARCHAR(20)  NOT NULL,
@@ -85,9 +83,9 @@ CREATE TABLE merchant (
     status          VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
     referrer_id     BIGINT       NULL,
     terminal_id     VARCHAR(100) NULL,
-    created_at    DATETIME     NOT NULL DEFAULT NOW(),
-    apply_date      DATETIME     NULL,
-    approve_date    DATETIME     NULL,
+    created_at DATETIME NOT NULL DEFAULT NOW(),
+    apply_date    DATETIME NULL,
+    approve_date  DATETIME NULL,
     updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (merchant_id),
@@ -107,7 +105,7 @@ CREATE TABLE payment (
     koces_ip                 VARCHAR(50)  NULL,
     message_number           VARCHAR(50)  NULL,
     institution_code         VARCHAR(20)  NULL,
-    transmission_date        VARCHAR(8)   NOT NULL DEFAULT '',
+    transmission_date        VARCHAR(8)   NULL,
     trace_number             VARCHAR(50)  NULL,
     terminal_id              VARCHAR(100) NULL,
     business_number          VARCHAR(20)  NULL,
@@ -133,33 +131,22 @@ CREATE TABLE payment (
     acquirer_name            VARCHAR(100) NULL,
     filter_value             VARCHAR(255) NULL,
     status                   ENUM('SUCCESS', 'FAILED', 'CANCELED', 'DELETED') NOT NULL DEFAULT 'SUCCESS',
-    created_at    DATETIME     NOT NULL DEFAULT NOW(),
+    created_at DATETIME NOT NULL DEFAULT NOW(),
     updated_at               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (payment_id, transmission_date)  -- ✅ 파티션 키 포함
 )
 PARTITION BY RANGE COLUMNS (transmission_date) (
-    PARTITION p20260515 VALUES LESS THAN ('20260516'),
-    PARTITION p20260516 VALUES LESS THAN ('20260517'),
-    PARTITION p20260517 VALUES LESS THAN ('20260518'),
-    PARTITION p20260518 VALUES LESS THAN ('20260519'),
-    PARTITION p20260519 VALUES LESS THAN ('20260520'),
-    PARTITION p20260520 VALUES LESS THAN ('20260521'),
-    PARTITION p20260521 VALUES LESS THAN ('20260522'),
-    PARTITION p20260522 VALUES LESS THAN ('20260523'),
-    PARTITION p20260523 VALUES LESS THAN ('20260524'),
-    PARTITION p20260524 VALUES LESS THAN ('20260525'),
-    PARTITION p20260525 VALUES LESS THAN ('20260526'),
-    PARTITION p20260526 VALUES LESS THAN ('20260527'),
-    PARTITION p20260527 VALUES LESS THAN ('20260528'),
-    PARTITION p20260528 VALUES LESS THAN ('20260529'),
-    PARTITION p20260529 VALUES LESS THAN ('20260530'),
-    PARTITION p20260530 VALUES LESS THAN ('20260531'),
-    PARTITION p20260531 VALUES LESS THAN ('20260601'),
+    PARTITION p20260426 VALUES LESS THAN ('20260427'),
+    PARTITION p20260427 VALUES LESS THAN ('20260428'),
+    PARTITION p20260428 VALUES LESS THAN ('20260429'),
+    PARTITION p20260429 VALUES LESS THAN ('20260430'),
+    PARTITION p20260430 VALUES LESS THAN ('20260501'),
     PARTITION p_future  VALUES LESS THAN (MAXVALUE)
 );
 
 -- 6. settlement 테이블
+
 CREATE TABLE settlement (
     settlement_id     BIGINT       NOT NULL AUTO_INCREMENT,
     merchant_id       BIGINT       NOT NULL,
@@ -170,32 +157,22 @@ CREATE TABLE settlement (
     settlement_amount BIGINT       NOT NULL,
     status            ENUM('PENDING', 'COMPLETED', 'FAILED', 'DELETED') NOT NULL DEFAULT 'PENDING',
     status_changed_at DATETIME     NULL,
-    created_at        DATETIME     NOT NULL DEFAULT NOW(),
+    created_at DATETIME NOT NULL DEFAULT NOW(),
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (settlement_id, settlement_date)  -- ✅ 파티션 키 포함
 )
 PARTITION BY RANGE COLUMNS (settlement_date) (
-    PARTITION p20260515 VALUES LESS THAN ('20260516'),
-    PARTITION p20260516 VALUES LESS THAN ('20260517'),
-    PARTITION p20260517 VALUES LESS THAN ('20260518'),
-    PARTITION p20260518 VALUES LESS THAN ('20260519'),
-    PARTITION p20260519 VALUES LESS THAN ('20260520'),
-    PARTITION p20260520 VALUES LESS THAN ('20260521'),
-    PARTITION p20260521 VALUES LESS THAN ('20260522'),
-    PARTITION p20260522 VALUES LESS THAN ('20260523'),
-    PARTITION p20260523 VALUES LESS THAN ('20260524'),
-    PARTITION p20260524 VALUES LESS THAN ('20260525'),
-    PARTITION p20260525 VALUES LESS THAN ('20260526'),
-    PARTITION p20260526 VALUES LESS THAN ('20260527'),
-    PARTITION p20260527 VALUES LESS THAN ('20260528'),
-    PARTITION p20260528 VALUES LESS THAN ('20260529'),
-    PARTITION p20260529 VALUES LESS THAN ('20260530'),
-    PARTITION p20260530 VALUES LESS THAN ('20260531'),
-    PARTITION p20260531 VALUES LESS THAN ('20260601'),
+    PARTITION p20260426 VALUES LESS THAN ('202605'),
+    PARTITION p20260427 VALUES LESS THAN ('202606'),
+    PARTITION p20260428 VALUES LESS THAN ('202607'),
+    PARTITION p20260429 VALUES LESS THAN ('202608'),
+    PARTITION p20260430 VALUES LESS THAN ('202609'),
+    PARTITION p20260430 VALUES LESS THAN ('202610'),
+    PARTITION p20260430 VALUES LESS THAN ('202611'),
+    PARTITION p20260430 VALUES LESS THAN ('202612'),
     PARTITION p_future  VALUES LESS THAN (MAXVALUE)
 );
-
 
 -- 7. allowed_ip 테이블
 CREATE TABLE allowed_ip (
@@ -203,7 +180,7 @@ CREATE TABLE allowed_ip (
     ip_address  VARCHAR(50)  NOT NULL,
     merchant_id BIGINT       NULL,
     description VARCHAR(100) NULL,
-    created_at  DATETIME     NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (ip_id),
@@ -406,7 +383,7 @@ DELIMITER ;
 -- payment 파티션 생성 (매월 1일 새벽 2시)
 CREATE EVENT IF NOT EXISTS evt_add_payment_partition
 ON SCHEDULE EVERY 1 MONTH
-STARTS '2026-06-01 02:00:00'
+STARTS '2026-05-01 02:00:00'
 DO
     CALL sp_add_payment_partition();
 
