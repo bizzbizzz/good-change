@@ -34,6 +34,14 @@ public class MerchantService {
     }
 
     @Transactional(readOnly = true)
+    public MerchantResponseDto getByMemberId(Long memberId) {
+        return merchantMapper.findByMemberId(memberId)
+                .map(m -> MerchantResponseDto.from(m,
+                        merchantMapper.findCategoriesByMerchantId(m.getMerchantId())))
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원의 가맹점이 존재하지 않습니다."));
+    }
+
+    @Transactional(readOnly = true)
     public MerchantResponseDto getById(Long merchantId) {
         return merchantMapper.findById(merchantId)
                 .map(m -> MerchantResponseDto.from(m,

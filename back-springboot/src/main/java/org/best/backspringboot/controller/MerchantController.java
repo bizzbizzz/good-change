@@ -8,6 +8,7 @@ import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.merchant.MerchantCreateDto;
 import org.best.backspringboot.dto.merchant.MerchantResponseDto;
+import org.best.backspringboot.dto.merchant.MerchantSearchDto;
 import org.best.backspringboot.dto.merchant.MerchantUpdateDto;
 import org.best.backspringboot.service.MerchantService;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class MerchantController {
 
     @Operation(summary = "가맹점 전체 조회 (페이징)")
     @GetMapping
-    public ResponseEntity<PageResponse<MerchantResponseDto>> getAll(SearchBase searchBase) {
+    public ResponseEntity<PageResponse<MerchantResponseDto>> getAll(MerchantSearchDto searchBase) {
         return ResponseEntity.ok(merchantService.getAll(searchBase));
     }
 
