@@ -23,4 +23,6 @@ public interface MerchantMapper {
     void insertCategory(@Param("merchantId") Long merchantId,
                         @Param("categoryName") String categoryName);
     void deleteCategories(Long merchantId);
+    // ✅ 추가
+    Long findMerchantIdByMemberId(Long memberId);
 }

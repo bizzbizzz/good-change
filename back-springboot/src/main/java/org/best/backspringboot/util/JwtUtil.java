@@ -24,10 +24,12 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String generateToken(Long memberId, String loginId) {
+    public String generateToken(Long memberId, String loginId, String role, Long merchantId) {
         return Jwts.builder()
                 .subject(loginId)
                 .claim("memberId", memberId)
+                .claim("role", role)
+                .claim("merchantId", merchantId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey())
@@ -42,6 +44,16 @@ public class JwtUtil {
     // 토큰에서 memberId 추출
     public Long getMemberId(String token) {
         return getClaims(token).get("memberId", Long.class);
+    }
+
+    // 토큰에서 role 추출
+    public String getRole(String token) {
+        return getClaims(token).get("role", String.class);
+    }
+
+    // 토큰에서 merchantId 추출
+    public Long getMerchantId(String token) {
+        return getClaims(token).get("merchantId", Long.class);
     }
 
     // 토큰 유효성 검사

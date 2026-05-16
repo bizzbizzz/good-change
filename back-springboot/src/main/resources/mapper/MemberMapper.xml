@@ -35,6 +35,14 @@
                  )
     </insert>
 
+    <select id="findRoleNameById" resultType="String">
+        SELECT role_name FROM role WHERE role_id = #{roleId}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE member SET status = #{status} WHERE login_id = #{loginId}
+    </update>
+
     <select id="findById" resultMap="memberResultMap">
         SELECT * FROM member
         WHERE member_id = #{memberId}

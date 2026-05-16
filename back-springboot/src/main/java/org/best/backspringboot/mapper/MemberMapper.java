@@ -18,4 +18,7 @@ public interface MemberMapper {
     Optional<Member> findByLoginId(String loginId);
     long countAll();
     void updatePoint(Long memberId, Long point);
+
+    String findRoleNameById(Long roleId);        // 로그인 시 role 조회
+    void updateStatus(String loginId, String status); // soft delete용
 }

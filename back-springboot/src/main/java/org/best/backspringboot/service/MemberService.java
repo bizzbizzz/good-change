@@ -9,6 +9,7 @@ import org.best.backspringboot.dto.member.MemberResponseDto;
 import org.best.backspringboot.dto.member.MemberUpdateDto;
 import org.best.backspringboot.entity.Member;
 import org.best.backspringboot.mapper.MemberMapper;
+import org.best.backspringboot.mapper.MerchantMapper;
 import org.best.backspringboot.util.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class MemberService {
 
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
+    private final MerchantMapper merchantMapper; // ✅ 추가
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -85,6 +87,18 @@ public class MemberService {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        return jwtUtil.generateToken(member.getMemberId(), member.getLoginId());
+        // ✅ 추가 - 상태 체크
+        if (!member.getStatus().equals("ACTIVE")) {
+            throw new IllegalArgumentException("비활성화된 계정입니다.");
+        }
+
+        // ✅ 수정 - role, merchantId 추가
+        String roleName = memberMapper.findRoleNameById(member.getRoleId());
+        Long merchantId = null;
+        if ("MERCHANT".equals(roleName)) {
+            merchantId = merchantMapper.findMerchantIdByMemberId(member.getMemberId());
+        }
+
+        return jwtUtil.generateToken(member.getMemberId(), member.getLoginId(), roleName, merchantId);
     }
 }
