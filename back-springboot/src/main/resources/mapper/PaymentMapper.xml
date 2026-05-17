@@ -82,13 +82,16 @@
     </select>
 
     <select id="findById" resultMap="paymentResultMap">
-        SELECT * FROM payment WHERE payment_id = #{paymentId}
+        SELECT * FROM payment
+        WHERE payment_id = #{paymentId}
+          AND transmission_date = #{transmissionDate}
     </select>
 
     <update id="updateStatus">
         UPDATE payment
         SET status = #{status}
         WHERE payment_id = #{paymentId}
+          AND transmission_date = #{transmissionDate}
     </update>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="paymentId">

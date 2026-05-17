@@ -63,7 +63,9 @@
     </select>
 
     <select id="findById" resultMap="settlementResultMap">
-        SELECT * FROM settlement WHERE settlement_id = #{settlementId}
+        SELECT * FROM settlement
+        WHERE settlement_id = #{settlementId}
+          AND settlement_date = #{settlementDate}
     </select>
 
     <update id="updateStatus">
@@ -71,6 +73,7 @@
         SET status = #{status},
             status_changed_at = NOW()
         WHERE settlement_id = #{settlementId}
+          AND settlement_date = #{settlementDate}
     </update>
 
 </mapper>
