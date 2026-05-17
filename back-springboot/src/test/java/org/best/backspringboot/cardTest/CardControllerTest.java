@@ -4,10 +4,12 @@ import org.best.backspringboot.controller.CardController;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.card.CardResponseDto;
 import org.best.backspringboot.service.CardService;
+import org.best.backspringboot.util.JwtFilter;
 import org.best.backspringboot.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -26,7 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(
         controllers = CardController.class,
-        excludeAutoConfiguration = SecurityAutoConfiguration.class  // ✅ Security 제외
+        excludeAutoConfiguration = {
+                SecurityAutoConfiguration.class,
+                SecurityFilterAutoConfiguration.class  // ✅ 추가
+        }
 )
 @DisplayName("CardController API 테스트")
 class CardControllerTest {
@@ -39,6 +44,25 @@ class CardControllerTest {
     CardService cardService;
     @MockitoBean
     JwtUtil jwtUtil;  // ✅ 추가!
+    @MockitoBean
+    JwtFilter jwtFilter; // ✅ 추가
+
+    @BeforeEach
+    void setUp() {
+        // ✅ JwtFilter Mock이 filterChain을 계속 진행하도록 설정
+        try {
+            willAnswer(invocation -> {
+                jakarta.servlet.FilterChain chain = invocation.getArgument(2);
+                chain.doFilter(invocation.getArgument(0), invocation.getArgument(1));
+                return null;
+            }).given(jwtFilter).doFilter(any(), any(), any());
+        } catch (Exception ignored) {}
+
+        given(jwtUtil.validateToken(anyString())).willReturn(true);
+        given(jwtUtil.getMemberId(anyString())).willReturn(1L);
+        given(jwtUtil.getLoginId(anyString())).willReturn("testuser");
+    }
+
 
     // ── 픽스처 ────────────────────────────────────────
     private CardResponseDto mockCardResponse() {
@@ -54,14 +78,6 @@ class CardControllerTest {
                 .build();
     }
 
-    @BeforeEach
-    void setUp() {
-        jwtUtil = new JwtUtil();
-        ReflectionTestUtils.setField(jwtUtil, "secret",
-                "goodchange-secret-key-must-be-at-least-32-chars!!");
-        ReflectionTestUtils.setField(jwtUtil, "expiration", 3600000L);
-    }
-
     // ── POST /api/cards ───────────────────────────────
     @Test
     @DisplayName("POST /api/cards - 카드 등록 성공")
@@ -69,6 +85,7 @@ class CardControllerTest {
         willDoNothing().given(cardService).create(any());
 
         mockMvc.perform(post("/api/cards")
+                        .header("Authorization", generateToken())  // ✅ 추가
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -84,6 +101,7 @@ class CardControllerTest {
     @DisplayName("POST /api/cards - 카드번호 미입력 시 400")
     void create_missingCardNumber() throws Exception {
         mockMvc.perform(post("/api/cards")
+                        .header("Authorization", generateToken())  // ✅ 추가!
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -98,6 +116,7 @@ class CardControllerTest {
     @DisplayName("POST /api/cards - 카드번호 16자리 미만 시 400")
     void create_invalidCardNumber() throws Exception {
         mockMvc.perform(post("/api/cards")
+                        .header("Authorization", generateToken())  // ✅ 추가
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -116,6 +135,7 @@ class CardControllerTest {
                 .given(cardService).create(any());
 
         mockMvc.perform(post("/api/cards")
+                        .header("Authorization", generateToken())  // ✅ 추가
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -134,7 +154,8 @@ class CardControllerTest {
         given(cardService.getByCardNumber("1234567890123456"))
                 .willReturn(mockCardResponse());
 
-        mockMvc.perform(get("/api/cards/1234567890123456"))
+        mockMvc.perform(get("/api/cards/1234567890123456")
+                .header("Authorization", generateToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cardId").value(1))
@@ -150,7 +171,8 @@ class CardControllerTest {
         given(cardService.getByCardNumber(anyString()))
                 .willThrow(new IllegalArgumentException("존재하지 않는 카드번호입니다."));
 
-        mockMvc.perform(get("/api/cards/9999999999999999"))
+        mockMvc.perform(get("/api/cards/9999999999999999")
+                        .header("Authorization", generateToken()))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -162,7 +184,8 @@ class CardControllerTest {
         given(cardService.getByMemberId(1L))
                 .willReturn(List.of(mockCardResponse()));
 
-        mockMvc.perform(get("/api/cards/member/1"))
+        mockMvc.perform(get("/api/cards/member/1")
+                        .header("Authorization", generateToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -175,7 +198,8 @@ class CardControllerTest {
     void getByMemberId_empty() throws Exception {
         given(cardService.getByMemberId(1L)).willReturn(List.of());
 
-        mockMvc.perform(get("/api/cards/member/1"))
+        mockMvc.perform(get("/api/cards/member/1")
+                        .header("Authorization", generateToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -194,6 +218,7 @@ class CardControllerTest {
         given(cardService.getAll(any())).willReturn(pageResponse);
 
         mockMvc.perform(get("/api/cards")
+                        .header("Authorization", generateToken())  // ✅ 추가
                         .param("page", "1")
                         .param("size", "10"))
                 .andDo(print())
@@ -209,7 +234,9 @@ class CardControllerTest {
     void delete_success() throws Exception {
         willDoNothing().given(cardService).delete(1L);
 
-        mockMvc.perform(delete("/api/cards/1"))
+        mockMvc.perform(delete("/api/cards/1")
+                        .header("Authorization", generateToken())  // ✅ 추가
+                )
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -220,8 +247,19 @@ class CardControllerTest {
         willThrow(new IllegalArgumentException("존재하지 않는 카드입니다."))
                 .given(cardService).delete(999L);
 
-        mockMvc.perform(delete("/api/cards/999"))
+        mockMvc.perform(delete("/api/cards/999")
+                        .header("Authorization", generateToken())  // ✅ 추가
+                )
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    // ── 토큰 생성 헬퍼 ─────────────────────────────────
+    private String generateToken() {
+        JwtUtil realJwtUtil = new JwtUtil();
+        ReflectionTestUtils.setField(realJwtUtil, "secret",
+                "goodchange-secret-key-must-be-at-least-32-chars!!");
+        ReflectionTestUtils.setField(realJwtUtil, "expiration", 3600000L);
+        return "Bearer " + realJwtUtil.generateToken(1L, "testuser", "USER", null);
     }
 }
