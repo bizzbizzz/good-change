@@ -54,7 +54,7 @@ allowed_ip        # 허용 IP
 
 ```
 src/main/java/org/best/backspringboot
-├── config          # Security, Swagger, JWT, XSS 설정
+├── config          # Security, Swagger, JWT, XSS, CORS 설정
 ├── controller      # API 컨트롤러
 ├── service         # 비즈니스 로직
 ├── mapper          # MyBatis 매퍼
@@ -69,10 +69,10 @@ src/main/java/org/best/backspringboot
 └── util            # JwtUtil, JwtFilter
 
 src/main/resources
-├── mapper          # MyBatis XML
+├── mapper                  # MyBatis XML
 ├── application.yml         # 공통 설정
 ├── application-local.yml   # 로컬 설정
-└── application-prod.yml    # 서버 설정
+└── application-prod.yml    # 서버 설정 (git 제외)
 ```
 
 ---
@@ -151,6 +151,102 @@ src/main/resources
 | CardControllerTest | 카드 API 10개 |
 | PaymentControllerTest | 결제 API 13개 |
 | SettlementControllerTest | 정산 API 12개 |
+
+---
+
+## 📌 CI/CD (GitHub Actions)
+
+### 전체 흐름
+
+```
+git push origin main
+       ↓
+GitHub Actions 실행
+  1. JDK 17 세팅
+  2. Gradle 캐시
+  3. Gradle 빌드 (테스트 스킵)
+       ↓
+SCP로 서버 전송
+  4. JAR 파일 → ~/springboot/
+       ↓
+SSH 접속
+  5. start.sh 실행 (Graceful shutdown → 재시작)
+       ↓
+배포 완료 ✅
+```
+
+### GitHub Secrets 등록
+
+```
+GitHub 레포 → Settings → Secrets and variables → Actions
+```
+
+| Secret | 값 |
+|--------|----|
+| `SSH_HOST` | 서버 IP |
+| `SSH_USERNAME` | `bizline` |
+| `SSH_PRIVATE_KEY` | PEM 개인키 전체 내용 |
+| `SSH_PORT` | `22` |
+
+### SSH 키 생성 (최초 1회)
+
+```bash
+# 서버에서 실행
+ssh-keygen -t rsa -b 4096 -C "github-actions" -f ~/.ssh/github_actions -N ""
+
+# 공개키 authorized_keys에 추가
+cat ~/.ssh/github_actions.pub >> ~/.ssh/authorized_keys
+
+# 개인키 내용 복사 → GitHub Secret SSH_PRIVATE_KEY에 등록
+cat ~/.ssh/github_actions
+```
+
+### start.sh (Graceful Shutdown)
+
+```bash
+# 서버 ~/springboot/start.sh 위치
+# SIGTERM 전송 → 30초 대기 → 강제 종료 → 재시작
+```
+
+### 서버 디렉토리 구조
+
+```
+~/springboot/
+├── back-springboot-0.0.1-SNAPSHOT.jar
+├── application-prod.yml    ← git 제외, 서버에 직접 관리
+├── start.sh
+└── logs/
+    └── logs-yyyyMMdd_HHmmss.log
+```
+
+### application-prod.yml (서버에만 존재)
+
+```yaml
+server:
+  shutdown: graceful
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/good-change?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: 비밀번호
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 10
+      connection-timeout: 10000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+cors:
+  allowed-origins: https://도메인명
+
+logging:
+  level:
+    org.best: INFO
+```
 
 ---
 
@@ -238,6 +334,14 @@ http://localhost:8080/swagger-ui/index.html
 
 ### 서버 배포
 ```bash
-./gradlew build
-java -jar build/libs/back-springboot-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+# GitHub main 브랜치에 push 시 자동 배포
+git push origin main
+
+# 수동 실행
+~/springboot/start.sh
+```
+
+### 로그 확인
+```bash
+tail -f ~/springboot/logs/logs-$(date '+%Y%m%d')*.log
 ```
