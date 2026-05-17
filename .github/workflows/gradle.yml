@@ -61,24 +61,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd ~/springboot
-
-            echo "🔁 기존 프로세스 종료..."
-            EXISTING_PID=$(pgrep -f "back-springboot")
-            if [ -n "$EXISTING_PID" ]; then
-              pkill -f "back-springboot"
-              sleep 3
-              echo "기존 프로세스 종료 완료 (PID: $EXISTING_PID)"
-            else
-              echo "실행 중인 프로세스 없음"
-            fi
-
-            echo "🚀 서버 시작..."
-            JAR_FILE=$(ls *.jar | head -1)
-            LOG_FILE="logs/logs-$(date '+%Y%m%d_%H%M%S').log"
-            mkdir -p logs
-            nohup java -jar $JAR_FILE --spring.profiles.active=prod > $LOG_FILE 2>&1 &
-
-            echo "PID: $!"
+            chmod +x ~/springboot/start.sh
+            ~/springboot/start.sh
             echo "✅ 배포 완료!"
-            echo "로그: tail -f $LOG_FILE"

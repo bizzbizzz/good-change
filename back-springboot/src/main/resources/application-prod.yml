@@ -24,8 +24,7 @@ management:
 
 
 cors:
-  allowed-origins:
-    - http://117.52.20.250:20005
+  allowed-origins: http://localhost:8000
 
 logging:
   level:
