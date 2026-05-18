@@ -11,7 +11,6 @@
         <result property="name"       column="name"/>
         <result property="birthDate"  column="birth_date"/>
         <result property="gender"     column="gender"/>
-        <result property="phone"      column="phone"/>
         <result property="address"    column="address"/>
         <result property="email"      column="email"/>
         <result property="referrerId" column="referrer_id"/>
@@ -26,11 +25,11 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="memberId">
         INSERT INTO member (
             role_id, login_id, password, name, birth_date,
-            gender, phone, address, email, point, status,
+            gender, address, email, point, status,
             referrer_id, apply_date, approve_date, created_at
         ) VALUES (
                      #{roleId}, #{loginId}, #{password}, #{name}, #{birthDate},
-                     #{gender}, #{phone}, #{address}, #{email}, 0, 'ACTIVE',
+                     #{gender}, #{address}, #{email}, 0, 'ACTIVE',
                      #{referrerId}, #{applyDate}, #{approveDate}, NOW()
                  )
     </insert>
@@ -87,7 +86,6 @@
         UPDATE member
         <set>
             <if test="dto.name    != null">name    = #{dto.name},</if>
-            <if test="dto.phone   != null">phone   = #{dto.phone},</if>
             <if test="dto.address != null">address = #{dto.address},</if>
             <if test="dto.email   != null">email   = #{dto.email},</if>
         </set>
