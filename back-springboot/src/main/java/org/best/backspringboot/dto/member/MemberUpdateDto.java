@@ -9,9 +9,6 @@ public class MemberUpdateDto {
     @Size(max = 50)
     private String name;
 
-    @Size(max = 20)
-    private String phone;
-
     @Size(max = 255)
     private String address;
 

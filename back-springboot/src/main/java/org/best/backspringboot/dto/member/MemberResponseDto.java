@@ -16,7 +16,6 @@ public class MemberResponseDto {
     private LocalDate birthDate;
     private Long roleId;
     private String gender;
-    private String phone;
     private String address;
     private String email;
     private Long referrerId;
@@ -34,7 +33,6 @@ public class MemberResponseDto {
                 .name(member.getName())
                 .birthDate(member.getBirthDate())
                 .gender(member.getGender())
-                .phone(member.getPhone())
                 .address(member.getAddress())
                 .email(member.getEmail())
                 .referrerId(member.getReferrerId())

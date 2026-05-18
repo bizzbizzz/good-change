@@ -38,11 +38,6 @@ public class MemberCreateDto {
     private String gender;
 
     @NotBlank
-    @Pattern(regexp = "^01[0-9]{8,9}$", message = "휴대폰번호 형식이 올바르지 않습니다. (예: 01012341234)")
-    @Size(max = 20)
-    private String phone;
-
-    @NotBlank
     @Size(max = 255)
     private String address;
 
@@ -56,9 +51,5 @@ public class MemberCreateDto {
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
-    }
-
-    public void encodePhone(PasswordEncoder passwordEncoder) {
-        this.phone = passwordEncoder.encode(this.phone);
     }
 }

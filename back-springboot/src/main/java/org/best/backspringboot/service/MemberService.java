@@ -33,7 +33,6 @@ public class MemberService {
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 사용 중인 아이디입니다."); });
         // 비밀번호 암호화
         dto.encodePassword(passwordEncoder);
-        dto.encodePhone(passwordEncoder);
         memberMapper.insert(dto);
     }
 

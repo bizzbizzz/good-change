@@ -15,7 +15,6 @@ public class Member {
     private String name;
     private LocalDate birthDate;
     private String gender;
-    private String phone;
     private String address;
     private String email;
     private Long referrerId;
