@@ -35,6 +35,7 @@ jobs:
       - name: Build with Gradle
         run: |
           cd back-springboot
+          cat build.gradle | grep aop    # ✅ 실제 파일 내용 확인
           chmod +x gradlew
           ./gradlew clean build -x test
           echo "✅ 빌드 완료"
