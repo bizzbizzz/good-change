@@ -2,11 +2,15 @@ server:
   shutdown: graceful
 
 spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: good_change
   datasource:
     url: jdbc:mysql://localhost:3306/good-change?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-    username: root
-    password: 0816abcd
-    driver-class-name: com.mysql.jdbc.Driver
+    username: goodchange
+    password: Gx9#mK2$vL8@nQ4!
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10      # 최대 커넥션 수
       minimum-idle: 10            # 최소 유지 커넥션 수
@@ -22,10 +26,17 @@ management:
     web:
       exposure:
         include: health, info, prometheus, metrics
-  prometheus:
-    metrics:
-      export:
-        enabled: true
+  metrics:
+    export:
+      prometheus:
+        metrics:
+          export:
+            enabled: true
+    enable:
+      hikaricp: true    # ✅ 추가
+      jvm: true        # ✅ 추가
+      process: true    # ✅ 추가
+      system: true     # ✅ 추가
 
 
 cors:

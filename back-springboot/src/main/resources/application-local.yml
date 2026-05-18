@@ -1,9 +1,13 @@
 spring:
+  data:
+    mongodb:
+      uri: mongodb://182.162.21.40:27017
+      database: good_change
   datasource:
-    url: jdbc:mysql://117.52.20.250:3306/good-change?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-    username: root
-    password: 0816abcd
-    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://182.162.21.40:3306/good_change?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: goodchange
+    password: Gx9#mK2$vL8@nQ4!
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 200
       minimum-idle: 200
@@ -23,7 +27,9 @@ management:
   metrics:
     export:
       prometheus:
-        enabled: true
+        metrics:
+          export:
+            enabled: true
     enable:
       hikaricp: true    # ✅ 추가
       jvm: true        # ✅ 추가
