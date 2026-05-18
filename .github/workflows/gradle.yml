@@ -29,8 +29,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-
+          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}-${{ github.run_id }}
 
       # 4. Gradle 빌드 (테스트 스킵)
       - name: Build with Gradle
