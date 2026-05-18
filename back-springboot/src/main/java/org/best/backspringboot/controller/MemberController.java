@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
+import org.best.backspringboot.dto.card.CardCreateDto;
 import org.best.backspringboot.dto.member.MemberCreateDto;
 import org.best.backspringboot.dto.member.MemberLoginDto;
 import org.best.backspringboot.dto.member.MemberResponseDto;
@@ -26,8 +27,8 @@ public class MemberController {
 
     @Operation(summary = "회원 등록")
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody MemberCreateDto dto) {
-        memberService.create(dto);
+    public ResponseEntity<Void> create(@Valid @RequestBody MemberCreateDto dto, @Valid @RequestBody CardCreateDto cardCreateDto) {
+        memberService.create(dto, cardCreateDto);
         return ResponseEntity.ok().build();
     }
 
