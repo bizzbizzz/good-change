@@ -21,7 +21,6 @@ CREATE TABLE member (
             name        VARCHAR(50)  NOT NULL,
             birth_date  DATE         NOT NULL,
             gender      ENUM('MALE', 'FEMALE') NOT NULL,
-            phone       VARCHAR(255)  NOT NULL,
             address     VARCHAR(255) NULL,
             email       VARCHAR(255) NULL,
             point       BIGINT       NOT NULL DEFAULT 0,
@@ -42,21 +41,21 @@ CREATE TABLE member (
 
 -- 3. card 테이블
 CREATE TABLE card (
-          card_id     BIGINT      NOT NULL AUTO_INCREMENT,
-          member_id   BIGINT      NOT NULL,
-          card_number CHAR(16)    NOT NULL,
-          card_alias  VARCHAR(50) NULL,
-          is_primary  TINYINT     NOT NULL DEFAULT 0,
-          card_type VARCHAR(255)  NOT NULL,
-          status      ENUM('ACTIVE', 'BLOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-          created_at DATETIME NOT NULL DEFAULT NOW(),
-          updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      card_id     BIGINT      NOT NULL AUTO_INCREMENT,
+      member_id   BIGINT      NOT NULL,
+      card_number CHAR(16)    NOT NULL,
+      card_alias  VARCHAR(50) NULL,
+      is_primary  TINYINT     NOT NULL DEFAULT 0,
+      card_type VARCHAR(255)  NOT NULL,
+      status      ENUM('ACTIVE', 'BLOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
+      created_at DATETIME NOT NULL DEFAULT NOW(),
+      updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-          PRIMARY KEY (card_id),
-          UNIQUE KEY uq_card_number (card_number),
-          CONSTRAINT fk_card_member
-              FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
-          INDEX idx_card_member_id (member_id)
+      PRIMARY KEY (card_id),
+      UNIQUE KEY uq_card_number (card_number),
+      CONSTRAINT fk_card_member
+          FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
+      INDEX idx_card_member_id (member_id)
 );
 
 CREATE TABLE merchant_category (
@@ -77,7 +76,8 @@ CREATE TABLE merchant (
     merchant_name   VARCHAR(100) NOT NULL,
     representative  VARCHAR(50)  NOT NULL,
     business_number VARCHAR(20)  NOT NULL,
-    contact         VARCHAR(20)  NULL,
+    contact         VARCHAR(20)  NOT NULL,
+    contact2         VARCHAR(20)  NULL,
     address         VARCHAR(255) NOT NULL,
     email           VARCHAR(100) NULL,
     status          VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
@@ -163,14 +163,14 @@ CREATE TABLE settlement (
     PRIMARY KEY (settlement_id, settlement_date)  -- ✅ 파티션 키 포함
 )
 PARTITION BY RANGE COLUMNS (settlement_date) (
-    PARTITION p20260426 VALUES LESS THAN ('202605'),
-    PARTITION p20260427 VALUES LESS THAN ('202606'),
-    PARTITION p20260428 VALUES LESS THAN ('202607'),
-    PARTITION p20260429 VALUES LESS THAN ('202608'),
-    PARTITION p20260430 VALUES LESS THAN ('202609'),
-    PARTITION p20260430 VALUES LESS THAN ('202610'),
-    PARTITION p20260430 VALUES LESS THAN ('202611'),
-    PARTITION p20260430 VALUES LESS THAN ('202612'),
+    PARTITION p202605 VALUES LESS THAN ('202605'),
+    PARTITION p202606 VALUES LESS THAN ('202606'),
+    PARTITION p202607 VALUES LESS THAN ('202607'),
+    PARTITION p202608 VALUES LESS THAN ('202608'),
+    PARTITION p202609 VALUES LESS THAN ('202609'),
+    PARTITION p202610 VALUES LESS THAN ('202610'),
+    PARTITION p202611 VALUES LESS THAN ('202611'),
+    PARTITION p202612 VALUES LESS THAN ('202612'),
     PARTITION p_future  VALUES LESS THAN (MAXVALUE)
 );
 
