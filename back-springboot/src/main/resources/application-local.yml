@@ -4,7 +4,7 @@ spring:
       uri: mongodb://182.162.21.40:27017
       database: good_change
   datasource:
-    url: jdbc:mysql://182.162.21.40:3306/good_change?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://182.162.21.40:3306/good_change?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&noAccessToProcedureBodies=true
     username: goodchange
     password: Gx9#mK2$vL8@nQ4!
     driver-class-name: com.mysql.cj.jdbc.Driver
