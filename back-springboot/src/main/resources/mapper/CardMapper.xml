@@ -41,16 +41,28 @@
         WHERE card_id = #{cardId}
     </update>
 
+    <update id="update">
+        UPDATE card
+        <set>
+            <if test="dto.cardNumber != null">card_number = #{dto.cardNumber},</if>
+            <if test="dto.cardAlias  != null">card_alias  = #{dto.cardAlias},</if>
+            <if test="dto.status     != null">status      = #{dto.status},</if>
+        </set>
+        WHERE card_id = #{cardId}
+    </update>
+
     <select id="findAll" resultMap="cardResultMap">
         SELECT * FROM card
         <where>
             <if test="status != null and status != ''">
                 AND status = #{status}
             </if>
+            <if test="status == null or status == ''">
+                AND status != 'DELETED'
+            </if>
             <if test="memberId != null">
                 AND member_id = #{memberId}
             </if>
-            AND status != 'DELETED'
         </where>
         ORDER BY created_at DESC
         LIMIT #{size} OFFSET #{offset}
@@ -62,10 +74,12 @@
             <if test="status != null and status != ''">
                 AND status = #{status}
             </if>
+            <if test="status == null or status == ''">
+                AND status != 'DELETED'
+            </if>
             <if test="memberId != null">
                 AND member_id = #{memberId}
             </if>
-            AND status != 'DELETED'
         </where>
     </select>
 

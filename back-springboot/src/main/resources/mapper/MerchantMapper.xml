@@ -24,15 +24,13 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
         INSERT INTO merchant (
-            member_id, merchant_name, representative,
-            business_number, contact, address,
-            email, status, referrer_id, terminal_id,
-            apply_date, approve_date, created_at
+            member_id, category_id, merchant_name, representative,
+            business_number, contact, contact2, address, email,
+            terminal_id, status, created_at
         ) VALUES (
-                     #{memberId}, #{merchantName}, #{representative},
-                     #{businessNumber}, #{contact}, #{address},
-                     #{email}, 'ACTIVE', #{referrerId}, #{terminalId},
-                     #{applyDate}, #{approveDate}, NOW()
+                     #{memberId}, #{categoryId}, #{merchantName}, #{representative},
+                     #{businessNumber}, #{contact}, #{contact2}, #{address}, #{email},
+                     #{terminalId}, 'ACTIVE', NOW()
                  )
     </insert>
 
@@ -49,6 +47,11 @@
     <delete id="deleteCategories">
         DELETE FROM merchant_category WHERE merchant_id = #{merchantId}
     </delete>
+
+    <select id="findAllCategories" resultType="String">
+        SELECT DISTINCT category_name FROM merchant_category
+        ORDER BY category_name
+    </select>
 
     <select id="findById" resultMap="merchantResultMap">
         SELECT * FROM merchant WHERE merchant_id = #{merchantId}

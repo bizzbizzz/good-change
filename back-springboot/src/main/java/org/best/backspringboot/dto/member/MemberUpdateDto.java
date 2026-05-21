@@ -13,7 +13,6 @@ public class MemberUpdateDto {
     @Size(max = 50)
     private String name;
 
-    @NotBlank
     @Pattern(regexp = "MALE|FEMALE")
     private String gender;          // 추가
 

@@ -14,6 +14,8 @@ import org.best.backspringboot.service.MerchantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "가맹점", description = "가맹점 관련 API")
 @RestController
 @RequestMapping("/api/merchants")
@@ -60,5 +62,11 @@ public class MerchantController {
     public ResponseEntity<Void> delete(@PathVariable Long merchantId) {
         merchantService.delete(merchantId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "카테고리 목록 조회")
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getCategories() {
+        return ResponseEntity.ok(merchantService.getCategories());
     }
 }

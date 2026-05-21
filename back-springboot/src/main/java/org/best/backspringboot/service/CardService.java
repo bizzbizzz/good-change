@@ -5,6 +5,7 @@ import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.card.CardCreateDto;
 import org.best.backspringboot.dto.card.CardResponseDto;
 import org.best.backspringboot.dto.card.CardSearchDto;
+import org.best.backspringboot.dto.card.CardUpdateDto;
 import org.best.backspringboot.entity.Card;
 import org.best.backspringboot.entity.Member;
 import org.best.backspringboot.mapper.CardMapper;
@@ -79,6 +80,13 @@ public class CardService {
         }
 
         cardMapper.insert(dto);
+    }
+
+    @Transactional
+    public void update(Long cardId, CardUpdateDto dto) {
+        cardMapper.findById(cardId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카드입니다."));
+        cardMapper.update(cardId, dto);
     }
 
 

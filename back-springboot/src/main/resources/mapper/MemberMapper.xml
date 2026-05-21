@@ -84,7 +84,7 @@
             )
         </if>
         GROUP BY m.member_id
-        ORDER BY m.member_id DESC
+        ORDER BY m.created_at DESC, m.member_id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 

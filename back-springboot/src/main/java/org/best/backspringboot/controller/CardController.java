@@ -8,6 +8,7 @@ import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.card.CardCreateDto;
 import org.best.backspringboot.dto.card.CardResponseDto;
 import org.best.backspringboot.dto.card.CardSearchDto;
+import org.best.backspringboot.dto.card.CardUpdateDto;
 import org.best.backspringboot.service.CardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,7 +42,6 @@ public class CardController {
         return ResponseEntity.ok(cardService.getByMemberId(memberId));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "카드 등록")
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody CardCreateDto dto) {
@@ -49,7 +49,14 @@ public class CardController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "카드 수정")
+    @PatchMapping("/{cardId}")
+    public ResponseEntity<Void> update(@PathVariable Long cardId,
+                                       @RequestBody CardUpdateDto dto) {
+        cardService.update(cardId, dto);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "카드 삭제")
     @DeleteMapping("/{cardId}")
     public ResponseEntity<Void> delete(@PathVariable Long cardId) {

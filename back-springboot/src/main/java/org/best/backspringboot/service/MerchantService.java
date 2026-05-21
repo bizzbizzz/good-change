@@ -24,13 +24,6 @@ public class MerchantService {
         merchantMapper.findByBusinessNumber(dto.getBusinessNumber())
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 등록된 사업자번호입니다."); });
         merchantMapper.insert(dto);
-
-        // ✅ 카테고리 등록
-        if (dto.getCategories() != null) {
-            for (String category : dto.getCategories()) {
-                merchantMapper.insertCategory(dto.getMerchantId(), category);
-            }
-        }
     }
 
     @Transactional(readOnly = true)
@@ -63,6 +56,11 @@ public class MerchantService {
         long totalCount = merchantMapper.countAll();
         pageResponse.setPageInfo(content, totalCount);
         return pageResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getCategories() {
+        return merchantMapper.findAllCategories();
     }
 
     @Transactional

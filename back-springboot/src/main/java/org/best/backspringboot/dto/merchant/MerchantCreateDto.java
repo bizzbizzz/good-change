@@ -33,6 +33,9 @@ public class MerchantCreateDto {
     @Size(max = 20)
     private String contact;
 
+    @Size(max = 20)
+    private String contact2;
+
     @Size(max = 255)
     private String address;
 
@@ -44,7 +47,7 @@ public class MerchantCreateDto {
     @Size(max = 100)
     private String terminalId;
 
-    private List<String> categories;  // ✅ 추가
+    private Long categoryId;  // categories 대신
 
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;

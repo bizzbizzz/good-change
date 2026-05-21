@@ -25,4 +25,5 @@ public interface MerchantMapper {
     void deleteCategories(Long merchantId);
     // ✅ 추가
     Long findMerchantIdByMemberId(Long memberId);
+    List<String> findAllCategories();
 }

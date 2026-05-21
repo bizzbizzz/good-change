@@ -24,9 +24,9 @@ public class MemberController {
 
     @Operation(summary = "회원 등록")
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody MemberRegisterDto registerDto) {
+    public ResponseEntity<Map<String, Long>> create(@Valid @RequestBody MemberRegisterDto registerDto) {
         memberService.create(registerDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("memberId", registerDto.getMember().getMemberId()));
     }
 
     @Operation(summary = "아이디 중복체크", description = "true = 사용가능, false = 중복")
