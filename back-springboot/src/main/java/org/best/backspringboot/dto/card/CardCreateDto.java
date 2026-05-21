@@ -3,13 +3,13 @@ package org.best.backspringboot.dto.card;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor  // 추가
+@AllArgsConstructor // @Builder와 함께 쓰려면 이것도 추가
 public class CardCreateDto {
 
     private Long cardId;
@@ -24,5 +24,5 @@ public class CardCreateDto {
     @Size(max = 50)
     private String cardAlias;
 
-    private Integer isPrimary;  // 1: 고유카드, 0: 추가카드
+    private Integer isPrimary;  // 회원가입 시 첫 카드는 고유카드(1)
 }

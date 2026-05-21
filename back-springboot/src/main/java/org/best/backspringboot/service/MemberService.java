@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.card.CardCreateDto;
-import org.best.backspringboot.dto.member.MemberCreateDto;
-import org.best.backspringboot.dto.member.MemberLoginDto;
-import org.best.backspringboot.dto.member.MemberResponseDto;
-import org.best.backspringboot.dto.member.MemberUpdateDto;
+import org.best.backspringboot.dto.member.*;
 import org.best.backspringboot.entity.Member;
 import org.best.backspringboot.mapper.CardMapper;
 import org.best.backspringboot.mapper.MemberMapper;
@@ -30,18 +27,24 @@ public class MemberService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void create(MemberCreateDto dto, CardCreateDto cardCreateDto) {
+    public void create(MemberRegisterDto registerDto) {
         // 아이디 중복 체크
-        memberMapper.findByLoginId(dto.getLoginId())
+        memberMapper.findByLoginId(registerDto.getMember().getLoginId())
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 사용 중인 아이디입니다."); });
         // 비밀번호 암호화
-        dto.encodePassword(passwordEncoder);
-        memberMapper.insert(dto);
+        registerDto.getMember().encodePassword(passwordEncoder);
+        memberMapper.insert(registerDto.getMember());
 
-        CardCreateDto cardDto = CardCreateDto.builder()
-                .memberId(dto.getMemberId())
-                .cardNumber(cardCreateDto.getCardNumber()).build();
-        cardMapper.insert(cardDto);
+        // 첫 번째 카드는 고유카드(isPrimary=1), 나머지는 추가카드(isPrimary=0)
+        for (int i = 0; i < registerDto.getCards().size(); i++) {
+            CardCreateDto cardDto = CardCreateDto.builder()
+                    .memberId(registerDto.getMember().getMemberId())
+                    .cardNumber(registerDto.getCards().get(i).getCardNumber())
+                    .cardAlias(registerDto.getCards().get(i).getCardAlias())  // 추가
+                    .isPrimary(i == 0 ? 1 : 0)
+                    .build();
+            cardMapper.insert(cardDto);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -52,16 +55,16 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<MemberResponseDto> getAll(SearchBase searchBase) {
+    public PageResponse<MemberResponseDto> getAll(MemberSearchDto searchDto) {
         PageResponse<MemberResponseDto> pageResponse = new PageResponse<>();
-        pageResponse.setPage(searchBase.getPage());
-        pageResponse.setSize(searchBase.getSize());
+        pageResponse.setPage(searchDto.getPage());
+        pageResponse.setSize(searchDto.getSize());
 
-        List<MemberResponseDto> content = memberMapper.findAll(searchBase).stream()
+        List<MemberResponseDto> content = memberMapper.findAll(searchDto).stream()
                 .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
 
-        long totalCount = memberMapper.countAll();
+        long totalCount = memberMapper.countAll(searchDto);
         pageResponse.setPageInfo(content, totalCount);
         return pageResponse;
     }

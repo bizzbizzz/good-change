@@ -6,6 +6,7 @@ import org.best.backspringboot.entity.Member;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -21,7 +22,9 @@ public class MemberResponseDto {
     private Long referrerId;
     private String status;
     private LocalDateTime createdAt;
+    private String organization;
     private Long point;
+    private List<String> cardNumbers;
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;
 
@@ -41,6 +44,8 @@ public class MemberResponseDto {
                 .status(member.getStatus())        // ✅ 추가
                 .applyDate(member.getApplyDate())
                 .approveDate(member.getApproveDate())
+                .cardNumbers(member.getCardNumbers())
+                .organization(member.getOrganization())
                 .createdAt(member.getCreatedAt())
                 .build();
     }

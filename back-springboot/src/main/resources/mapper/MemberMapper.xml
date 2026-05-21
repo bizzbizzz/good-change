@@ -18,18 +18,27 @@
         <result property="status"     column="status"/>
         <result property="createdAt"  column="created_at"/>
         <result property="updatedAt"  column="updated_at"/>
+        <result property="organization"  column="organization"/>
         <result property="applyDate"   column="apply_date"/>
         <result property="approveDate" column="approve_date"/>
+        <collection property="cardNumbers" ofType="String"
+                    select="findCardNumbersByMemberId" column="member_id"/>
     </resultMap>
+
+    <select id="findCardNumbersByMemberId" resultType="String">
+        SELECT card_number FROM card
+        WHERE member_id = #{memberId}
+          AND status != 'DELETED'
+    </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="memberId">
         INSERT INTO member (
             role_id, login_id, password, name, birth_date,
-            gender, address, email, point, status,
+            gender, address, organization, email, point, status,
             referrer_id, apply_date, approve_date, created_at
         ) VALUES (
                      #{roleId}, #{loginId}, #{password}, #{name}, #{birthDate},
-                     #{gender}, #{address}, #{email}, 0, 'ACTIVE',
+                     #{gender}, #{address}, #{organization}, #{email}, 0, 'ACTIVE',
                      #{referrerId}, #{applyDate}, #{approveDate}, NOW()
                  )
     </insert>
@@ -48,17 +57,64 @@
     </select>
 
     <select id="findAll" resultMap="memberResultMap">
-        SELECT * FROM member
-        WHERE status = 'ACTIVE'
-          AND role_id != 1
-        ORDER BY created_at DESC
-            LIMIT #{size} OFFSET #{offset}
+        SELECT m.* FROM member m
+        LEFT JOIN card c ON c.member_id = m.member_id
+        WHERE m.role_id = 2
+        <if test="name != null and name != ''">
+            AND m.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="birthDate != null and birthDate != ''">
+            AND DATE_FORMAT(m.birth_date, '%Y-%m-%d') LIKE CONCAT('%', #{birthDate}, '%')
+        </if>
+        <if test="cardNumber != null and cardNumber != ''">
+            AND c.card_number LIKE CONCAT('%', #{cardNumber}, '%')
+        </if>
+        <if test="organization != null and organization != ''">
+            AND m.organization LIKE CONCAT('%', #{organization}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND m.status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+            m.name LIKE CONCAT('%', #{keyword}, '%')
+            OR DATE_FORMAT(m.birth_date, '%Y-%m-%d') LIKE CONCAT('%', #{keyword}, '%')
+            OR c.card_number LIKE CONCAT('%', #{keyword}, '%')
+            OR m.organization LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        GROUP BY m.member_id
+        ORDER BY m.member_id DESC
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="long">
-        SELECT COUNT(*) FROM member
-        WHERE status = 'ACTIVE'
-          AND role_id != 1
+        SELECT COUNT(DISTINCT m.member_id) FROM member m
+        LEFT JOIN card c ON c.member_id = m.member_id
+        WHERE m.role_id = 2
+        <if test="name != null and name != ''">
+            AND m.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="birthDate != null and birthDate != ''">
+            AND DATE_FORMAT(m.birth_date, '%Y-%m-%d') LIKE CONCAT('%', #{birthDate}, '%')
+        </if>
+        <if test="cardNumber != null and cardNumber != ''">
+            AND c.card_number LIKE CONCAT('%', #{cardNumber}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND m.status = #{status}
+        </if>
+        <if test="organization != null and organization != ''">
+            AND m.organization LIKE CONCAT('%', #{organization}, '%')
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+            m.name LIKE CONCAT('%', #{keyword}, '%')
+            OR DATE_FORMAT(m.birth_date, '%Y-%m-%d') LIKE CONCAT('%', #{keyword}, '%')
+            OR c.card_number LIKE CONCAT('%', #{keyword}, '%')
+            OR m.organization LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
     </select>
 
     <select id="findLeaveList" resultMap="memberResultMap">

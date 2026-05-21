@@ -45,6 +45,8 @@ public class MemberCreateDto {
     private String email;
 
     private Long referrerId;
+    @Size(max = 100)
+    private String organization;
 
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;

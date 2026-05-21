@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.card.CardCreateDto;
-import org.best.backspringboot.dto.member.MemberCreateDto;
-import org.best.backspringboot.dto.member.MemberLoginDto;
-import org.best.backspringboot.dto.member.MemberResponseDto;
-import org.best.backspringboot.dto.member.MemberUpdateDto;
+import org.best.backspringboot.dto.member.*;
 import org.best.backspringboot.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +24,8 @@ public class MemberController {
 
     @Operation(summary = "회원 등록")
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody MemberCreateDto dto, @Valid @RequestBody CardCreateDto cardCreateDto) {
-        memberService.create(dto, cardCreateDto);
+    public ResponseEntity<Void> create(@Valid @RequestBody MemberRegisterDto registerDto) {
+        memberService.create(registerDto);
         return ResponseEntity.ok().build();
     }
 
@@ -53,8 +50,8 @@ public class MemberController {
 
     @Operation(summary = "회원 전체 조회 (페이징)")
     @GetMapping
-    public ResponseEntity<PageResponse<MemberResponseDto>> getAll(SearchBase searchBase) {
-        return ResponseEntity.ok(memberService.getAll(searchBase));
+    public ResponseEntity<PageResponse<MemberResponseDto>> getAll(MemberSearchDto searchDto) {
+        return ResponseEntity.ok(memberService.getAll(searchDto));
     }
 
     @Operation(summary = "회원 수정")
