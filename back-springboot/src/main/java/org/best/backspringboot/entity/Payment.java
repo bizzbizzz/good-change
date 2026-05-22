@@ -28,6 +28,7 @@ public class Payment {
     private String inputMethod;
     private String track;
     private Long amount;
+    private String cardNumber;  // 없으면 추가
     private String transactionType;
     private String approvalNumber;
     private String responseCode;
@@ -40,4 +41,8 @@ public class Payment {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String memberName;
+    private String birthDate;
+    private String organization;
+    private String gender;
 }

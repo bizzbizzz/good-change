@@ -26,6 +26,7 @@
         <result property="transactionType"       column="transaction_type"/>
         <result property="approvalNumber"        column="approval_number"/>
         <result property="responseCode"          column="response_code"/>
+        <result property="cardNumber" column="card_number"/>
         <result property="cancelCode"            column="cancel_code"/>
         <result property="originalTradeDate"     column="original_trade_date"/>
         <result property="originalApprovalNumber" column="original_approval_number"/>
@@ -35,6 +36,10 @@
         <result property="status"                column="status"/>
         <result property="createdAt"             column="created_at"/>
         <result property="updatedAt"             column="updated_at"/>
+        <result property="memberName"    column="member_name"/>
+        <result property="birthDate"     column="birth_date"/>
+        <result property="organization"  column="organization"/>
+        <result property="gender"        column="gender"/>
     </resultMap>
 
     <select id="findAll" resultMap="paymentResultMap">
@@ -47,6 +52,9 @@
             <if test="endDate != null and endDate != ''">
                 AND transmission_date &lt;= #{endDate}
             </if>
+            <if test="startDate == null or startDate == ''">
+                AND transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y%m%d')
+            </if>
             <if test="transactionType != null and transactionType != ''">
                 AND transaction_type = #{transactionType}
             </if>
@@ -56,8 +64,13 @@
             <if test="approvalNumber != null and approvalNumber != ''">
                 AND approval_number = #{approvalNumber}
             </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
         </where>
-        ORDER BY created_at DESC
+        ORDER BY
+        CASE WHEN status = 'SUCCESS' THEN 0 ELSE 1 END ASC,
+        created_at DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
@@ -71,6 +84,9 @@
             <if test="endDate != null and endDate != ''">
                 AND transmission_date &lt;= #{endDate}
             </if>
+            <if test="startDate == null or startDate == ''">
+                AND transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y%m%d')
+            </if>
             <if test="transactionType != null and transactionType != ''">
                 AND transaction_type = #{transactionType}
             </if>
@@ -80,13 +96,23 @@
             <if test="approvalNumber != null and approvalNumber != ''">
                 AND approval_number = #{approvalNumber}
             </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
         </where>
     </select>
 
+
     <select id="findById" resultMap="paymentResultMap">
-        SELECT * FROM payment
-        WHERE payment_id = #{paymentId}
-          AND transmission_date = #{transmissionDate}
+        SELECT p.*,
+               m.name        AS member_name,
+               m.birth_date  AS birth_date,
+               m.organization AS organization,
+               m.gender      AS gender
+        FROM payment p
+                 LEFT JOIN card c ON p.card_id = c.card_id
+                 LEFT JOIN member m ON c.member_id = m.member_id
+        WHERE p.payment_id = #{paymentId}
     </select>
 
     <update id="updateStatus">

@@ -192,6 +192,75 @@ CREATE TABLE allowed_ip (
 );
 
 
+-- ============================================================
+-- 게시판 타입 마스터
+-- ============================================================
+CREATE TABLE board_type (
+    board_type_id   BIGINT       NOT NULL AUTO_INCREMENT,
+    type_code       VARCHAR(20)  NOT NULL COMMENT '타입코드 (NOTICE, RESOURCE, PRESS)',
+    type_name       VARCHAR(50)  NOT NULL COMMENT '타입명 (공지사항, 서식/자료, 언론보도)',
+    sort_order      INT          NOT NULL DEFAULT 0,
+    is_active       TINYINT(1)   NOT NULL DEFAULT 1,
+    created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (board_type_id),
+    UNIQUE KEY uq_board_type_code (type_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='게시판 타입';
+
+-- 기본 데이터
+INSERT INTO board_type (type_code, type_name, sort_order)
+VALUES
+    ('NOTICE',   '공지사항', 1),
+    ('RESOURCE', '서식/자료', 2),
+    ('PRESS',    '언론보도', 3);
+
+
+-- ============================================================
+-- 게시글 (일반화)
+-- ============================================================
+CREATE TABLE board (
+    board_id        BIGINT          NOT NULL AUTO_INCREMENT,
+    board_type_id   BIGINT          NOT NULL COMMENT '게시판 타입 FK',
+    member_id       BIGINT          DEFAULT NULL COMMENT '작성자 FK',
+    title           VARCHAR(255)    NOT NULL COMMENT '제목',
+    content         LONGTEXT        DEFAULT NULL COMMENT '내용',
+    thumbnail       VARCHAR(500)    DEFAULT NULL COMMENT '썸네일 이미지 경로',
+    source          VARCHAR(255)    DEFAULT NULL COMMENT '출처 (언론보도용)',
+    source_url      VARCHAR(500)    DEFAULT NULL COMMENT '원문 URL (언론보도용)',
+    view_count      INT             NOT NULL DEFAULT 0 COMMENT '조회수',
+    is_pinned       TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '상단고정',
+    is_active       TINYINT(1)      NOT NULL DEFAULT 1 COMMENT '노출여부',
+    status          VARCHAR(20)     NOT NULL DEFAULT 'ACTIVE' COMMENT 'ACTIVE/DELETED',
+    created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (board_id),
+    KEY idx_board_type   (board_type_id),
+    KEY idx_board_member (member_id),
+    KEY idx_board_status (status, is_active),
+    CONSTRAINT fk_board_type   FOREIGN KEY (board_type_id) REFERENCES board_type (board_type_id),
+    CONSTRAINT fk_board_member FOREIGN KEY (member_id)     REFERENCES member (member_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='게시글';
+
+
+-- ============================================================
+-- 공통 파일 (다른 테이블에서 참조 가능)
+-- ============================================================
+CREATE TABLE common_file (
+    file_id         BIGINT          NOT NULL AUTO_INCREMENT,
+    ref_type        VARCHAR(50)     NOT NULL COMMENT '참조 테이블명 (board, member 등)',
+    ref_id          BIGINT          NOT NULL COMMENT '참조 ID',
+    file_name       VARCHAR(255)    NOT NULL COMMENT '원본 파일명',
+    stored_name     VARCHAR(255)    NOT NULL COMMENT '저장 파일명 (UUID)',
+    file_path       VARCHAR(500)    NOT NULL COMMENT '저장 경로',
+    file_ext        VARCHAR(20)     DEFAULT NULL COMMENT '확장자',
+    file_size       BIGINT          DEFAULT NULL COMMENT '파일 크기 (bytes)',
+    mime_type       VARCHAR(100)    DEFAULT NULL COMMENT 'MIME 타입',
+    sort_order      INT             NOT NULL DEFAULT 0 COMMENT '정렬순서',
+    is_active       TINYINT(1)      NOT NULL DEFAULT 1,
+    created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (file_id),
+    KEY idx_common_file_ref (ref_type, ref_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='공통 파일';
+
 
 
 ---------------------------------------------------------

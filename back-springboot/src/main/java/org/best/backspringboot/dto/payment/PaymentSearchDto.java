@@ -12,4 +12,5 @@ public class PaymentSearchDto extends SearchBase {
     private String transactionType;
     private String merchantName;
     private String approvalNumber;
+    private String status;
 }

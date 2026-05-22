@@ -39,6 +39,10 @@ public class PaymentResponseDto {
     private String cardNumber;      // ✅ 추가
     private Long originalAmount;    // ✅ 추가
     private Long remainingPoint;    // ✅ 추가
+    private String memberName;
+    private String birthDate;
+    private String organization;
+    private String gender;
 
     // 조회용 (card, member 없이)
     public static PaymentResponseDto from(Payment payment) {
@@ -63,10 +67,15 @@ public class PaymentResponseDto {
                 .approvalNumber(payment.getApprovalNumber())
                 .responseCode(payment.getResponseCode())
                 .cancelCode(payment.getCancelCode())
+                .memberName(payment.getMemberName())
+                .birthDate(payment.getBirthDate())
+                .organization(payment.getOrganization())
+                .gender(payment.getGender())
                 .originalTradeDate(payment.getOriginalTradeDate())
                 .originalApprovalNumber(payment.getOriginalApprovalNumber())
                 .acquirerCode(payment.getAcquirerCode())
                 .acquirerName(payment.getAcquirerName())
+                .cardNumber(payment.getCardNumber())  // 추가
                 .status(payment.getStatus())
                 .createdAt(payment.getCreatedAt())
                 .build();
