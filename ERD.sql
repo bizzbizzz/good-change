@@ -262,6 +262,19 @@ CREATE TABLE common_file (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='공통 파일';
 
 
+CREATE TABLE site_config (
+    config_no   INT          NOT NULL AUTO_INCREMENT,
+    config_key  VARCHAR(100) NOT NULL,
+    config_val  VARCHAR(500) NULL,
+    sort_no     INT          NOT NULL DEFAULT 1,
+    use_yn      CHAR(1)      NOT NULL DEFAULT 'Y',
+    reg_dt      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    mod_dt      TIMESTAMP    NULL     ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (config_no),
+    UNIQUE KEY uk_config_key (config_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사이트 설정';
+
+
 
 ---------------------------------------------------------
 1. 프로시저 생성 (CREATE PROCEDURE)
