@@ -17,6 +17,7 @@ public class MerchantResponseDto {
     private String contact;
     private String address;
     private String email;
+    private Long categoryId;  // 추가
     private String status;
     private Long referrerId;
     private String terminalId;
@@ -41,6 +42,7 @@ public class MerchantResponseDto {
                 .createdAt(merchant.getCreatedAt())
                 .applyDate(merchant.getApplyDate())
                 .approveDate(merchant.getApproveDate())
+                .categoryId(merchant.getCategoryId())  // 추가
                 .categories(categories)
                 .build();
     }

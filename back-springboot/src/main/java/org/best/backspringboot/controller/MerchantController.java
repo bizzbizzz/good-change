@@ -6,10 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
-import org.best.backspringboot.dto.merchant.MerchantCreateDto;
-import org.best.backspringboot.dto.merchant.MerchantResponseDto;
-import org.best.backspringboot.dto.merchant.MerchantSearchDto;
-import org.best.backspringboot.dto.merchant.MerchantUpdateDto;
+import org.best.backspringboot.dto.merchant.*;
 import org.best.backspringboot.service.MerchantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +25,13 @@ public class MerchantController {
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody MerchantCreateDto dto) {
         merchantService.create(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "가맹점 + 회원 통합 등록")
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@Valid @RequestBody MerchantRegisterDto dto) {
+        merchantService.createWithMember(dto);
         return ResponseEntity.ok().build();
     }
 

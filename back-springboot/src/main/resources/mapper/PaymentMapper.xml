@@ -40,6 +40,7 @@
     <select id="findAll" resultMap="paymentResultMap">
         SELECT * FROM payment
         <where>
+            AND status != 'DELETED'
             <if test="startDate != null and startDate != ''">
                 AND transmission_date >= #{startDate}
             </if>
@@ -63,6 +64,7 @@
     <select id="countAll" resultType="long">
         SELECT COUNT(*) FROM payment
         <where>
+            AND status != 'DELETED'
             <if test="startDate != null and startDate != ''">
                 AND transmission_date >= #{startDate}
             </if>

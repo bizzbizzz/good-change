@@ -8,6 +8,10 @@ import org.best.backspringboot.dto.SearchBase;
 @Setter
 public class MerchantSearchDto extends SearchBase {
     private String merchantName;
+    private String representative;
     private String businessNumber;
-    private String categoryName;  // ✅ 카테고리 검색 추가
+    private String categoryName;
+    private String contact;
+    private String terminalId;
+    private String keyword;  // 전체 검색용
 }

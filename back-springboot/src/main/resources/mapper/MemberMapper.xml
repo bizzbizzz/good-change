@@ -117,6 +117,7 @@
         </if>
     </select>
 
+
     <select id="findLeaveList" resultMap="memberResultMap">
         SELECT * FROM member
         WHERE status = 'DISABLED'

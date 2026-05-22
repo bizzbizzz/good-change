@@ -24,6 +24,8 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/members",          // 회원가입
             "/api/cards",            // 카드 조회
             "/api/merchants",
+            "/api/settlements",        // 추가
+            "/api/payments",           // 추가
             "/swagger-ui",
             "/v3/api-docs"
     );

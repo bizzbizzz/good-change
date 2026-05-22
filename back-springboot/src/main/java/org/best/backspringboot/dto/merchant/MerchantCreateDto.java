@@ -14,8 +14,6 @@ import java.util.List;
 public class MerchantCreateDto {
 
     private Long merchantId;
-
-    @NotNull
     private Long memberId;          // ✅ 가맹점 관리자 member_id
 
     @NotBlank

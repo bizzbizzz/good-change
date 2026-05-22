@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.merchant.MerchantCreateDto;
+import org.best.backspringboot.dto.merchant.MerchantSearchDto;
 import org.best.backspringboot.dto.merchant.MerchantUpdateDto;
 import org.best.backspringboot.entity.Merchant;
 import java.util.List;
@@ -15,15 +16,11 @@ public interface MerchantMapper {
     Optional<Merchant> findById(Long merchantId);
     Optional<Merchant> findByMemberId(Long memberId);
     Optional<Merchant> findByBusinessNumber(String businessNumber);
-    List<Merchant> findAll(SearchBase searchBase);
+    List<Merchant> findAll(MerchantSearchDto searchDto);  // SearchBase → MerchantSearchDto
     long countAll();
     void update(Long merchantId, MerchantUpdateDto dto);
     void delete(Long merchantId);
-    List<String> findCategoriesByMerchantId(Long merchantId);
-    void insertCategory(@Param("merchantId") Long merchantId,
-                        @Param("categoryName") String categoryName);
-    void deleteCategories(Long merchantId);
-    // ✅ 추가
     Long findMerchantIdByMemberId(Long memberId);
     List<String> findAllCategories();
+    String findCategoryNameById(Long categoryId);
 }
