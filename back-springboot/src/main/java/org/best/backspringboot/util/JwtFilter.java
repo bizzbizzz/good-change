@@ -26,6 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/merchants",
             "/api/settlements",        // 추가
             "/api/payments",           // 추가
+            "/api/boards",
             "/swagger-ui",
             "/v3/api-docs"
     );
