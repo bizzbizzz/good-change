@@ -38,7 +38,7 @@
             referrer_id, apply_date, approve_date, created_at
         ) VALUES (
                      #{roleId}, #{loginId}, #{password}, #{name}, #{birthDate},
-                     #{gender}, #{address}, #{organization}, #{email}, 0, 'ACTIVE',
+                     #{gender}, #{address}, #{organization}, #{email}, #{point}, 'ACTIVE',
                      #{referrerId}, #{applyDate}, #{approveDate}, NOW()
                  )
     </insert>

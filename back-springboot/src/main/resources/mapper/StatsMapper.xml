@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.StatsMapper">
+
+    <!-- 일별 총 결제금액 -->
+    <select id="findDailyPayment" resultType="org.best.backspringboot.dto.statistics.DailyPaymentDto">
+        SELECT
+            transmission_date AS date,
+            SUM(amount)        AS amount,
+            COUNT(*)           AS count
+        FROM payment
+        WHERE status = 'SUCCESS'
+          AND transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL #{days} DAY), '%Y%m%d')
+        GROUP BY transmission_date
+        ORDER BY transmission_date ASC
+    </select>
+
+    <!-- 월별 총 정산금액 -->
+    <select id="findMonthlySettlement" resultType="org.best.backspringboot.dto.statistics.MonthlySettlementDto">
+        SELECT
+            settlement_month AS month,
+            SUM(settlement_amount) AS amount,
+            COUNT(*)               AS count
+        FROM settlement
+        WHERE status != 'DELETED'
+          AND settlement_month >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL #{months} MONTH), '%Y-%m')
+        GROUP BY settlement_month
+        ORDER BY settlement_month ASC
+    </select>
+
+</mapper>

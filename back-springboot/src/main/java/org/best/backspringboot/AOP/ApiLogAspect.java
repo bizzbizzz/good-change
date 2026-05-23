@@ -38,7 +38,17 @@ public class ApiLogAspect {
 
 
         // 파라미터
-        String requestBody = Arrays.toString(joinPoint.getArgs());
+        String requestBody = Arrays.stream(joinPoint.getArgs())
+                .filter(arg -> arg != null)
+                .map(arg -> {
+                    try {
+                        return arg.toString();
+                    } catch (Exception e) {
+                        return "?";
+                    }
+                })
+                .collect(java.util.stream.Collectors.joining(", "));
+
 
         Object result;
         String level        = "INFO";

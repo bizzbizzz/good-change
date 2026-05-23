@@ -3,10 +3,15 @@ package org.best.backspringboot.service;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.SearchBase;
+import org.best.backspringboot.dto.allowedip.AllowedIpCreateDto;
+import org.best.backspringboot.dto.member.MemberCreateDto;
 import org.best.backspringboot.dto.member.MemberRegisterDto;
 import org.best.backspringboot.dto.merchant.*;
+import org.best.backspringboot.entity.Member;
+import org.best.backspringboot.mapper.AllowedIpMapper;
 import org.best.backspringboot.mapper.MemberMapper;
 import org.best.backspringboot.mapper.MerchantMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -18,6 +23,9 @@ public class MerchantService {
 
     private final MerchantMapper merchantMapper;
     private final MemberService memberService;  // 추가
+    private final PasswordEncoder passwordEncoder;
+    private final MemberMapper memberMapper;
+    private final AllowedIpMapper allowedIpMapper;
 
     @Transactional
     public void create(MerchantCreateDto dto) {
@@ -53,14 +61,24 @@ public class MerchantService {
     @Transactional
     public void createWithMember(MerchantRegisterDto dto) {
         // member insert
-        memberService.create(dto.getMember());
-        Long memberId = dto.getMember().getMember().getMemberId();
+        MemberCreateDto member = dto.getMember().getMember();
+        member.encodePassword(passwordEncoder);
+        memberMapper.insert(member);
 
         // merchant insert
-        dto.getMerchant().setMemberId(memberId);
         merchantMapper.findByBusinessNumber(dto.getMerchant().getBusinessNumber())
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 등록된 사업자번호입니다."); });
+        dto.getMerchant().setMemberId(member.getMemberId());
         merchantMapper.insert(dto.getMerchant());
+
+        // IP 등록
+        if (!allowedIpMapper.existsByIp(dto.getIpAddress())) {
+            allowedIpMapper.insert(AllowedIpCreateDto.builder()
+                    .ipAddress(dto.getIpAddress())
+                    .merchantId(dto.getMerchant().getMerchantId())
+                    .description(dto.getMerchant().getMerchantName() + " 등록 IP")
+                    .build());
+        }
     }
 
     @Transactional(readOnly = true)

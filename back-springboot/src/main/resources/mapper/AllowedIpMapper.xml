@@ -21,6 +21,15 @@
                  )
     </insert>
 
+    <select id="findByMerchantId" resultMap="allowedIpResultMap">
+        SELECT * FROM allowed_ip WHERE merchant_id = #{merchantId} LIMIT 1
+    </select>
+
+    <update id="updateByMerchantId">
+        UPDATE allowed_ip SET ip_address = #{ipAddress}
+        WHERE merchant_id = #{merchantId}
+    </update>
+
     <select id="findAll" resultMap="allowedIpResultMap">
         SELECT * FROM allowed_ip ORDER BY created_at DESC
     </select>

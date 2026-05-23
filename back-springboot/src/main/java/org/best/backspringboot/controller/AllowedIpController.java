@@ -38,4 +38,19 @@ public class AllowedIpController {
         allowedIpService.delete(ipId);
         return ResponseEntity.ok().build();
     }
+    @Operation(summary = "가맹점 허용 IP 단건 조회")
+    @GetMapping("/merchant/{merchantId}")
+    public ResponseEntity<AllowedIp> getByMerchantId(@PathVariable Long merchantId) {
+        return allowedIpService.getByMerchantId(merchantId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "가맹점 허용 IP 수정")
+    @PutMapping("/merchant/{merchantId}")
+    public ResponseEntity<Void> updateByMerchantId(@PathVariable Long merchantId,
+                                                   @RequestBody AllowedIpCreateDto dto) {
+        allowedIpService.updateByMerchantId(merchantId, dto.getIpAddress());
+        return ResponseEntity.ok().build();
+    }
 }

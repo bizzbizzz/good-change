@@ -1,6 +1,7 @@
 package org.best.backspringboot.dto.merchant;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.best.backspringboot.dto.card.CardCreateDto;
@@ -15,4 +16,6 @@ public class MerchantRegisterDto {
     private MemberRegisterDto member;
     @Valid
     private MerchantCreateDto merchant;
+    @NotBlank
+    private String ipAddress;
 }
