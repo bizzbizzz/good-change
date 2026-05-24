@@ -1,8 +1,6 @@
 package org.best.backspringboot.dto.member;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -36,4 +34,8 @@ public class MemberUpdateDto {
     private String password;        // 추가 - 비밀번호 변경
 
     private Long referrerId;        // 추가 - 추천인 변경
+
+    @Min(0)
+    @Max(999999999)
+    private Long point;
 }

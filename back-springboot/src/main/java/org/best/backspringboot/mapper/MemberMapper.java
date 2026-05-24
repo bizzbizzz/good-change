@@ -1,6 +1,7 @@
 package org.best.backspringboot.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.member.MemberCreateDto;
 import org.best.backspringboot.dto.member.MemberSearchDto;
@@ -14,9 +15,9 @@ public interface MemberMapper {
     void insert(MemberCreateDto dto);
     Optional<Member> findById(Long memberId);
     List<Member> findAll(MemberSearchDto searchBase);
-    void update(String loginId, MemberUpdateDto dto);
-    void delete(String loginId);
-    Optional<Member> findByLoginId(String loginId);
+    void update(@Param("memberId") Long memberId, @Param("dto") MemberUpdateDto dto);
+    void delete(Long memberId);
+    Optional<Member> findByLoginId(String memberId);
     long countAll(MemberSearchDto searchDto);
     void updatePoint(Long memberId, Long point);
 

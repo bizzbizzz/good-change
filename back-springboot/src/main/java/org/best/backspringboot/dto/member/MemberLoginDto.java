@@ -11,4 +11,5 @@ public class MemberLoginDto {
 
     @NotBlank
     private String password;
+    private String role;  // 추가
 }

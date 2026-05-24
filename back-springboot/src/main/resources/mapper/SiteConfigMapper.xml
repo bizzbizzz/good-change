@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.SiteConfigMapper">
+
+    <resultMap id="siteConfigResultMap" type="org.best.backspringboot.entity.SiteConfig">
+        <id  property="configNo"  column="config_no"/>
+        <result property="configKey" column="config_key"/>
+        <result property="configVal" column="config_val"/>
+        <result property="sortNo"    column="sort_no"/>
+        <result property="useYn"     column="use_yn"/>
+        <result property="regDt"     column="reg_dt"/>
+        <result property="modDt"     column="mod_dt"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="siteConfigResultMap">
+        SELECT * FROM site_config
+        <where>
+            <if test="configKey != null and configKey != ''">
+                AND config_key LIKE CONCAT('%', #{configKey}, '%')
+            </if>
+            <if test="configVal != null and configVal != ''">
+                AND config_val LIKE CONCAT('%', #{configVal}, '%')
+            </if>
+        </where>
+        ORDER BY sort_no ASC
+    </select>
+
+    <select id="findByKey" resultMap="siteConfigResultMap">
+        SELECT * FROM site_config WHERE config_key = #{configKey}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO site_config (config_key, config_val, sort_no, use_yn, reg_dt)
+        VALUES (#{configKey}, #{configVal}, #{sortNo}, 'Y', NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE site_config
+        <set>
+            <if test="configVal != null">config_val = #{configVal},</if>
+            <if test="sortNo    != null">sort_no    = #{sortNo},</if>
+            <if test="useYn     != null">use_yn     = #{useYn},</if>
+        </set>
+        WHERE config_key = #{configKey}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM site_config WHERE config_key = #{configKey}
+    </delete>
+
+</mapper>

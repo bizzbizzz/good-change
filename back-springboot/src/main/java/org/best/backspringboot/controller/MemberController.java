@@ -49,12 +49,13 @@ public class MemberController {
         response.put("token",   token);
         response.put("loginId", jwtUtil.getLoginId(token));
         response.put("role",    jwtUtil.getRole(token));
+        response.put("name",    memberService.getNameByLoginId(jwtUtil.getLoginId(token)));
 
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "회원 단건 조회")
-    @GetMapping("/{memberId}")
+    @GetMapping("/{memberId:\\d+}")
     public ResponseEntity<MemberResponseDto> getById(@PathVariable Long memberId) {
         return ResponseEntity.ok(memberService.getById(memberId));
     }
@@ -66,17 +67,17 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 수정")
-    @PatchMapping("/{loginId}")
-    public ResponseEntity<Void> update(@PathVariable String loginId,
+    @PatchMapping("/{memberId:\\d+}")
+    public ResponseEntity<Void> update(@PathVariable Long memberId,
                                        @Valid @RequestBody MemberUpdateDto dto) {
-        memberService.update(loginId, dto);
+        memberService.update(memberId, dto);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "회원 삭제")
-    @DeleteMapping("/{loginId}")
-    public ResponseEntity<Void> delete(@PathVariable String loginId) {
-        memberService.delete(loginId);
+    @DeleteMapping("/{memberId:\\d+}")
+    public ResponseEntity<Void> delete(@PathVariable Long memberId) {
+        memberService.delete(memberId);
         return ResponseEntity.ok().build();
     }
 }

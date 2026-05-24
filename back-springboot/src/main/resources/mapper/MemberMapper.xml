@@ -142,17 +142,19 @@
     <update id="update">
         UPDATE member
         <set>
-            <if test="dto.name    != null">name    = #{dto.name},</if>
-            <if test="dto.address != null">address = #{dto.address},</if>
-            <if test="dto.email   != null">email   = #{dto.email},</if>
+            <if test="dto.name         != null">name         = #{dto.name},</if>
+            <if test="dto.address      != null">address      = #{dto.address},</if>
+            <if test="dto.email        != null">email        = #{dto.email},</if>
+            <if test="dto.organization != null">organization = #{dto.organization},</if>
+            <if test="dto.point        != null">point        = #{dto.point},</if>
         </set>
-        WHERE login_id = #{loginId}
+        WHERE member_id = #{memberId}
     </update>
 
     <update id="delete">
         UPDATE member
         SET status = 'DISABLED'
-        WHERE login_id = #{loginId}
+        WHERE member_id = #{memberId}
     </update>
 
 </mapper>

@@ -70,17 +70,17 @@ public class MemberService {
     }
 
     @Transactional
-    public void update(String loginId, MemberUpdateDto dto) {
-        memberMapper.findByLoginId(loginId)
+    public void update(Long memberId, MemberUpdateDto dto) {
+        memberMapper.findById(memberId)  // findByLoginId → findById
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        memberMapper.update(loginId, dto);
+        memberMapper.update(memberId, dto);
     }
 
     @Transactional
-    public void delete(String loginId) {
-        memberMapper.findByLoginId(loginId)
+    public void delete(Long memberId) {
+        memberMapper.findById(memberId)  // findByLoginId → findById
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        memberMapper.delete(loginId);
+        memberMapper.delete(memberId);
     }
 
     // 아이디 중복체크 (true = 사용가능, false = 중복)
@@ -110,5 +110,12 @@ public class MemberService {
         }
 
         return jwtUtil.generateToken(member.getMemberId(), member.getLoginId(), roleName, merchantId);
+    }
+
+    @Transactional(readOnly = true)
+    public String getNameByLoginId(String loginId) {
+        return memberMapper.findByLoginId(loginId)
+                .map(Member::getName)
+                .orElse(loginId);
     }
 }
