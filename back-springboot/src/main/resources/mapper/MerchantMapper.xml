@@ -34,6 +34,10 @@
                  )
     </insert>
 
+    <select id="findMerchantIdByMemberId" resultType="Long">
+        SELECT merchant_id FROM merchant WHERE member_id = #{memberId}
+    </select>
+
     <select id="findCategoryNameById" resultType="String">
         SELECT category_name FROM merchant_category
         WHERE category_id = #{categoryId}
