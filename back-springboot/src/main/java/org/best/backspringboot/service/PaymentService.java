@@ -138,7 +138,8 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
         // 5. 결제 취소 처리
-        paymentMapper.updateStatus(paymentId, "CANCELED");
+        paymentMapper.updateStatusAndDate(paymentId, "CANCELED",
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
         // 6. 포인트 복원
         memberMapper.updatePoint(member.getMemberId(), member.getPoint() + payment.getAmount());

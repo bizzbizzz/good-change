@@ -74,6 +74,13 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
+    <update id="updateStatusAndDate">
+        UPDATE payment
+        SET status = #{status},
+            transmission_date = #{transmissionDate}
+        WHERE payment_id = #{paymentId}
+    </update>
+
     <select id="countAll" resultType="long">
         SELECT COUNT(*) FROM payment
         <where>

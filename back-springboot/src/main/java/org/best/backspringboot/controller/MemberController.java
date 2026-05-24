@@ -9,8 +9,11 @@ import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.card.CardCreateDto;
 import org.best.backspringboot.dto.member.*;
 import org.best.backspringboot.service.MemberService;
+import org.best.backspringboot.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +24,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
     @Operation(summary = "회원 등록")
     @PostMapping
@@ -37,9 +41,16 @@ public class MemberController {
 
     @Operation(summary = "로그인", description = "JWT 토큰 반환")
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody MemberLoginDto dto) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody MemberLoginDto dto) {
         String token = memberService.login(dto);
-        return ResponseEntity.ok(Map.of("token", token));
+
+        // 토큰에서 정보 추출
+        Map<String, Object> response = new HashMap<>();
+        response.put("token",   token);
+        response.put("loginId", jwtUtil.getLoginId(token));
+        response.put("role",    jwtUtil.getRole(token));
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "회원 단건 조회")
