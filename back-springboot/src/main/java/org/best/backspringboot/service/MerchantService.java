@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class MerchantService {
 
     private final MerchantMapper merchantMapper;
-    private final MemberService memberService;  // 추가
     private final PasswordEncoder passwordEncoder;
     private final MemberMapper memberMapper;
     private final AllowedIpMapper allowedIpMapper;
@@ -119,4 +118,16 @@ public class MerchantService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
         merchantMapper.delete(merchantId);
     }
+
+    @Transactional(readOnly = true)
+    public String getMerchantNameByMemberId(Long memberId) {
+        try {
+            return merchantMapper.findByMemberId(memberId)
+                    .map(m -> m.getMerchantName())
+                    .orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }
