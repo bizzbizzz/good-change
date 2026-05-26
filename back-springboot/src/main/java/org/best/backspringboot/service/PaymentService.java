@@ -38,14 +38,19 @@ public class PaymentService {
                 .map(PaymentResponseDto::from)
                 .collect(Collectors.toList());
 
-        long totalCount = paymentMapper.countAll(dto);
+        long totalCount  = paymentMapper.countAll(dto);
+        long totalAmount = paymentMapper.sumAmount(dto);
+
         pageResponse.setPageInfo(content, totalCount);
+        pageResponse.setTotalAmount(totalAmount);
+        pageResponse.setSuccessCount(totalCount);  // 전체 건수 사용
+
         return pageResponse;
     }
 
     @Transactional(readOnly = true)
-    public PaymentResponseDto getById(Long paymentId) {
-        return paymentMapper.findById(paymentId)
+    public PaymentResponseDto getById(Long paymentId, String transmissionDate) {
+        return paymentMapper.findById(paymentId, transmissionDate)
                 .map(PaymentResponseDto::from)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
     }
@@ -85,13 +90,16 @@ public class PaymentService {
 
         // 8. payment INSERT
         Payment payment = Payment.builder()
-                .cardId(card.getCardId())
+                .merchantId(dto.getMerchantId())
+                .memberId(card.getMemberId())
+                .cardNumber(card.getCardNumber())
                 .institutionCode("bizline")
                 .messageNumber(messageNumber)
                 .transmissionDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .amount(dto.getAmount())
                 .transactionType("사용")
                 .approvalNumber(approvalNumber)
+                .inputMethod("WEB")
                 .status("SUCCESS")
                 .build();
 
@@ -105,16 +113,16 @@ public class PaymentService {
     }
 
     @Transactional
-    public void delete(Long paymentId) {
-        paymentMapper.findById(paymentId)
+    public void delete(Long paymentId, String transmissionDate) {
+        paymentMapper.findById(paymentId, transmissionDate)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
-        paymentMapper.updateStatus(paymentId, "DELETED");
+        paymentMapper.updateStatusAndDate(paymentId, "DELETED", transmissionDate);
     }
 
     @Transactional
-    public void cancel(Long paymentId) {
+    public void cancel(Long paymentId, String transmissionDate) {
         // 1. 결제 조회
-        Payment payment = paymentMapper.findById(paymentId)
+        Payment payment = paymentMapper.findById(paymentId, transmissionDate)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
 
         // 2. 결제 상태 체크
@@ -130,11 +138,8 @@ public class PaymentService {
             }
         }
 
-        // 4. 카드 조회 → 회원 조회
-        Card card = cardMapper.findById(payment.getCardId())
-                .orElseThrow(() -> new IllegalArgumentException("카드 정보를 찾을 수 없습니다."));
-
-        Member member = memberMapper.findById(card.getMemberId())
+        // 4. member_id로 회원 직접 조회
+        Member member = memberMapper.findById(payment.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
         // 5. 결제 취소 처리

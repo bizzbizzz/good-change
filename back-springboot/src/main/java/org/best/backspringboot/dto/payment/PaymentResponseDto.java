@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PaymentResponseDto {
     private Long paymentId;
-    private Long cardId;
+    private Long memberId;
     private String messageNumber;
     private String institutionCode;
     private String transmissionDate;
@@ -48,7 +48,7 @@ public class PaymentResponseDto {
     public static PaymentResponseDto from(Payment payment) {
         return PaymentResponseDto.builder()
                 .paymentId(payment.getPaymentId())
-                .cardId(payment.getCardId())
+                .memberId(payment.getMemberId())
                 .messageNumber(payment.getMessageNumber())
                 .institutionCode(payment.getInstitutionCode())
                 .transmissionDate(payment.getTransmissionDate())
@@ -85,7 +85,7 @@ public class PaymentResponseDto {
     public static PaymentResponseDto from(Payment payment, Card card, Member member) {
         return PaymentResponseDto.builder()
                 .paymentId(payment.getPaymentId())
-                .cardId(payment.getCardId())
+                .memberId(payment.getMemberId())
                 .messageNumber(payment.getMessageNumber())
                 .institutionCode(payment.getInstitutionCode())
                 .transmissionDate(payment.getTransmissionDate())

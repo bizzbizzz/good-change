@@ -6,7 +6,8 @@
 
     <resultMap id="paymentResultMap" type="org.best.backspringboot.entity.Payment">
         <id  property="paymentId"                column="payment_id"/>
-        <result property="cardId"                column="card_id"/>
+        <result property="merchantId"            column="merchant_id"/>
+        <result property="memberId"            column="member_id"/>
         <result property="kocessIp"              column="koces_ip"/>
         <result property="messageNumber"         column="message_number"/>
         <result property="institutionCode"       column="institution_code"/>
@@ -19,6 +20,7 @@
         <result property="representative"        column="representative"/>
         <result property="phone"                 column="phone"/>
         <result property="address"               column="address"/>
+        <result property="cardNumber"            column="card_number"/>
         <result property="cardType"              column="card_type"/>
         <result property="inputMethod"           column="input_method"/>
         <result property="track"                 column="track"/>
@@ -26,7 +28,6 @@
         <result property="transactionType"       column="transaction_type"/>
         <result property="approvalNumber"        column="approval_number"/>
         <result property="responseCode"          column="response_code"/>
-        <result property="cardNumber" column="card_number"/>
         <result property="cancelCode"            column="cancel_code"/>
         <result property="originalTradeDate"     column="original_trade_date"/>
         <result property="originalApprovalNumber" column="original_approval_number"/>
@@ -36,42 +37,165 @@
         <result property="status"                column="status"/>
         <result property="createdAt"             column="created_at"/>
         <result property="updatedAt"             column="updated_at"/>
-        <result property="memberName"    column="member_name"/>
-        <result property="birthDate"     column="birth_date"/>
-        <result property="organization"  column="organization"/>
-        <result property="gender"        column="gender"/>
+        <result property="memberName"   column="member_name"/>
+        <result property="birthDate"    column="birth_date"/>
+        <result property="organization" column="organization"/>
+        <result property="gender"       column="gender"/>
     </resultMap>
 
     <select id="findAll" resultMap="paymentResultMap">
-        SELECT * FROM payment
+        SELECT p.payment_id, p.merchant_id, p.koces_ip,
+        p.message_number, p.institution_code, p.transmission_date,
+        p.trace_number, p.merchant_number,
+        p.card_number, p.card_type, p.input_method, p.track,
+        p.amount, p.transaction_type, p.approval_number,
+        p.response_code, p.cancel_code, p.original_trade_date,
+        p.original_approval_number, p.acquirer_code, p.acquirer_name,
+        p.filter_value, p.status, p.created_at, p.updated_at,
+        COALESCE(m.merchant_name,  p.merchant_name)  AS merchant_name,
+        m.business_number                            AS business_number,
+        COALESCE(m.representative, p.representative) AS representative,
+        COALESCE(m.contact,        p.phone)          AS phone,
+        COALESCE(m.address,        p.address)        AS address,
+        COALESCE(m.terminal_id,    p.terminal_id)    AS terminal_id,
+        mb.name                                      AS member_name,
+        mb.birth_date                                AS birth_date,
+        mb.gender                                    AS gender
+        FROM payment p
+        LEFT JOIN merchant m ON p.merchant_id = m.merchant_id
+        LEFT JOIN member mb ON p.member_id = mb.member_id
         <where>
-            AND status != 'DELETED'
+            AND p.status != 'DELETED'
             <if test="startDate != null and startDate != ''">
-                AND transmission_date >= #{startDate}
+                AND p.transmission_date >= #{startDate}
             </if>
             <if test="endDate != null and endDate != ''">
-                AND transmission_date &lt;= #{endDate}
+                AND p.transmission_date &lt;= #{endDate}
             </if>
             <if test="startDate == null or startDate == ''">
-                AND transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y%m%d')
+                AND p.transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y%m%d')
             </if>
             <if test="transactionType != null and transactionType != ''">
-                AND transaction_type = #{transactionType}
+                AND p.transaction_type = #{transactionType}
             </if>
             <if test="merchantName != null and merchantName != ''">
-                AND merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+                AND COALESCE(m.merchant_name, p.merchant_name) LIKE CONCAT('%', #{merchantName}, '%')
             </if>
             <if test="approvalNumber != null and approvalNumber != ''">
-                AND approval_number = #{approvalNumber}
+                AND p.approval_number = #{approvalNumber}
+            </if>
+            <if test="merchantId != null">
+                AND p.merchant_id = #{merchantId}
             </if>
             <if test="status != null and status != ''">
-                AND status = #{status}
+                AND p.status = #{status}
+            </if>
+            <if test="memberName != null and memberName != ''">
+                AND mb.name LIKE CONCAT('%', #{memberName}, '%')
+            </if>
+            <if test="cardNumber != null and cardNumber != ''">
+                AND p.card_number LIKE CONCAT('%', #{cardNumber}, '%')
             </if>
         </where>
         ORDER BY
-        CASE WHEN status = 'SUCCESS' THEN 0 ELSE 1 END ASC,
-        created_at DESC
+        CASE WHEN p.status = 'SUCCESS' THEN 0 ELSE 1 END ASC,
+        p.created_at DESC, p.payment_id DESC
         LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="sumAmount" resultType="long">
+        SELECT COALESCE(SUM(p.amount), 0)
+        FROM payment p
+        LEFT JOIN member mb ON p.member_id = mb.member_id
+        <where>
+            AND p.status != 'DELETED'
+            <if test="startDate != null and startDate != ''">
+                AND p.transmission_date >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND p.transmission_date &lt;= #{endDate}
+            </if>
+            <if test="startDate == null or startDate == ''">
+                AND p.transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y%m%d')
+            </if>
+            <if test="merchantId != null">
+                AND p.merchant_id = #{merchantId}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+            <if test="memberName != null and memberName != ''">
+                AND mb.name LIKE CONCAT('%', #{memberName}, '%')
+            </if>
+            <if test="cardNumber != null and cardNumber != ''">
+                AND p.card_number LIKE CONCAT('%', #{cardNumber}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM payment p
+        LEFT JOIN merchant m ON p.merchant_id = m.merchant_id
+        LEFT JOIN member mb ON p.member_id = mb.member_id
+        <where>
+            AND p.status != 'DELETED'
+            <if test="startDate != null and startDate != ''">
+                AND p.transmission_date >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND p.transmission_date &lt;= #{endDate}
+            </if>
+            <if test="startDate == null or startDate == ''">
+                AND p.transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y%m%d')
+            </if>
+            <if test="transactionType != null and transactionType != ''">
+                AND p.transaction_type = #{transactionType}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND COALESCE(m.merchant_name, p.merchant_name) LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="approvalNumber != null and approvalNumber != ''">
+                AND p.approval_number = #{approvalNumber}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+            <if test="merchantId != null">
+                AND p.merchant_id = #{merchantId}
+            </if>
+            <if test="memberName != null and memberName != ''">
+                AND mb.name LIKE CONCAT('%', #{memberName}, '%')
+            </if>
+            <if test="cardNumber != null and cardNumber != ''">
+                AND p.card_number LIKE CONCAT('%', #{cardNumber}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" resultMap="paymentResultMap">
+        SELECT p.payment_id, p.member_id, p.merchant_id, p.koces_ip,
+               p.message_number, p.institution_code, p.transmission_date,
+               p.trace_number, p.merchant_number,
+               p.card_number, p.card_type, p.input_method, p.track,
+               p.amount, p.transaction_type, p.approval_number,
+               p.response_code, p.cancel_code, p.original_trade_date,
+               p.original_approval_number, p.acquirer_code, p.acquirer_name,
+               p.filter_value, p.status, p.created_at, p.updated_at,
+               COALESCE(mer.merchant_name,   p.merchant_name)   AS merchant_name,
+               mer.business_number                               AS business_number,
+               COALESCE(mer.representative,  p.representative)  AS representative,
+               COALESCE(mer.contact,         p.phone)           AS phone,
+               COALESCE(mer.address,         p.address)         AS address,
+               COALESCE(mer.terminal_id,     p.terminal_id)     AS terminal_id,
+               mem.name         AS member_name,
+               mem.birth_date   AS birth_date,
+               mem.organization AS organization,
+               mem.gender       AS gender
+        FROM payment p
+                 LEFT JOIN merchant mer ON p.merchant_id = mer.merchant_id
+                 LEFT JOIN member   mem ON p.member_id   = mem.member_id
+        WHERE p.payment_id = #{paymentId}
+          AND p.transmission_date = #{transmissionDate}
     </select>
 
     <update id="updateStatusAndDate">
@@ -79,70 +203,25 @@
         SET status = #{status},
             transmission_date = #{transmissionDate}
         WHERE payment_id = #{paymentId}
-    </update>
-
-    <select id="countAll" resultType="long">
-        SELECT COUNT(*) FROM payment
-        <where>
-            AND status != 'DELETED'
-            <if test="startDate != null and startDate != ''">
-                AND transmission_date >= #{startDate}
-            </if>
-            <if test="endDate != null and endDate != ''">
-                AND transmission_date &lt;= #{endDate}
-            </if>
-            <if test="startDate == null or startDate == ''">
-                AND transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 3 MONTH), '%Y%m%d')
-            </if>
-            <if test="transactionType != null and transactionType != ''">
-                AND transaction_type = #{transactionType}
-            </if>
-            <if test="merchantName != null and merchantName != ''">
-                AND merchant_name LIKE CONCAT('%', #{merchantName}, '%')
-            </if>
-            <if test="approvalNumber != null and approvalNumber != ''">
-                AND approval_number = #{approvalNumber}
-            </if>
-            <if test="status != null and status != ''">
-                AND status = #{status}
-            </if>
-        </where>
-    </select>
-
-
-    <select id="findById" resultMap="paymentResultMap">
-        SELECT p.*,
-               m.name        AS member_name,
-               m.birth_date  AS birth_date,
-               m.organization AS organization,
-               m.gender      AS gender
-        FROM payment p
-                 LEFT JOIN card c ON p.card_id = c.card_id
-                 LEFT JOIN member m ON c.member_id = m.member_id
-        WHERE p.payment_id = #{paymentId}
-    </select>
-
-    <update id="updateStatus">
-        UPDATE payment
-        SET status = #{status}
-        WHERE payment_id = #{paymentId}
           AND transmission_date = #{transmissionDate}
     </update>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="paymentId">
         INSERT INTO payment (
-            card_id, institution_code, message_number,
-            transmission_date, terminal_id,
-            card_type, amount, transaction_type,
-            approval_number, merchant_number,
-            merchant_name, status, created_at
+        member_id, merchant_id, institution_code, message_number,
+        transmission_date,
+        card_number, card_type, input_method,   <!-- 추가 -->
+        amount, transaction_type,
+        approval_number, merchant_number,
+        merchant_name, status, created_at
         ) VALUES (
-                     #{cardId}, #{institutionCode}, #{messageNumber},
-                     #{transmissionDate}, #{terminalId},
-                     #{cardType}, #{amount}, #{transactionType},
-                     #{approvalNumber}, #{merchantNumber},
-                     #{merchantName}, #{status}, NOW()
-                 )
+        #{memberId}, #{merchantId}, #{institutionCode}, #{messageNumber},
+        #{transmissionDate},
+        #{cardNumber}, #{cardType}, #{inputMethod},   <!-- 추가 -->
+        #{amount}, #{transactionType},
+        #{approvalNumber}, #{merchantNumber},
+        #{merchantName}, #{status}, NOW()
+        )
     </insert>
 
     <select id="findByApprovalNumber" resultMap="paymentResultMap">

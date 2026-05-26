@@ -11,12 +11,14 @@ import java.util.Optional;
 public interface PaymentMapper {
     List<Payment> findAll(PaymentSearchDto dto);
     long countAll(PaymentSearchDto dto);
-    Optional<Payment> findById(Long paymentId);
+    Optional<Payment> findById(@Param("paymentId") Long paymentId,
+                               @Param("transmissionDate") String transmissionDate);
     void updateStatusAndDate(@Param("paymentId") Long paymentId,
                              @Param("status") String status,
                              @Param("transmissionDate") String transmissionDate);
-    void updateStatus(Long paymentId, String status);
     void insert(Payment payment);
     Optional<Payment> findByApprovalNumber(String approvalNumber);
-    void delete(Long paymentId);
+    void delete(@Param("paymentId") Long paymentId,
+                @Param("transmissionDate") String transmissionDate);  // 추가
+    long sumAmount(PaymentSearchDto dto);
 }

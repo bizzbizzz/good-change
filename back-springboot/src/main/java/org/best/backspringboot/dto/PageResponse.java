@@ -11,6 +11,8 @@ public class PageResponse<T> extends SearchBase {
     private List<T> content;
     private long totalCount;
     private int totalPages;
+    private long totalAmount;  // 추가
+    private long successCount; // 추가
 
     public void setPageInfo(List<T> content, long totalCount) {
         this.content = content;

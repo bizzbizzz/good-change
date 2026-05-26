@@ -22,6 +22,7 @@ CREATE TABLE member (
             birth_date  DATE         NOT NULL,
             gender      ENUM('MALE', 'FEMALE') NOT NULL,
             address     VARCHAR(255) NULL,
+            detail_address VARCHAR(255) NULL,
             email       VARCHAR(255) NULL,
             point       BIGINT       NOT NULL DEFAULT 0,
             status      VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
@@ -101,11 +102,12 @@ CREATE TABLE merchant (
 -- 5. payment 테이블
 CREATE TABLE payment (
     payment_id               BIGINT       NOT NULL AUTO_INCREMENT,
-    card_id                  BIGINT       NULL,
-    koces_ip                 VARCHAR(50)  NULL,
+    member_id                BIGINT       NULL,
+    merchant_id              BIGINT       NULL,
+    koces_cd                 VARCHAR(5)   NULL,
     message_number           VARCHAR(50)  NULL,
     institution_code         VARCHAR(20)  NULL,
-    transmission_date        VARCHAR(8)   NULL,
+    transmission_date        VARCHAR(8)   NOT NULL DEFAULT '',
     trace_number             VARCHAR(50)  NULL,
     terminal_id              VARCHAR(100) NULL,
     business_number          VARCHAR(20)  NULL,
@@ -115,9 +117,9 @@ CREATE TABLE payment (
     phone                    VARCHAR(20)  NULL,
     address                  VARCHAR(255) NULL,
     card_number              CHAR(16)     NULL,
-    card_type                VARCHAR(20)  NULL,
+    track_data               VARCHAR(37)  NULL,
+    key_in                   CHAR(1)      NULL,
     input_method             VARCHAR(20)  NULL,
-    track                    VARCHAR(255) NULL,
     amount                   BIGINT       NULL,
     transaction_type         VARCHAR(20)  NULL,
     approval_number          VARCHAR(50)  NULL,
@@ -127,14 +129,18 @@ CREATE TABLE payment (
     original_approval_number VARCHAR(50)  NULL,
     original_amount          BIGINT       NULL,
     remaining_point          BIGINT       NULL,
-    acquirer_code            VARCHAR(20)  NULL,
-    acquirer_name            VARCHAR(100) NULL,
     filter_value             VARCHAR(255) NULL,
     status                   ENUM('SUCCESS', 'FAILED', 'CANCELED', 'DELETED') NOT NULL DEFAULT 'SUCCESS',
-    created_at DATETIME NOT NULL DEFAULT NOW(),
+    created_at               DATETIME     NOT NULL DEFAULT NOW(),
     updated_at               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (payment_id, transmission_date)  -- ✅ 파티션 키 포함
+    PRIMARY KEY (payment_id, transmission_date),
+    INDEX idx_payment_member_id           (member_id),
+    INDEX idx_payment_merchant_id         (merchant_id),
+    INDEX idx_payment_status              (status),
+    INDEX idx_payment_merchant_status     (merchant_id, status),
+    INDEX idx_approval_number             (approval_number),
+    INDEX idx_payment_transmission_status (transmission_date, status)
 )
 PARTITION BY RANGE COLUMNS (transmission_date) (
     PARTITION p20260426 VALUES LESS THAN ('20260427'),
@@ -160,7 +166,7 @@ CREATE TABLE settlement (
     created_at DATETIME NOT NULL DEFAULT NOW(),
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (settlement_id, settlement_date)  -- ✅ 파티션 키 포함
+    PRIMARY KEY (settlement_id, settlement_date),
 )
 PARTITION BY RANGE COLUMNS (settlement_date) (
     PARTITION p202605 VALUES LESS THAN ('202605'),

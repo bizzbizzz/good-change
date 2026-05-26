@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Payment {
     private Long paymentId;
-    private Long cardId;
+    private Long memberId;
     private String kocessIp;
     private String messageNumber;
     private String institutionCode;
@@ -30,6 +30,7 @@ public class Payment {
     private Long amount;
     private String cardNumber;  // 없으면 추가
     private String transactionType;
+    private Long merchantId;
     private String approvalNumber;
     private String responseCode;
     private String cancelCode;

@@ -71,8 +71,14 @@ public class MemberService {
 
     @Transactional
     public void update(Long memberId, MemberUpdateDto dto) {
-        memberMapper.findById(memberId)  // findByLoginId → findById
+        memberMapper.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 비밀번호 암호화
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+            dto.encodePassword(passwordEncoder);
+        }
+
         memberMapper.update(memberId, dto);
     }
 

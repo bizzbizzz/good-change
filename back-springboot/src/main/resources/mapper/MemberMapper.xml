@@ -19,6 +19,7 @@
         <result property="createdAt"  column="created_at"/>
         <result property="updatedAt"  column="updated_at"/>
         <result property="organization"  column="organization"/>
+        <result property="detailAddress" column="detail_address"/>
         <result property="applyDate"   column="apply_date"/>
         <result property="approveDate" column="approve_date"/>
         <collection property="cardNumbers" ofType="String"
@@ -142,11 +143,20 @@
     <update id="update">
         UPDATE member
         <set>
+            <if test="dto.loginId      != null">login_id     = #{dto.loginId},</if>
             <if test="dto.name         != null">name         = #{dto.name},</if>
+            <if test="dto.gender       != null">gender       = #{dto.gender},</if>
+            <if test="dto.birthDate    != null">birth_date   = #{dto.birthDate},</if>
             <if test="dto.address      != null">address      = #{dto.address},</if>
             <if test="dto.email        != null">email        = #{dto.email},</if>
             <if test="dto.organization != null">organization = #{dto.organization},</if>
+            <if test="dto.status       != null">status       = #{dto.status},</if>
             <if test="dto.point        != null">point        = #{dto.point},</if>
+            <if test="dto.referrerId   != null">referrer_id  = #{dto.referrerId},</if>
+            <if test="dto.password     != null and dto.password != ''">
+                password = #{dto.password},
+            </if>
+            <if test="dto.detailAddress != null">detail_address = #{dto.detailAddress},</if>
         </set>
         WHERE member_id = #{memberId}
     </update>

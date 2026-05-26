@@ -89,11 +89,30 @@ public class CardService {
         cardMapper.update(cardId, dto);
     }
 
-
     @Transactional
     public void delete(Long cardId) {
         cardMapper.findById(cardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카드입니다."));
         cardMapper.delete(cardId);
+    }
+
+    @Transactional(readOnly = true)
+    public CardResponseDto getCardInfo(String cardNumber, String memberName, String birthDate) {
+        Card card = cardMapper.findByCardNumber(cardNumber)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카드입니다."));
+
+        Member member = memberMapper.findById(card.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        if (!member.getName().equals(memberName)) {
+            throw new IllegalArgumentException("카드 정보가 일치하지 않습니다.");
+        }
+
+        if (birthDate != null && !birthDate.isEmpty()
+                && !member.getBirthDate().equals(birthDate)) {
+            throw new IllegalArgumentException("카드 정보가 일치하지 않습니다.");
+        }
+
+        return CardResponseDto.from(card, member);
     }
 }

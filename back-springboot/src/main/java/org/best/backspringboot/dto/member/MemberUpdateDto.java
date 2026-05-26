@@ -2,6 +2,7 @@ package org.best.backspringboot.dto.member;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -38,4 +39,14 @@ public class MemberUpdateDto {
     @Min(0)
     @Max(999999999)
     private Long point;
+
+    @Size(max = 50)
+    private String loginId;  // 추가
+
+    @Size(max = 255)
+    private String detailAddress;
+
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
+    }
 }

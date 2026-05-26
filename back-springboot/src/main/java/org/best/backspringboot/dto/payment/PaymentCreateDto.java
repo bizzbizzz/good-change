@@ -8,6 +8,8 @@ import lombok.Getter;
 @Getter
 public class PaymentCreateDto {
 
+    private Long merchantId;  // 추가
+
     @NotBlank
     private String cardNumber;      // 카드번호 16자리
 

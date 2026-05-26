@@ -27,6 +27,7 @@ public class MemberResponseDto {
     private List<String> cardNumbers;
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;
+    private String detailAddress;
 
 
     public static MemberResponseDto from(Member member) {
@@ -43,6 +44,7 @@ public class MemberResponseDto {
                 .point(member.getPoint())          // ✅ 추가
                 .status(member.getStatus())        // ✅ 추가
                 .applyDate(member.getApplyDate())
+                .detailAddress(member.getDetailAddress())
                 .approveDate(member.getApproveDate())
                 .cardNumbers(member.getCardNumbers())
                 .organization(member.getOrganization())

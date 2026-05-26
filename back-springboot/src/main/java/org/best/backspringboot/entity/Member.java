@@ -27,4 +27,5 @@ public class Member {
     private LocalDateTime applyDate;    // 가입신청일자
     private LocalDateTime approveDate;  // 가입승인일자
     private List<String> cardNumbers;
+    private String detailAddress;
 }

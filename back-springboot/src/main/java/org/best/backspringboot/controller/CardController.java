@@ -49,6 +49,15 @@ public class CardController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "신원 정보 확인")
+    @GetMapping("/info")
+    public ResponseEntity<CardResponseDto> getCardInfo(
+            @RequestParam String cardNumber,
+            @RequestParam String memberName,
+            @RequestParam(required = false) String birthDate) {
+        return ResponseEntity.ok(cardService.getCardInfo(cardNumber, memberName, birthDate));
+    }
+
     @Operation(summary = "카드 수정")
     @PatchMapping("/{cardId}")
     public ResponseEntity<Void> update(@PathVariable Long cardId,
