@@ -20,6 +20,8 @@
         <result property="updatedAt"      column="updated_at"/>
         <result property="applyDate"   column="apply_date"/>
         <result property="approveDate" column="approve_date"/>
+        <result property="loginId" column="login_id"/>  <!-- 추가 -->
+        <result property="categoryName" column="category_name"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
@@ -63,7 +65,10 @@
     </select>
 
     <select id="findById" resultMap="merchantResultMap">
-        SELECT * FROM merchant WHERE merchant_id = #{merchantId}
+        SELECT m.*, mb.login_id AS login_id
+        FROM merchant m
+                 LEFT JOIN member mb ON m.member_id = mb.member_id
+        WHERE m.merchant_id = #{merchantId}
     </select>
 
     <select id="findByMemberId" resultMap="merchantResultMap">
@@ -75,9 +80,14 @@
     </select>
 
     <select id="findAll" resultMap="merchantResultMap">
-        SELECT DISTINCT m.* FROM merchant m
+        SELECT m.*,
+        mb.login_id     AS login_id,
+        mc.category_name AS category_name
+        FROM merchant m
+        LEFT JOIN member mb ON m.member_id = mb.member_id
         LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
         <where>
+            AND m.status = 'ACTIVE'
             <if test="merchantName != null and merchantName != ''">
                 AND m.merchant_name LIKE CONCAT('%', #{merchantName}, '%')
             </if>
@@ -98,17 +108,16 @@
             </if>
             <if test="keyword != null and keyword != ''">
                 AND (
-                m.merchant_name LIKE CONCAT('%', #{keyword}, '%')
+                m.merchant_name    LIKE CONCAT('%', #{keyword}, '%')
                 OR m.representative LIKE CONCAT('%', #{keyword}, '%')
                 OR m.business_number LIKE CONCAT('%', #{keyword}, '%')
-                OR mc.category_name LIKE CONCAT('%', #{keyword}, '%')
-                OR m.contact LIKE CONCAT('%', #{keyword}, '%')
-                OR m.terminal_id LIKE CONCAT('%', #{keyword}, '%')
+                OR mc.category_name  LIKE CONCAT('%', #{keyword}, '%')
+                OR m.contact         LIKE CONCAT('%', #{keyword}, '%')
+                OR m.terminal_id     LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
-            AND m.status = 'ACTIVE'
         </where>
-        ORDER BY m.created_at DESC, m.member_id DESC
+        ORDER BY m.created_at DESC, m.merchant_id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 

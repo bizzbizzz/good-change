@@ -2,10 +2,12 @@ package org.best.backspringboot.dto.member;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
+@Setter
 @Getter
 public class MemberUpdateDto {
 

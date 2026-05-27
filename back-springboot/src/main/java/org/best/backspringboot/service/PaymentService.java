@@ -125,7 +125,7 @@ public class PaymentService {
         Payment payment = paymentMapper.findById(paymentId, transmissionDate)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제내역입니다."));
 
-        // 2. 결제 상태 체크
+        // 2. 상태 체크
         if (!payment.getStatus().equals("SUCCESS")) {
             throw new IllegalArgumentException("취소 가능한 결제가 아닙니다.");
         }
@@ -138,15 +138,49 @@ public class PaymentService {
             }
         }
 
-        // 4. member_id로 회원 직접 조회
+        // 4. 회원 조회
         Member member = memberMapper.findById(payment.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
-        // 5. 결제 취소 처리
-        paymentMapper.updateStatusAndDate(paymentId, "CANCELED",
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        // 6. 포인트 복원
+        // 5. 기존 행 DELETED 처리
+        paymentMapper.updateStatusAndDate(paymentId, "DELETED", transmissionDate);
+
+        // 6. 오늘 날짜로 CANCELED 행 새로 INSERT
+        Payment cancelPayment = Payment.builder()
+                .memberId(payment.getMemberId())
+                .merchantId(payment.getMerchantId())
+                .kocesCd(payment.getKocesCd())
+                .messageNumber(payment.getMessageNumber())
+                .institutionCode(payment.getInstitutionCode())
+                .transmissionDate(today)                    // 오늘 날짜
+                .traceNumber(payment.getTraceNumber())
+                .terminalId(payment.getTerminalId())
+                .businessNumber(payment.getBusinessNumber())
+                .merchantName(payment.getMerchantName())
+                .representative(payment.getRepresentative())
+                .phone(payment.getPhone())
+                .address(payment.getAddress())
+                .cardNumber(payment.getCardNumber())
+                .trackData(payment.getTrackData())
+                .keyIn(payment.getKeyIn())
+                .inputMethod(payment.getInputMethod())
+                .amount(payment.getAmount())
+                .transactionType("취소")
+                .approvalNumber(payment.getApprovalNumber())
+                .responseCode(payment.getResponseCode())
+                .cancelCode("1")
+                .originalTradeDate(payment.getTransmissionDate()) // 원거래일자
+                .originalApprovalNumber(payment.getApprovalNumber())
+                .originalAmount(payment.getOriginalAmount())
+                .remainingPoint(member.getPoint() + payment.getAmount())
+                .status("CANCELED")
+                .build();
+
+        paymentMapper.insertCancel(cancelPayment);
+
+        // 7. 포인트 복원
         memberMapper.updatePoint(member.getMemberId(), member.getPoint() + payment.getAmount());
     }
 }

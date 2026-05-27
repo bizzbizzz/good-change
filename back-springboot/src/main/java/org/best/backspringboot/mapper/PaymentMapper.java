@@ -16,6 +16,7 @@ public interface PaymentMapper {
     void updateStatusAndDate(@Param("paymentId") Long paymentId,
                              @Param("status") String status,
                              @Param("transmissionDate") String transmissionDate);
+    void insertCancel(Payment payment);
     void insert(Payment payment);
     Optional<Payment> findByApprovalNumber(String approvalNumber);
     void delete(@Param("paymentId") Long paymentId,

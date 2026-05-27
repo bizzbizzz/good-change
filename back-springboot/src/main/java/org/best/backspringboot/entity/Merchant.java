@@ -24,4 +24,6 @@ public class Merchant {
     private LocalDateTime applyDate;    // 가입신청일자
     private LocalDateTime approveDate;  // 가입승인일자
     private Long categoryId;  // 추가
+    private String loginId;  // 추가
+    private String categoryName;  // 추가
 }

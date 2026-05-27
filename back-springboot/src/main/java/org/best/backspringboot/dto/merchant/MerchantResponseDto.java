@@ -25,6 +25,8 @@ public class MerchantResponseDto {
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;
     private List<String> categories;  // ✅ 추가
+    private String loginId;  // 추가
+
 
     public static MerchantResponseDto from(Merchant merchant, List<String> categories) {
         return MerchantResponseDto.builder()
@@ -36,6 +38,7 @@ public class MerchantResponseDto {
                 .contact(merchant.getContact())
                 .address(merchant.getAddress())
                 .email(merchant.getEmail())
+                .loginId(merchant.getLoginId())  // 추가
                 .status(merchant.getStatus())
                 .referrerId(merchant.getReferrerId())
                 .terminalId(merchant.getTerminalId())

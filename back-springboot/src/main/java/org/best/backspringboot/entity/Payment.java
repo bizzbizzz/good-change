@@ -3,7 +3,6 @@ package org.best.backspringboot.entity;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder
@@ -12,7 +11,8 @@ import java.time.LocalDateTime;
 public class Payment {
     private Long paymentId;
     private Long memberId;
-    private String kocessIp;
+    private Long merchantId;
+    private String kocesCd;          // 추가
     private String messageNumber;
     private String institutionCode;
     private String transmissionDate;
@@ -24,20 +24,19 @@ public class Payment {
     private String representative;
     private String phone;
     private String address;
-    private String cardType;
+    private String cardNumber;
+    private String trackData;        // track → trackData
+    private String keyIn;            // 추가
     private String inputMethod;
-    private String track;
     private Long amount;
-    private String cardNumber;  // 없으면 추가
     private String transactionType;
-    private Long merchantId;
     private String approvalNumber;
     private String responseCode;
     private String cancelCode;
     private String originalTradeDate;
     private String originalApprovalNumber;
-    private String acquirerCode;
-    private String acquirerName;
+    private Long originalAmount;
+    private Long remainingPoint;
     private String filterValue;
     private String status;
     private LocalDateTime createdAt;

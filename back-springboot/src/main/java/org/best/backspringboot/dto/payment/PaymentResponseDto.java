@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 public class PaymentResponseDto {
     private Long paymentId;
     private Long memberId;
+    private Long merchantId;
+    private String kocesCd;          // 추가
     private String messageNumber;
     private String institutionCode;
     private String transmissionDate;
@@ -23,7 +25,9 @@ public class PaymentResponseDto {
     private String representative;
     private String phone;
     private String address;
-    private String cardType;
+    private String cardNumber;
+    private String trackData;        // 추가
+    private String keyIn;            // 추가
     private String inputMethod;
     private Long amount;
     private String transactionType;
@@ -32,13 +36,10 @@ public class PaymentResponseDto {
     private String cancelCode;
     private String originalTradeDate;
     private String originalApprovalNumber;
-    private String acquirerCode;
-    private String acquirerName;
+    private Long originalAmount;
+    private Long remainingPoint;
     private String status;
     private LocalDateTime createdAt;
-    private String cardNumber;      // ✅ 추가
-    private Long originalAmount;    // ✅ 추가
-    private Long remainingPoint;    // ✅ 추가
     private String memberName;
     private String birthDate;
     private String organization;
@@ -49,6 +50,8 @@ public class PaymentResponseDto {
         return PaymentResponseDto.builder()
                 .paymentId(payment.getPaymentId())
                 .memberId(payment.getMemberId())
+                .merchantId(payment.getMerchantId())
+                .kocesCd(payment.getKocesCd())
                 .messageNumber(payment.getMessageNumber())
                 .institutionCode(payment.getInstitutionCode())
                 .transmissionDate(payment.getTransmissionDate())
@@ -60,22 +63,23 @@ public class PaymentResponseDto {
                 .representative(payment.getRepresentative())
                 .phone(payment.getPhone())
                 .address(payment.getAddress())
-                .cardType(payment.getCardType())
+                .cardNumber(payment.getCardNumber())
+                .trackData(payment.getTrackData())
+                .keyIn(payment.getKeyIn())
                 .inputMethod(payment.getInputMethod())
                 .amount(payment.getAmount())
                 .transactionType(payment.getTransactionType())
                 .approvalNumber(payment.getApprovalNumber())
                 .responseCode(payment.getResponseCode())
                 .cancelCode(payment.getCancelCode())
+                .originalTradeDate(payment.getOriginalTradeDate())
+                .originalApprovalNumber(payment.getOriginalApprovalNumber())
+                .originalAmount(payment.getOriginalAmount())
+                .remainingPoint(payment.getRemainingPoint())
                 .memberName(payment.getMemberName())
                 .birthDate(payment.getBirthDate())
                 .organization(payment.getOrganization())
                 .gender(payment.getGender())
-                .originalTradeDate(payment.getOriginalTradeDate())
-                .originalApprovalNumber(payment.getOriginalApprovalNumber())
-                .acquirerCode(payment.getAcquirerCode())
-                .acquirerName(payment.getAcquirerName())
-                .cardNumber(payment.getCardNumber())  // 추가
                 .status(payment.getStatus())
                 .createdAt(payment.getCreatedAt())
                 .build();
@@ -86,6 +90,8 @@ public class PaymentResponseDto {
         return PaymentResponseDto.builder()
                 .paymentId(payment.getPaymentId())
                 .memberId(payment.getMemberId())
+                .merchantId(payment.getMerchantId())
+                .kocesCd(payment.getKocesCd())
                 .messageNumber(payment.getMessageNumber())
                 .institutionCode(payment.getInstitutionCode())
                 .transmissionDate(payment.getTransmissionDate())
@@ -97,23 +103,21 @@ public class PaymentResponseDto {
                 .representative(payment.getRepresentative())
                 .phone(payment.getPhone())
                 .address(payment.getAddress())
-                .cardNumber(card != null ? card.getCardNumber() : null)
-                .cardType(payment.getCardType())
+                .cardNumber(card != null ? card.getCardNumber() : payment.getCardNumber())
+                .trackData(payment.getTrackData())
+                .keyIn(payment.getKeyIn())
                 .inputMethod(payment.getInputMethod())
                 .amount(payment.getAmount())
-                .originalAmount(member != null ? member.getPoint() : null)
-                .remainingPoint(member != null ? member.getPoint() - payment.getAmount() : null)
+                .originalAmount(payment.getOriginalAmount())
+                .remainingPoint(payment.getRemainingPoint())
                 .transactionType(payment.getTransactionType())
                 .approvalNumber(payment.getApprovalNumber())
                 .responseCode(payment.getResponseCode())
                 .cancelCode(payment.getCancelCode())
                 .originalTradeDate(payment.getOriginalTradeDate())
                 .originalApprovalNumber(payment.getOriginalApprovalNumber())
-                .acquirerCode(payment.getAcquirerCode())
-                .acquirerName(payment.getAcquirerName())
                 .status(payment.getStatus())
                 .createdAt(payment.getCreatedAt())
                 .build();
     }
-
 }

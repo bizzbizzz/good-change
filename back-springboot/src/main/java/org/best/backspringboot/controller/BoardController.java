@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 @Tag(name = "게시판", description = "게시판 관련 API")
 @RestController
 @RequestMapping("/api/boards")
@@ -28,9 +27,39 @@ import java.util.UUID;
 public class BoardController {
 
     private final BoardService boardService;
+    private static final String UPLOAD_PATH = System.getProperty("user.dir") + "/src/main/resources/uploads/board/";
+    private static final String UPLOAD_URL  = "/uploads/board/";
 
-    // 업로드 경로 (환경에 맞게 수정)
-    private static final String UPLOAD_PATH = "/home/bizline/uploads/board/";
+    @Operation(summary = "에디터 이미지 업로드")
+    @PostMapping("/image")
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "boardType", defaultValue = "board") String boardType,
+            @RequestParam(value = "boardId", defaultValue = "0") Long boardId) throws Exception {
+
+        String ext        = getExt(file.getOriginalFilename());
+        String storedName = UUID.randomUUID().toString() + "." + ext;
+        String uploadPath = UPLOAD_PATH + boardType + "/";
+        String uploadUrl  = UPLOAD_URL  + boardType + "/" + storedName;
+
+        new File(uploadPath).mkdirs();
+        file.transferTo(new File(uploadPath + storedName));
+
+        CommonFile commonFile = CommonFile.builder()
+                .refType(boardType.toLowerCase() + "_editor")  // ex) notice_editor
+                .refId(boardId)
+                .fileName(file.getOriginalFilename())
+                .storedName(storedName)
+                .filePath(uploadPath + storedName)
+                .fileExt(ext)
+                .fileSize(file.getSize())
+                .mimeType(file.getContentType())
+                .sortOrder(0)
+                .build();
+
+        boardService.addFile(commonFile);
+        return ResponseEntity.ok(Map.of("url", uploadUrl));
+    }
 
     @Operation(summary = "게시글 목록 조회")
     @GetMapping
@@ -76,16 +105,18 @@ public class BoardController {
     @PostMapping("/{boardId}/files")
     public ResponseEntity<Void> uploadFile(@PathVariable Long boardId,
                                            @RequestParam("file") MultipartFile file) throws Exception {
+
+        String boardType  = boardService.getBoardTypeCode(boardId);
         String ext        = getExt(file.getOriginalFilename());
         String storedName = UUID.randomUUID().toString() + "." + ext;
-        String filePath   = UPLOAD_PATH + storedName;
+        String uploadPath = UPLOAD_PATH + boardType + "/";
+        String filePath   = uploadPath + storedName;
 
-        // 디렉토리 생성
-        new File(UPLOAD_PATH).mkdirs();
+        new File(uploadPath).mkdirs();
         file.transferTo(new File(filePath));
 
         CommonFile commonFile = CommonFile.builder()
-                .refType("board")
+                .refType(boardType.toLowerCase() + "_thumbnail")  // ex) notice_thumbnail
                 .refId(boardId)
                 .fileName(file.getOriginalFilename())
                 .storedName(storedName)
@@ -103,6 +134,11 @@ public class BoardController {
     @Operation(summary = "파일 삭제")
     @DeleteMapping("/files/{fileId}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long fileId) {
+        // 실제 파일도 삭제
+        CommonFile file = boardService.getFile(fileId);
+        if (file != null && file.getFilePath() != null) {
+            new File(file.getFilePath()).delete();
+        }
         boardService.deleteFile(fileId);
         return ResponseEntity.ok().build();
     }

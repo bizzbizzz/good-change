@@ -6,8 +6,10 @@ import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.allowedip.AllowedIpCreateDto;
 import org.best.backspringboot.dto.member.MemberCreateDto;
 import org.best.backspringboot.dto.member.MemberRegisterDto;
+import org.best.backspringboot.dto.member.MemberUpdateDto;
 import org.best.backspringboot.dto.merchant.*;
 import org.best.backspringboot.entity.Member;
+import org.best.backspringboot.entity.Merchant;
 import org.best.backspringboot.mapper.AllowedIpMapper;
 import org.best.backspringboot.mapper.MemberMapper;
 import org.best.backspringboot.mapper.MerchantMapper;
@@ -87,12 +89,8 @@ public class MerchantService {
         pageResponse.setSize(searchBase.getSize());
 
         List<MerchantResponseDto> content = merchantMapper.findAll(searchBase).stream()
-                .map(m -> {
-                    String categoryName = m.getCategoryId() != null
-                            ? merchantMapper.findCategoryNameById(m.getCategoryId()) : null;
-                    return MerchantResponseDto.from(m,
-                            categoryName != null ? List.of(categoryName) : List.of());
-                })
+                .map(m -> MerchantResponseDto.from(m,
+                        m.getCategoryName() != null ? List.of(m.getCategoryName()) : List.of()))
                 .collect(Collectors.toList());
 
         long totalCount = merchantMapper.countAll();
@@ -107,9 +105,35 @@ public class MerchantService {
 
     @Transactional
     public void update(Long merchantId, MerchantUpdateDto dto) {
-        merchantMapper.findById(merchantId)
+        Merchant merchant = merchantMapper.findById(merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+
+        // merchant 테이블 업데이트
         merchantMapper.update(merchantId, dto);
+
+        // member 테이블 업데이트 (loginId, password)
+        if (merchant.getMemberId() != null) {
+            MemberUpdateDto memberUpdateDto = new MemberUpdateDto();
+            boolean hasUpdate = false;
+
+            if (dto.getLoginId() != null && !dto.getLoginId().isEmpty()) {
+                memberUpdateDto.setLoginId(dto.getLoginId());
+                hasUpdate = true;
+            }
+            if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+                memberUpdateDto.setPassword(passwordEncoder.encode(dto.getPassword()));
+                hasUpdate = true;
+            }
+            if (dto.getDetailAddress() != null) {
+                memberUpdateDto.setDetailAddress(dto.getDetailAddress());
+                hasUpdate = true;
+            }
+
+            // 업데이트할 필드가 있을 때만 실행
+            if (hasUpdate) {
+                memberMapper.update(merchant.getMemberId(), memberUpdateDto);
+            }
+        }
     }
 
     @Transactional

@@ -20,6 +20,7 @@ public interface BoardMapper {
     void update(@Param("boardId") Long boardId, @Param("dto") BoardUpdateDto dto);
     void delete(Long boardId);
     void increaseViewCount(Long boardId);
+    CommonFile findFileById(Long fileId);
 
     // 파일
     void insertFile(CommonFile file);

@@ -6,9 +6,9 @@
 
     <resultMap id="paymentResultMap" type="org.best.backspringboot.entity.Payment">
         <id  property="paymentId"                column="payment_id"/>
+        <result property="memberId"              column="member_id"/>
         <result property="merchantId"            column="merchant_id"/>
-        <result property="memberId"            column="member_id"/>
-        <result property="kocessIp"              column="koces_ip"/>
+        <result property="kocesCd"               column="koces_cd"/>
         <result property="messageNumber"         column="message_number"/>
         <result property="institutionCode"       column="institution_code"/>
         <result property="transmissionDate"      column="transmission_date"/>
@@ -21,9 +21,9 @@
         <result property="phone"                 column="phone"/>
         <result property="address"               column="address"/>
         <result property="cardNumber"            column="card_number"/>
-        <result property="cardType"              column="card_type"/>
+        <result property="trackData"             column="track_data"/>
+        <result property="keyIn"                 column="key_in"/>
         <result property="inputMethod"           column="input_method"/>
-        <result property="track"                 column="track"/>
         <result property="amount"                column="amount"/>
         <result property="transactionType"       column="transaction_type"/>
         <result property="approvalNumber"        column="approval_number"/>
@@ -31,39 +31,39 @@
         <result property="cancelCode"            column="cancel_code"/>
         <result property="originalTradeDate"     column="original_trade_date"/>
         <result property="originalApprovalNumber" column="original_approval_number"/>
-        <result property="acquirerCode"          column="acquirer_code"/>
-        <result property="acquirerName"          column="acquirer_name"/>
+        <result property="originalAmount"        column="original_amount"/>
+        <result property="remainingPoint"        column="remaining_point"/>
         <result property="filterValue"           column="filter_value"/>
         <result property="status"                column="status"/>
         <result property="createdAt"             column="created_at"/>
         <result property="updatedAt"             column="updated_at"/>
-        <result property="memberName"   column="member_name"/>
-        <result property="birthDate"    column="birth_date"/>
-        <result property="organization" column="organization"/>
-        <result property="gender"       column="gender"/>
+        <result property="memberName"            column="member_name"/>
+        <result property="birthDate"             column="birth_date"/>
+        <result property="organization"          column="organization"/>
+        <result property="gender"                column="gender"/>
     </resultMap>
 
     <select id="findAll" resultMap="paymentResultMap">
-        SELECT p.payment_id, p.merchant_id, p.koces_ip,
-        p.message_number, p.institution_code, p.transmission_date,
-        p.trace_number, p.merchant_number,
-        p.card_number, p.card_type, p.input_method, p.track,
-        p.amount, p.transaction_type, p.approval_number,
-        p.response_code, p.cancel_code, p.original_trade_date,
-        p.original_approval_number, p.acquirer_code, p.acquirer_name,
-        p.filter_value, p.status, p.created_at, p.updated_at,
-        COALESCE(m.merchant_name,  p.merchant_name)  AS merchant_name,
-        m.business_number                            AS business_number,
-        COALESCE(m.representative, p.representative) AS representative,
-        COALESCE(m.contact,        p.phone)          AS phone,
-        COALESCE(m.address,        p.address)        AS address,
-        COALESCE(m.terminal_id,    p.terminal_id)    AS terminal_id,
-        mb.name                                      AS member_name,
-        mb.birth_date                                AS birth_date,
-        mb.gender                                    AS gender
+        SELECT p.payment_id, p.member_id, p.merchant_id, p.koces_cd,
+               p.message_number, p.institution_code, p.transmission_date,
+               p.trace_number, p.merchant_number,
+               p.card_number, p.track_data, p.key_in, p.input_method,
+               p.amount, p.transaction_type, p.approval_number,
+               p.response_code, p.cancel_code, p.original_trade_date,
+               p.original_approval_number, p.original_amount, p.remaining_point,
+               p.filter_value, p.status, p.created_at, p.updated_at,
+               COALESCE(m.merchant_name,  p.merchant_name)  AS merchant_name,
+               m.business_number                            AS business_number,
+               COALESCE(m.representative, p.representative) AS representative,
+               COALESCE(m.contact,        p.phone)          AS phone,
+               COALESCE(m.address,        p.address)        AS address,
+               COALESCE(m.terminal_id,    p.terminal_id)    AS terminal_id,
+               mb.name                                      AS member_name,
+               mb.birth_date                                AS birth_date,
+               mb.gender                                    AS gender
         FROM payment p
-        LEFT JOIN merchant m ON p.merchant_id = m.merchant_id
-        LEFT JOIN member mb ON p.member_id = mb.member_id
+        LEFT JOIN merchant m  ON p.merchant_id = m.merchant_id
+        LEFT JOIN member   mb ON p.member_id   = mb.member_id
         <where>
             AND p.status != 'DELETED'
             <if test="startDate != null and startDate != ''">
@@ -98,8 +98,8 @@
             </if>
         </where>
         ORDER BY
-        CASE WHEN p.status = 'SUCCESS' THEN 0 ELSE 1 END ASC,
-        p.created_at DESC, p.payment_id DESC
+            CASE WHEN p.status = 'SUCCESS' THEN 0 ELSE 1 END ASC,
+            p.created_at DESC, p.payment_id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
@@ -124,6 +124,9 @@
             <if test="status != null and status != ''">
                 AND p.status = #{status}
             </if>
+            <if test="status == null or status == ''">
+                AND p.status = 'SUCCESS'   <!-- 전체 조회 시 승인 건만 합산 -->
+            </if>
             <if test="memberName != null and memberName != ''">
                 AND mb.name LIKE CONCAT('%', #{memberName}, '%')
             </if>
@@ -134,9 +137,10 @@
     </select>
 
     <select id="countAll" resultType="long">
-        SELECT COUNT(*) FROM payment p
-        LEFT JOIN merchant m ON p.merchant_id = m.merchant_id
-        LEFT JOIN member mb ON p.member_id = mb.member_id
+        SELECT COUNT(*)
+        FROM payment p
+        LEFT JOIN merchant m  ON p.merchant_id = m.merchant_id
+        LEFT JOIN member   mb ON p.member_id   = mb.member_id
         <where>
             AND p.status != 'DELETED'
             <if test="startDate != null and startDate != ''">
@@ -173,13 +177,13 @@
     </select>
 
     <select id="findById" resultMap="paymentResultMap">
-        SELECT p.payment_id, p.member_id, p.merchant_id, p.koces_ip,
+        SELECT p.payment_id, p.member_id, p.merchant_id, p.koces_cd,
                p.message_number, p.institution_code, p.transmission_date,
                p.trace_number, p.merchant_number,
-               p.card_number, p.card_type, p.input_method, p.track,
+               p.card_number, p.track_data, p.key_in, p.input_method,
                p.amount, p.transaction_type, p.approval_number,
                p.response_code, p.cancel_code, p.original_trade_date,
-               p.original_approval_number, p.acquirer_code, p.acquirer_name,
+               p.original_approval_number, p.original_amount, p.remaining_point,
                p.filter_value, p.status, p.created_at, p.updated_at,
                COALESCE(mer.merchant_name,   p.merchant_name)   AS merchant_name,
                mer.business_number                               AS business_number,
@@ -192,46 +196,62 @@
                mem.organization AS organization,
                mem.gender       AS gender
         FROM payment p
-                 LEFT JOIN merchant mer ON p.merchant_id = mer.merchant_id
-                 LEFT JOIN member   mem ON p.member_id   = mem.member_id
+        LEFT JOIN merchant mer ON p.merchant_id = mer.merchant_id
+        LEFT JOIN member   mem ON p.member_id   = mem.member_id
         WHERE p.payment_id = #{paymentId}
           AND p.transmission_date = #{transmissionDate}
     </select>
 
     <update id="updateStatusAndDate">
         UPDATE payment
-        SET status = #{status},
-            transmission_date = #{transmissionDate}
+        SET status = #{status}
+        WHERE payment_id = #{paymentId}
+          AND transmission_date = #{transmissionDate}
+    </update>
+
+    <insert id="insertCancel" useGeneratedKeys="true" keyProperty="paymentId">
+        INSERT INTO payment (
+            member_id, merchant_id, koces_cd, message_number, institution_code,
+            transmission_date, trace_number, terminal_id,
+            business_number, merchant_name, representative, phone, address,
+            card_number, track_data, key_in, input_method,
+            amount, transaction_type,
+            approval_number, response_code,
+            cancel_code, original_trade_date, original_approval_number,
+            original_amount, remaining_point,
+            status, created_at
+        ) VALUES (
+                     #{memberId}, #{merchantId}, #{kocesCd}, #{messageNumber}, #{institutionCode},
+                     #{transmissionDate}, #{traceNumber}, #{terminalId},
+                     #{businessNumber}, #{merchantName}, #{representative}, #{phone}, #{address},
+                     #{cardNumber}, #{trackData}, #{keyIn}, #{inputMethod},
+                     #{amount}, #{transactionType},
+                     #{approvalNumber}, #{responseCode},
+                     #{cancelCode}, #{originalTradeDate}, #{originalApprovalNumber},
+                     #{originalAmount}, #{remainingPoint},
+                     'CANCELED', NOW()
+                 )
+    </insert>
+
+    <update id="delete">
+        UPDATE payment
+        SET status = 'DELETED'
         WHERE payment_id = #{paymentId}
           AND transmission_date = #{transmissionDate}
     </update>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="paymentId">
         INSERT INTO payment (
-        member_id, merchant_id, institution_code, message_number,
-        transmission_date,
-        card_number, card_type, input_method,   <!-- 추가 -->
-        amount, transaction_type,
-        approval_number, merchant_number,
-        merchant_name, status, created_at
+            member_id, merchant_id, institution_code, message_number,
+            transmission_date, card_number, input_method,
+            amount, transaction_type,
+            approval_number, status, created_at
         ) VALUES (
-        #{memberId}, #{merchantId}, #{institutionCode}, #{messageNumber},
-        #{transmissionDate},
-        #{cardNumber}, #{cardType}, #{inputMethod},   <!-- 추가 -->
-        #{amount}, #{transactionType},
-        #{approvalNumber}, #{merchantNumber},
-        #{merchantName}, #{status}, NOW()
-        )
+                     #{memberId}, #{merchantId}, #{institutionCode}, #{messageNumber},
+                     #{transmissionDate}, #{cardNumber}, #{inputMethod},
+                     #{amount}, #{transactionType},
+                     #{approvalNumber}, #{status}, NOW()
+                 )
     </insert>
-
-    <select id="findByApprovalNumber" resultMap="paymentResultMap">
-        SELECT * FROM payment WHERE approval_number = #{approvalNumber}
-    </select>
-
-    <update id="delete">
-        UPDATE payment
-        SET status = 'DELETED'
-        WHERE payment_id = #{paymentId}
-    </update>
 
 </mapper>
