@@ -22,6 +22,26 @@ public class BoardService {
 
     private final BoardMapper boardMapper;
 
+    @Transactional
+    public void deleteThumbnail(Long boardId) {
+        Board board = boardMapper.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        String boardType = board.getTypeCode() != null
+                ? board.getTypeCode().toLowerCase() : "board";
+
+        List<CommonFile> thumbFiles = boardMapper.findFilesByRef(boardType + "_thumbnail", boardId);
+        for (CommonFile f : thumbFiles) {
+            if (f.getFilePath() != null) new File(f.getFilePath()).delete();
+        }
+        boardMapper.deleteFilesByRef(boardType + "_thumbnail", boardId);
+
+        // board.thumbnail 초기화 추가
+        BoardUpdateDto dto = new BoardUpdateDto();
+        dto.setThumbnail(null);
+        boardMapper.update(boardId, dto);
+    }
+
     @Transactional(readOnly = true)
     public PageResponse<BoardResponseDto> getAll(BoardSearchDto dto) {
         PageResponse<BoardResponseDto> pageResponse = new PageResponse<>();
@@ -36,13 +56,30 @@ public class BoardService {
         pageResponse.setPageInfo(content, totalCount);
         return pageResponse;
     }
-
+    @Transactional(readOnly = true)
     public String getBoardTypeCode(Long boardId) {
         return boardMapper.findById(boardId)
                 .map(b -> b.getTypeCode() != null ? b.getTypeCode() : "board")
                 .orElse("board");
     }
 
+    // BoardService에 추가
+    @Transactional
+    public void deleteEditorImages(Long boardId) {
+        Board board = boardMapper.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        String boardType = board.getTypeCode() != null
+                ? board.getTypeCode().toLowerCase() : "board";
+
+        List<CommonFile> editorFiles = boardMapper.findFilesByRef(boardType + "_editor", boardId);
+        for (CommonFile f : editorFiles) {
+            if (f.getFilePath() != null) new File(f.getFilePath()).delete();
+        }
+        boardMapper.deleteFilesByRef(boardType + "_editor", boardId);
+    }
+
+    @Transactional(readOnly = true)
     public CommonFile getFile(Long fileId) {
         return boardMapper.findFileById(fileId);
     }
@@ -52,11 +89,13 @@ public class BoardService {
         Board board = boardMapper.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        // 조회수 증가
         boardMapper.increaseViewCount(boardId);
 
-        // 첨부파일 조회
-        List<CommonFile> files = boardMapper.findFilesByRef("board", boardId);
+        String boardType = board.getTypeCode() != null
+                ? board.getTypeCode().toLowerCase() : "board";
+
+        // thumbnail 파일만 조회 (에디터 이미지 제외)
+        List<CommonFile> files = boardMapper.findFilesByRef(boardType + "_thumbnail", boardId);
         return BoardResponseDto.from(board, files);
     }
 
@@ -70,6 +109,7 @@ public class BoardService {
     public void update(Long boardId, BoardUpdateDto dto) {
         boardMapper.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
         boardMapper.update(boardId, dto);
     }
 
@@ -88,32 +128,24 @@ public class BoardService {
         }
         boardMapper.deleteFilesByRef(boardType + "_editor", boardId);
 
-        // 썸네일 파일 삭제
+        // 첨부파일 삭제
         List<CommonFile> thumbFiles = boardMapper.findFilesByRef(boardType + "_thumbnail", boardId);
         for (CommonFile f : thumbFiles) {
             if (f.getFilePath() != null) new File(f.getFilePath()).delete();
         }
         boardMapper.deleteFilesByRef(boardType + "_thumbnail", boardId);
 
-        // 게시글 삭제
         boardMapper.delete(boardId);
     }
 
-    private void deleteImagesFromContent(String content) {
-        try {
-            var pattern = java.util.regex.Pattern.compile(
-                    "src=\"[^\"]*\\/uploads\\/([^\"]+)\"");
-            var matcher = pattern.matcher(content);
-            while (matcher.find()) {
-                String relativePath = matcher.group(1);
-                String filePath = System.getProperty("user.dir")
-                        + "/src/main/resources/uploads/" + relativePath;
-                new File(filePath).delete();
-            }
-        } catch (Exception e) {
-            // 파일 삭제 실패 시 무시
-        }
+    @Transactional
+    public void updateThumbnail(Long boardId, String thumbnailUrl) {
+        BoardUpdateDto dto = new BoardUpdateDto();
+        dto.setThumbnail(thumbnailUrl);
+        boardMapper.update(boardId, dto);
     }
+
+
 
     @Transactional(readOnly = true)
     public List<Board> getBoardTypes() {

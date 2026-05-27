@@ -12,14 +12,22 @@ import org.best.backspringboot.dto.board.BoardUpdateDto;
 import org.best.backspringboot.entity.Board;
 import org.best.backspringboot.entity.CommonFile;
 import org.best.backspringboot.service.BoardService;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+
 @Tag(name = "게시판", description = "게시판 관련 API")
 @RestController
 @RequestMapping("/api/boards")
@@ -36,6 +44,12 @@ public class BoardController {
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "boardType", defaultValue = "board") String boardType,
             @RequestParam(value = "boardId", defaultValue = "0") Long boardId) throws Exception {
+
+        // 파일 타입 체크 추가
+        List<String> allowedTypes = List.of("image/png", "image/jpeg", "image/gif", "image/webp");
+        if (!allowedTypes.contains(file.getContentType())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "이미지 파일만 업로드 가능합니다."));
+        }
 
         String ext        = getExt(file.getOriginalFilename());
         String storedName = UUID.randomUUID().toString() + "." + ext;
@@ -58,7 +72,16 @@ public class BoardController {
                 .build();
 
         boardService.addFile(commonFile);
+        boardService.updateThumbnail(boardId, UPLOAD_URL + boardType + "/" + storedName);
         return ResponseEntity.ok(Map.of("url", uploadUrl));
+    }
+
+
+    @Operation(summary = "썸네일 삭제")
+    @DeleteMapping("/{boardId}/thumbnail")
+    public ResponseEntity<Void> deleteThumbnail(@PathVariable Long boardId) {
+        boardService.deleteThumbnail(boardId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "게시글 목록 조회")
@@ -94,6 +117,13 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "에디터 이미지 초기화")
+    @DeleteMapping("/{boardId}/editor-images")
+    public ResponseEntity<Void> deleteEditorImages(@PathVariable Long boardId) {
+        boardService.deleteEditorImages(boardId);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "게시글 삭제")
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> delete(@PathVariable Long boardId) {
@@ -105,6 +135,12 @@ public class BoardController {
     @PostMapping("/{boardId}/files")
     public ResponseEntity<Void> uploadFile(@PathVariable Long boardId,
                                            @RequestParam("file") MultipartFile file) throws Exception {
+
+        // 파일 타입 체크 추가
+        List<String> allowedTypes = List.of("image/png", "image/jpeg", "image/gif", "image/webp");
+        if (!allowedTypes.contains(file.getContentType())) {
+            return ResponseEntity.badRequest().build();
+        }
 
         String boardType  = boardService.getBoardTypeCode(boardId);
         String ext        = getExt(file.getOriginalFilename());
@@ -141,6 +177,26 @@ public class BoardController {
         }
         boardService.deleteFile(fileId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "파일 다운로드")
+    @GetMapping("/files/{fileId}/download")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws Exception {
+        CommonFile file = boardService.getFile(fileId);
+        if (file == null) return ResponseEntity.notFound().build();
+
+        Path path     = Paths.get(file.getFilePath());
+        Resource resource = new FileSystemResource(path);
+
+        if (!resource.exists()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" +
+                                URLEncoder.encode(file.getFileName(), "UTF-8") + "\"")
+                .header(HttpHeaders.CONTENT_TYPE,
+                        file.getMimeType() != null ? file.getMimeType() : "application/octet-stream")
+                .body(resource);
     }
 
     private String getExt(String fileName) {
