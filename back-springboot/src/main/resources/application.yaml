@@ -10,4 +10,4 @@ mybatis:
 
 jwt:
   secret: good-change-secret-key-must-be-at-least-256-bits-long-for-security
-  expiration: 86400000
+  expiration: 14400000

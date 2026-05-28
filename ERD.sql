@@ -12,6 +12,14 @@ INSERT INTO role (role_name, description, created_at) VALUES ('ADMIN', '운영�
 INSERT INTO role (role_name, description, created_at) VALUES ('USER', '수혜자', NOW());
 INSERT INTO role (role_name, description, created_at) VALUES ('MERCHANT', '가맹점 관리자', NOW());
 
+CREATE TABLE member_token (
+    member_id BIGINT NOT NULL,
+    token VARCHAR(500) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (member_id)
+);
+
+
 -- 2. member 테이블
 CREATE TABLE member (
             member_id   BIGINT       NOT NULL AUTO_INCREMENT,

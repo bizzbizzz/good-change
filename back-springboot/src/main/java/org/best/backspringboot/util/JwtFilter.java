@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.best.backspringboot.mapper.TokenMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final TokenMapper tokenMapper;
 
     // 인증 없이 통과할 경로
     private static final List<String> WHITE_LIST = List.of(
@@ -47,14 +49,13 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Authorization 헤더 또는 URL 파라미터에서 토큰 추출
         String token = null;
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);  // 헤더에서 추출
+            token = authHeader.substring(7);
         } else {
-            token = request.getParameter("token");  // SSE용 URL 파라미터
+            token = request.getParameter("token");
         }
 
         if (token == null) {
@@ -67,7 +68,15 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        request.setAttribute("memberId", jwtUtil.getMemberId(token));
+        // 중복 로그인 체크
+        Long memberId = jwtUtil.getMemberId(token);
+        String savedToken = tokenMapper.findByMemberId(memberId);
+        if (savedToken == null || !savedToken.equals(token)) {
+            sendError(response, "다른 기기에서 로그인되었습니다.");
+            return;
+        }
+
+        request.setAttribute("memberId", memberId);
         request.setAttribute("loginId",  jwtUtil.getLoginId(token));
 
         filterChain.doFilter(request, response);

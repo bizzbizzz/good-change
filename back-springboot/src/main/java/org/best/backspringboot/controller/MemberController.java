@@ -2,6 +2,7 @@ package org.best.backspringboot.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
@@ -82,6 +83,16 @@ public class MemberController {
     @DeleteMapping("/{memberId:\\d+}")
     public ResponseEntity<Void> delete(@PathVariable Long memberId) {
         memberService.delete(memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        Long memberId = (Long) request.getAttribute("memberId");
+        if (memberId != null) {
+            memberService.logout(memberId);
+        }
         return ResponseEntity.ok().build();
     }
 }
