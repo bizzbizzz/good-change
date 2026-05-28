@@ -1,6 +1,10 @@
 server:
   shutdown: graceful
 
+file:
+  upload-path: /home/bizline/springboot/uploads/board/
+  upload-url: /uploads/board/
+
 spring:
   servlet:
     multipart:
