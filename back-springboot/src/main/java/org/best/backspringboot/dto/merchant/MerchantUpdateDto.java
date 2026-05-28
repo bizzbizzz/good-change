@@ -35,4 +35,8 @@ public class MerchantUpdateDto {
     private String terminalId;
 
     private List<String> categories;
+
+    public String getTerminalId() {
+        return (terminalId != null && terminalId.isBlank()) ? null : terminalId;
+    }
 }

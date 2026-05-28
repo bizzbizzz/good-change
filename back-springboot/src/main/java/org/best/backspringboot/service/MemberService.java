@@ -9,6 +9,7 @@ import org.best.backspringboot.entity.Member;
 import org.best.backspringboot.mapper.CardMapper;
 import org.best.backspringboot.mapper.MemberMapper;
 import org.best.backspringboot.mapper.MerchantMapper;
+import org.best.backspringboot.mapper.TokenMapper;
 import org.best.backspringboot.util.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MerchantMapper merchantMapper; // ✅ 추가
     private final CardMapper cardMapper;
+    private final TokenMapper tokenMapper;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -90,11 +92,13 @@ public class MemberService {
     }
 
     // 아이디 중복체크 (true = 사용가능, false = 중복)
+    @Transactional(readOnly = true)
     public boolean isLoginIdAvailable(String loginId) {
         return memberMapper.findByLoginId(loginId).isEmpty();
     }
 
     // 로그인
+    @Transactional
     public String login(MemberLoginDto dto) {
         Member member = memberMapper.findByLoginId(dto.getLoginId())
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다."));
@@ -114,8 +118,16 @@ public class MemberService {
         if ("MERCHANT".equals(roleName)) {
             merchantId = merchantMapper.findMerchantIdByMemberId(member.getMemberId());
         }
+        String token = jwtUtil.generateToken(member.getMemberId(), member.getLoginId(), roleName, merchantId);
+        tokenMapper.upsert(member.getMemberId(), token);
 
-        return jwtUtil.generateToken(member.getMemberId(), member.getLoginId(), roleName, merchantId);
+        return token;
+    }
+
+    // MemberService 로그아웃 메서드
+    @Transactional
+    public void logout(Long memberId) {
+        tokenMapper.deleteByMemberId(memberId);
     }
 
     @Transactional(readOnly = true)
