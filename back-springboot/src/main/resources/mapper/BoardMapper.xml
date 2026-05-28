@@ -172,6 +172,11 @@
         )
     </insert>
 
+    <!-- 썸네일 초기화 -->
+    <update id="clearThumbnail">
+        UPDATE board SET thumbnail = NULL WHERE board_id = #{boardId}
+    </update>
+
     <!-- 파일 목록 조회 -->
     <select id="findFilesByRef" resultMap="fileResultMap">
         SELECT * FROM common_file

@@ -21,7 +21,7 @@ public interface BoardMapper {
     void delete(Long boardId);
     void increaseViewCount(Long boardId);
     CommonFile findFileById(Long fileId);
-
+    void clearThumbnail(Long boardId);
     // 파일
     void insertFile(CommonFile file);
     List<CommonFile> findFilesByRef(@Param("refType") String refType, @Param("refId") Long refId);

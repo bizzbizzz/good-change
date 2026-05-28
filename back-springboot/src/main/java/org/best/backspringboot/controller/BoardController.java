@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-
 @Tag(name = "게시판", description = "게시판 관련 API")
 @RestController
 @RequestMapping("/api/boards")
@@ -38,6 +37,7 @@ public class BoardController {
     private static final String UPLOAD_PATH = System.getProperty("user.dir") + "/src/main/resources/uploads/board/";
     private static final String UPLOAD_URL  = "/uploads/board/";
 
+    // 에디터 이미지 업로드 (공통)
     @Operation(summary = "에디터 이미지 업로드")
     @PostMapping("/image")
     public ResponseEntity<Map<String, String>> uploadImage(
@@ -45,7 +45,6 @@ public class BoardController {
             @RequestParam(value = "boardType", defaultValue = "board") String boardType,
             @RequestParam(value = "boardId", defaultValue = "0") Long boardId) throws Exception {
 
-        // 파일 타입 체크 추가
         List<String> allowedTypes = List.of("image/png", "image/jpeg", "image/gif", "image/webp");
         if (!allowedTypes.contains(file.getContentType())) {
             return ResponseEntity.badRequest().body(Map.of("message", "이미지 파일만 업로드 가능합니다."));
@@ -60,7 +59,7 @@ public class BoardController {
         file.transferTo(new File(uploadPath + storedName));
 
         CommonFile commonFile = CommonFile.builder()
-                .refType(boardType.toLowerCase() + "_editor")  // ex) notice_editor
+                .refType(boardType.toLowerCase() + "_editor")
                 .refId(boardId)
                 .fileName(file.getOriginalFilename())
                 .storedName(storedName)
@@ -72,15 +71,75 @@ public class BoardController {
                 .build();
 
         boardService.addFile(commonFile);
-        boardService.updateThumbnail(boardId, UPLOAD_URL + boardType + "/" + storedName);
         return ResponseEntity.ok(Map.of("url", uploadUrl));
     }
 
+    // 썸네일 업로드 (언론보도 전용)
+    @Operation(summary = "썸네일 업로드")
+    @PostMapping("/{boardId}/thumbnail")
+    public ResponseEntity<Void> uploadThumbnail(@PathVariable Long boardId,
+                                                @RequestParam("file") MultipartFile file) throws Exception {
 
+        List<String> allowedTypes = List.of("image/png", "image/jpeg", "image/gif", "image/webp");
+        if (!allowedTypes.contains(file.getContentType())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String boardType  = boardService.getBoardTypeCode(boardId);
+        String ext        = getExt(file.getOriginalFilename());
+        String storedName = UUID.randomUUID().toString() + "." + ext;
+        String uploadPath = UPLOAD_PATH + boardType + "/";
+        String filePath   = uploadPath + storedName;
+
+        new File(uploadPath).mkdirs();
+        file.transferTo(new File(filePath));
+
+        // board.thumbnail 컬럼 업데이트
+        boardService.updateThumbnail(boardId, UPLOAD_URL + boardType + "/" + storedName);
+        return ResponseEntity.ok().build();
+    }
+
+    // 썸네일 삭제
     @Operation(summary = "썸네일 삭제")
     @DeleteMapping("/{boardId}/thumbnail")
     public ResponseEntity<Void> deleteThumbnail(@PathVariable Long boardId) {
         boardService.deleteThumbnail(boardId);
+        return ResponseEntity.ok().build();
+    }
+
+    // 첨부파일 업로드 (서식/자료 전용)
+    @Operation(summary = "첨부파일 업로드")
+    @PostMapping("/{boardId}/files")
+    public ResponseEntity<Void> uploadFile(@PathVariable Long boardId,
+                                           @RequestParam("file") MultipartFile file) throws Exception {
+
+        List<String> allowedTypes = List.of("image/png", "image/jpeg", "image/gif", "image/webp");
+        if (!allowedTypes.contains(file.getContentType())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String boardType  = boardService.getBoardTypeCode(boardId);
+        String ext        = getExt(file.getOriginalFilename());
+        String storedName = UUID.randomUUID().toString() + "." + ext;
+        String uploadPath = UPLOAD_PATH + boardType + "/";
+        String filePath   = uploadPath + storedName;
+
+        new File(uploadPath).mkdirs();
+        file.transferTo(new File(filePath));
+
+        CommonFile commonFile = CommonFile.builder()
+                .refType(boardType.toLowerCase() + "_attach")  // resource_attach
+                .refId(boardId)
+                .fileName(file.getOriginalFilename())
+                .storedName(storedName)
+                .filePath(filePath)
+                .fileExt(ext)
+                .fileSize(file.getSize())
+                .mimeType(file.getContentType())
+                .sortOrder(0)
+                .build();
+
+        boardService.addFile(commonFile);
         return ResponseEntity.ok().build();
     }
 
@@ -131,46 +190,9 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "파일 업로드")
-    @PostMapping("/{boardId}/files")
-    public ResponseEntity<Void> uploadFile(@PathVariable Long boardId,
-                                           @RequestParam("file") MultipartFile file) throws Exception {
-
-        // 파일 타입 체크 추가
-        List<String> allowedTypes = List.of("image/png", "image/jpeg", "image/gif", "image/webp");
-        if (!allowedTypes.contains(file.getContentType())) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        String boardType  = boardService.getBoardTypeCode(boardId);
-        String ext        = getExt(file.getOriginalFilename());
-        String storedName = UUID.randomUUID().toString() + "." + ext;
-        String uploadPath = UPLOAD_PATH + boardType + "/";
-        String filePath   = uploadPath + storedName;
-
-        new File(uploadPath).mkdirs();
-        file.transferTo(new File(filePath));
-
-        CommonFile commonFile = CommonFile.builder()
-                .refType(boardType.toLowerCase() + "_thumbnail")  // ex) notice_thumbnail
-                .refId(boardId)
-                .fileName(file.getOriginalFilename())
-                .storedName(storedName)
-                .filePath(filePath)
-                .fileExt(ext)
-                .fileSize(file.getSize())
-                .mimeType(file.getContentType())
-                .sortOrder(0)
-                .build();
-
-        boardService.addFile(commonFile);
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "파일 삭제")
+    @Operation(summary = "첨부파일 삭제")
     @DeleteMapping("/files/{fileId}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long fileId) {
-        // 실제 파일도 삭제
         CommonFile file = boardService.getFile(fileId);
         if (file != null && file.getFilePath() != null) {
             new File(file.getFilePath()).delete();
@@ -185,7 +207,7 @@ public class BoardController {
         CommonFile file = boardService.getFile(fileId);
         if (file == null) return ResponseEntity.notFound().build();
 
-        Path path     = Paths.get(file.getFilePath());
+        Path path = Paths.get(file.getFilePath());
         Resource resource = new FileSystemResource(path);
 
         if (!resource.exists()) return ResponseEntity.notFound().build();
