@@ -26,14 +26,16 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
         INSERT INTO merchant (
-            member_id, category_id, merchant_name, representative,
-            business_number, contact, contact2, address, email,
-            terminal_id, status, created_at
+        member_id, category_id, merchant_name, representative,
+        business_number, contact, contact2, address, email,
+        <if test="terminalId != null and terminalId != ''">terminal_id,</if>
+        status, created_at
         ) VALUES (
-                     #{memberId}, #{categoryId}, #{merchantName}, #{representative},
-                     #{businessNumber}, #{contact}, #{contact2}, #{address}, #{email},
-                     #{terminalId}, 'ACTIVE', NOW()
-                 )
+        #{memberId}, #{categoryId}, #{merchantName}, #{representative},
+        #{businessNumber}, #{contact}, #{contact2}, #{address}, #{email},
+        <if test="terminalId != null and terminalId != ''">#{terminalId},</if>
+        'ACTIVE', NOW()
+        )
     </insert>
 
     <select id="findMerchantIdByMemberId" resultType="Long">

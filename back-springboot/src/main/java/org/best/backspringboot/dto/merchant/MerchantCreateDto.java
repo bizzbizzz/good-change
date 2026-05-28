@@ -49,4 +49,8 @@ public class MerchantCreateDto {
 
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;
+
+    public String getTerminalId() {
+        return (terminalId != null && terminalId.isBlank()) ? null : terminalId;
+    }
 }
