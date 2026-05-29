@@ -17,6 +17,7 @@ public class MerchantResponseDto {
     private String contact;
     private String address;
     private String email;
+    private String categoryName;  // 추가
     private Long categoryId;  // 추가
     private String status;
     private Long referrerId;
@@ -36,6 +37,7 @@ public class MerchantResponseDto {
                 .representative(merchant.getRepresentative())
                 .businessNumber(merchant.getBusinessNumber())
                 .contact(merchant.getContact())
+                .categoryName(merchant.getCategoryName())
                 .address(merchant.getAddress())
                 .email(merchant.getEmail())
                 .loginId(merchant.getLoginId())  // 추가

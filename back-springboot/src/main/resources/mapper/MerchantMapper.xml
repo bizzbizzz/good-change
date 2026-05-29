@@ -108,15 +108,27 @@
             <if test="terminalId != null and terminalId != ''">
                 AND m.terminal_id LIKE CONCAT('%', #{terminalId}, '%')
             </if>
+            <if test="categoryId != null">
+                AND m.category_id = #{categoryId}
+            </if>
             <if test="keyword != null and keyword != ''">
-                AND (
-                m.merchant_name    LIKE CONCAT('%', #{keyword}, '%')
-                OR m.representative LIKE CONCAT('%', #{keyword}, '%')
-                OR m.business_number LIKE CONCAT('%', #{keyword}, '%')
-                OR mc.category_name  LIKE CONCAT('%', #{keyword}, '%')
-                OR m.contact         LIKE CONCAT('%', #{keyword}, '%')
-                OR m.terminal_id     LIKE CONCAT('%', #{keyword}, '%')
-                )
+                <choose>
+                    <when test="searchType == 'address'">
+                        AND m.address LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'name'">
+                        AND m.merchant_name LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                        m.merchant_name      LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.address         LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.representative  LIKE CONCAT('%', #{keyword}, '%')
+                        OR mc.category_name  LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.contact         LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
             </if>
         </where>
         ORDER BY m.created_at DESC, m.merchant_id DESC
@@ -124,7 +136,37 @@
     </select>
 
     <select id="countAll" resultType="long">
-        SELECT COUNT(*) FROM merchant WHERE status = 'ACTIVE'
+        SELECT COUNT(*)
+        FROM merchant m
+        LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
+        <where>
+            AND m.status = 'ACTIVE'
+            <if test="categoryName != null and categoryName != ''">
+                AND mc.category_name = #{categoryName}
+            </if>
+            <if test="categoryId != null">
+                AND m.category_id = #{categoryId}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'address'">
+                        AND m.address LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'name'">
+                        AND m.merchant_name LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                        m.merchant_name     LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.address        LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.representative LIKE CONCAT('%', #{keyword}, '%')
+                        OR mc.category_name LIKE CONCAT('%', #{keyword}, '%')
+                        OR m.contact        LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
     </select>
 
     <update id="update">

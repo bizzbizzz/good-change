@@ -8,6 +8,8 @@ import org.best.backspringboot.dto.SearchBase;
 @Setter
 public class PaymentSearchDto extends SearchBase {
     private String startDate;
+    private Long memberId;      // 추가
+    private String tab;         // 추가
     private String endDate;
     private String transactionType;
     private String merchantName;

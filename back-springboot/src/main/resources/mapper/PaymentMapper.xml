@@ -64,6 +64,7 @@
         FROM payment p
         LEFT JOIN merchant m  ON p.merchant_id = m.merchant_id
         LEFT JOIN member   mb ON p.member_id   = mb.member_id
+        LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
         <where>
             AND p.status != 'DELETED'
             <if test="startDate != null and startDate != ''">
@@ -93,6 +94,12 @@
             <if test="memberName != null and memberName != ''">
                 AND mb.name LIKE CONCAT('%', #{memberName}, '%')
             </if>
+            <if test="memberId != null">
+                AND p.member_id = #{memberId}
+            </if>
+            <if test="tab != null and tab != '' and tab != 'all'">
+                AND mc.category_name = #{tab}
+            </if>
             <if test="cardNumber != null and cardNumber != ''">
                 AND p.card_number LIKE CONCAT('%', #{cardNumber}, '%')
             </if>
@@ -106,6 +113,8 @@
     <select id="sumAmount" resultType="long">
         SELECT COALESCE(SUM(p.amount), 0)
         FROM payment p
+        LEFT JOIN merchant m  ON p.merchant_id = m.merchant_id
+        LEFT JOIN merchant_category mc ON m.category_id = mc.category_id  <!-- 추가 -->
         LEFT JOIN member mb ON p.member_id = mb.member_id
         <where>
             AND p.status != 'DELETED'
@@ -120,6 +129,12 @@
             </if>
             <if test="merchantId != null">
                 AND p.merchant_id = #{merchantId}
+            </if>
+            <if test="memberId != null">
+                AND p.member_id = #{memberId}
+            </if>
+            <if test="tab != null and tab != '' and tab != 'all'">
+                AND mc.category_name = #{tab}
             </if>
             <if test="status != null and status != ''">
                 AND p.status = #{status}
@@ -141,10 +156,17 @@
         FROM payment p
         LEFT JOIN merchant m  ON p.merchant_id = m.merchant_id
         LEFT JOIN member   mb ON p.member_id   = mb.member_id
+        LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
         <where>
             AND p.status != 'DELETED'
             <if test="startDate != null and startDate != ''">
                 AND p.transmission_date >= #{startDate}
+            </if>
+            <if test="memberId != null">
+                AND p.member_id = #{memberId}
+            </if>
+            <if test="tab != null and tab != '' and tab != 'all'">
+                AND mc.category_name = #{tab}
             </if>
             <if test="endDate != null and endDate != ''">
                 AND p.transmission_date &lt;= #{endDate}
