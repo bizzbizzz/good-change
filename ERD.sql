@@ -266,6 +266,17 @@ CREATE TABLE board (
     CONSTRAINT fk_board_member FOREIGN KEY (member_id)     REFERENCES member (member_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='게시글';
 
+-- 회원가입 문의
+CREATE TABLE member_inquiry (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,  -- 고유번호
+    name          VARCHAR(50)   NOT NULL,             -- 이름
+    phone         VARCHAR(20)   NOT NULL,             -- 휴대폰
+    title         VARCHAR(200)  NOT NULL,             -- 문의제목
+    content       TEXT          NOT NULL,             -- 문의내용
+    status        VARCHAR(20)   NOT NULL DEFAULT 'WAIT', -- 상태 (WAIT/DONE)
+    created_at    DATETIME      NOT NULL DEFAULT NOW(), -- 문의 등록일
+    answered_at   DATETIME                           -- 답변 완료일
+);
 
 -- ============================================================
 -- 공통 파일 (다른 테이블에서 참조 가능)
@@ -299,8 +310,6 @@ CREATE TABLE site_config (
     PRIMARY KEY (config_no),
     UNIQUE KEY uk_config_key (config_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사이트 설정';
-
-
 
 ---------------------------------------------------------
 1. 프로시저 생성 (CREATE PROCEDURE)
