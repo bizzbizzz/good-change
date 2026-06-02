@@ -28,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/merchants",
             "/api/settlements",        // 추가
             "/api/payments",           // 추가
+            "/api/inquiry",            // 추가 
             "/api/allowed-ips",
             "/api/site-config",
             "/api/stats",
