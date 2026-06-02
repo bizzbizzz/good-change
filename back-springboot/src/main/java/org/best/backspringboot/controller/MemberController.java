@@ -101,4 +101,22 @@ public class MemberController {
         }
         return ResponseEntity.ok().build();
     }
+
+
+    // 비밀번호 재설정 요청 (공개 — 어노테이션 X)
+    @Operation(summary = "비밀번호 재설정 요청")
+    @PostMapping("/password-reset/request")
+    public ResponseEntity<Map<String, String>> requestReset(@RequestBody Map<String, String> body) {
+        memberService.requestPasswordReset(body.get("email"));
+        // 계정 유무와 무관하게 동일 응답
+        return ResponseEntity.ok(Map.of("message", "입력하신 이메일로 재설정 링크를 발송했습니다."));
+    }
+
+    // 비밀번호 재설정 확인 (공개 — 어노테이션 X)
+    @Operation(summary = "비밀번호 재설정 확인")
+    @PostMapping("/password-reset/confirm")
+    public ResponseEntity<Map<String, String>> confirmReset(@RequestBody Map<String, String> body) {
+        memberService.confirmPasswordReset(body.get("token"), body.get("newPassword"));
+        return ResponseEntity.ok(Map.of("message", "비밀번호가 변경되었습니다."));
+    }
 }

@@ -32,6 +32,15 @@
           AND status != 'DELETED'
     </select>
 
+    <select id="findByEmail" resultType="org.best.backspringboot.entity.Member">
+        SELECT * FROM member WHERE email = #{email} LIMIT 1
+    </select>
+
+    <update id="updatePassword">
+        UPDATE member SET password = #{password}, updated_at = NOW()
+        WHERE member_id = #{memberId}
+    </update>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="memberId">
         INSERT INTO member (
             role_id, login_id, password, name, birth_date,

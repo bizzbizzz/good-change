@@ -23,4 +23,7 @@ public interface MemberMapper {
 
     String findRoleNameById(Long roleId);        // 로그인 시 role 조회
     void updateStatus(String loginId, String status); // soft delete용
+
+    Optional<Member> findByEmail(String email);
+    void updatePassword(@Param("memberId") Long memberId, @Param("password") String password);
 }

@@ -1,3 +1,6 @@
+app:
+  reset-base-url: http://182.162.21.40/admin/resetPassword.jsp
+
 spring:
   mail:
     host: smtp.naver.com
