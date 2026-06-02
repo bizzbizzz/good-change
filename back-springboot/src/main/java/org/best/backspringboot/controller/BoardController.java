@@ -13,6 +13,7 @@ import org.best.backspringboot.entity.Board;
 import org.best.backspringboot.entity.CommonFile;
 import org.best.backspringboot.service.BoardService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Role;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +42,7 @@ public class BoardController {
 
     @Value("${file.upload-url}")
     private String UPLOAD_URL;
+
 
     // 에디터 이미지 업로드 (공통)
     @Operation(summary = "에디터 이미지 업로드")
