@@ -8,6 +8,7 @@ import org.best.backspringboot.dto.settlement.SettlementResponseDto;
 import org.best.backspringboot.dto.settlement.SettlementSearchDto;
 import org.best.backspringboot.service.SettlementService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "정산", description = "정산 관련 API")
@@ -19,18 +20,21 @@ public class SettlementController {
     private final SettlementService settlementService;
 
     @Operation(summary = "정산 내역 조회 (페이징 + 검색)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<PageResponse<SettlementResponseDto>> getAll(SettlementSearchDto dto) {
         return ResponseEntity.ok(settlementService.getAll(dto));
     }
 
     @Operation(summary = "정산 단건 조회")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/{settlementId}")
     public ResponseEntity<SettlementResponseDto> getById(@PathVariable Long settlementId) {
         return ResponseEntity.ok(settlementService.getById(settlementId));
     }
 
     @Operation(summary = "정산 상태 변경")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{settlementId}/status")
     public ResponseEntity<Void> updateStatus(
             @PathVariable Long settlementId,

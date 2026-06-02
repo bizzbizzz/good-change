@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.entity.SiteConfig;
 import org.best.backspringboot.service.SiteConfigService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class SiteConfigController {
     }
 
     @Operation(summary = "설정 등록")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping
     public ResponseEntity<Void> insert(@RequestBody SiteConfig dto) {
         siteConfigService.insert(dto);
@@ -34,6 +36,7 @@ public class SiteConfigController {
     }
 
     @Operation(summary = "설정 수정")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{configKey}")
     public ResponseEntity<Void> update(@PathVariable String configKey,
                                        @RequestBody Map<String, Object> body) {
@@ -47,13 +50,16 @@ public class SiteConfigController {
     }
 
     @Operation(summary = "설정 삭제")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{configKey}")
     public ResponseEntity<Void> delete(@PathVariable String configKey) {
         siteConfigService.delete(configKey);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "설정 단건 조회")
     @GetMapping("/{configKey}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<SiteConfig> getByKey(@PathVariable String configKey) {
         return siteConfigService.findByKey(configKey)
                 .map(ResponseEntity::ok)

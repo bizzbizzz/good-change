@@ -1,11 +1,9 @@
 package org.best.backspringboot.paymentTest;
 
 import org.best.backspringboot.controller.PaymentController;
-import org.best.backspringboot.dto.PageResponse;
-import org.best.backspringboot.dto.payment.PaymentResponseDto;
 import org.best.backspringboot.exception.GlobalExceptionHandler;
 import org.best.backspringboot.service.PaymentService;
-import org.best.backspringboot.util.JwtFilter;
+import org.best.backspringboot.config.JwtFilter;
 import org.best.backspringboot.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,19 +11,12 @@ import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
 import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
         controllers = PaymentController.class,

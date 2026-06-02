@@ -26,24 +26,28 @@ public class CardController {
 
     @Operation(summary = "카드번호로 카드 조회")
     @GetMapping("/{cardNumber}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<CardResponseDto> getByCardNumber(@PathVariable String cardNumber) {
         return ResponseEntity.ok(cardService.getByCardNumber(cardNumber));
     }
 
     @Operation(summary = "카드 전체 조회 (페이징)")
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<PageResponse<CardResponseDto>> getAll(CardSearchDto dto) {
         return ResponseEntity.ok(cardService.getAll(dto));
     }
 
     @Operation(summary = "회원별 카드 조회")
     @GetMapping("/member/{memberId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     public ResponseEntity<List<CardResponseDto>> getByMemberId(@PathVariable Long memberId) {
         return ResponseEntity.ok(cardService.getByMemberId(memberId));
     }
 
     @Operation(summary = "카드 등록")
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     public ResponseEntity<Void> create(@Valid @RequestBody CardCreateDto dto) {
         cardService.create(dto);
         return ResponseEntity.ok().build();
@@ -51,6 +55,7 @@ public class CardController {
 
     @Operation(summary = "신원 정보 확인")
     @GetMapping("/info")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     public ResponseEntity<CardResponseDto> getCardInfo(
             @RequestParam String cardNumber,
             @RequestParam String memberName,
@@ -60,6 +65,7 @@ public class CardController {
 
     @Operation(summary = "카드 수정")
     @PatchMapping("/{cardId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     public ResponseEntity<Void> update(@PathVariable Long cardId,
                                        @RequestBody CardUpdateDto dto) {
         cardService.update(cardId, dto);
@@ -68,6 +74,7 @@ public class CardController {
 
     @Operation(summary = "카드 삭제")
     @DeleteMapping("/{cardId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     public ResponseEntity<Void> delete(@PathVariable Long cardId) {
         cardService.delete(cardId);
         return ResponseEntity.ok().build();

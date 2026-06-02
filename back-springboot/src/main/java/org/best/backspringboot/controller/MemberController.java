@@ -13,6 +13,7 @@ import org.best.backspringboot.service.MemberService;
 import org.best.backspringboot.service.MerchantService;
 import org.best.backspringboot.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -60,18 +61,21 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 단건 조회")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     @GetMapping("/{memberId:\\d+}")
     public ResponseEntity<MemberResponseDto> getById(@PathVariable Long memberId) {
         return ResponseEntity.ok(memberService.getById(memberId));
     }
 
     @Operation(summary = "회원 전체 조회 (페이징)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<PageResponse<MemberResponseDto>> getAll(MemberSearchDto searchDto) {
         return ResponseEntity.ok(memberService.getAll(searchDto));
     }
 
     @Operation(summary = "회원 수정")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     @PatchMapping("/{memberId:\\d+}")
     public ResponseEntity<Void> update(@PathVariable Long memberId,
                                        @Valid @RequestBody MemberUpdateDto dto) {
@@ -80,6 +84,7 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 삭제")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{memberId:\\d+}")
     public ResponseEntity<Void> delete(@PathVariable Long memberId) {
         memberService.delete(memberId);
@@ -87,6 +92,7 @@ public class MemberController {
     }
 
     @Operation(summary = "로그아웃")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         Long memberId = (Long) request.getAttribute("memberId");
