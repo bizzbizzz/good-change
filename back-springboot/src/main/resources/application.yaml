@@ -1,4 +1,18 @@
 spring:
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: bizline11        # @naver.com 빼고 아이디만
+    password: 0816line114
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          starttls:
+            enable: false
+    default-encoding: UTF-8
   profiles:
     active: local  # 기본값 로컬
 
