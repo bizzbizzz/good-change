@@ -26,6 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/members/login",
             "/api/members/check-id",
             "/swagger-ui",
+            "/api/members/password-reset",   // ← 추가
             "/v3/api-docs"
     );
 

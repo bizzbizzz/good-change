@@ -6,11 +6,10 @@ import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.card.CardCreateDto;
 import org.best.backspringboot.dto.member.*;
 import org.best.backspringboot.entity.Member;
-import org.best.backspringboot.mapper.CardMapper;
-import org.best.backspringboot.mapper.MemberMapper;
-import org.best.backspringboot.mapper.MerchantMapper;
-import org.best.backspringboot.mapper.TokenMapper;
+import org.best.backspringboot.entity.PasswordResetToken;
+import org.best.backspringboot.mapper.*;
 import org.best.backspringboot.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +26,58 @@ public class MemberService {
     private final CardMapper cardMapper;
     private final TokenMapper tokenMapper;
     private final JwtUtil jwtUtil;
+    private final PasswordResetTokenMapper passwordResetTokenMapper;
+    private final MailService mailService;
+
+    @Value("${app.reset-base-url}")
+    private String resetBaseUrl;   // 재설정 페이지 기본 URL
+
+
+    @Transactional
+    public void requestPasswordReset(String email) {
+        memberMapper.findByEmail(email).ifPresent(member -> {
+            // 관리자 계정만 재설정 허용
+            String roleName = memberMapper.findRoleNameById(member.getRoleId());
+            if (!"ADMIN".equals(roleName) && !"SUPER_ADMIN".equals(roleName)) {
+                return;   // 관리자가 아니면 아무것도 안 함 (조용히 무시)
+            }
+
+            passwordResetTokenMapper.deleteByMemberId(member.getMemberId());
+
+            String token = java.util.UUID.randomUUID().toString();
+            PasswordResetToken prt = PasswordResetToken.builder()
+                    .memberId(member.getMemberId())
+                    .token(token)
+                    .expiresAt(java.time.LocalDateTime.now().plusMinutes(30))
+                    .build();
+            passwordResetTokenMapper.insert(prt);
+
+            String resetLink = resetBaseUrl + "?token=" + token;
+            mailService.sendPasswordResetMail(member.getEmail(), resetLink);
+        });
+        // 관리자가 아니거나 없는 이메일이어도 동일하게 정상 응답
+    }
+
+
+    @Transactional
+    public void confirmPasswordReset(String token, String newPassword) {
+        PasswordResetToken prt = passwordResetTokenMapper.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 링크입니다."));
+
+        if (prt.getUsed() == 1) {
+            throw new IllegalArgumentException("이미 사용된 링크입니다.");
+        }
+        if (prt.getExpiresAt().isBefore(java.time.LocalDateTime.now())) {
+            throw new IllegalArgumentException("만료된 링크입니다. 다시 요청해 주세요.");
+        }
+
+        // 비밀번호 변경 (BCrypt 암호화)
+        String encoded = passwordEncoder.encode(newPassword);
+        memberMapper.updatePassword(prt.getMemberId(), encoded);
+
+        // 토큰 사용 처리
+        passwordResetTokenMapper.markUsed(token);
+    }
 
     @Transactional
     public void create(MemberRegisterDto registerDto) {
