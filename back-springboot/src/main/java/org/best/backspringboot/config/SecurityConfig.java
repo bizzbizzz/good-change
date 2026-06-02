@@ -2,7 +2,6 @@ package org.best.backspringboot.config;
 
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.mapper.TokenMapper;
-import org.best.backspringboot.util.JwtFilter;
 import org.best.backspringboot.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
