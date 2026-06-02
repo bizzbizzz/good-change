@@ -17,6 +17,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,7 @@ public class BoardController {
 
     // 에디터 이미지 업로드 (공통)
     @Operation(summary = "에디터 이미지 업로드")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/image")
     public ResponseEntity<Map<String, String>> uploadImage(
             @RequestParam("file") MultipartFile file,
@@ -80,6 +82,7 @@ public class BoardController {
 
     // 썸네일 업로드 (언론보도 전용)
     @Operation(summary = "썸네일 업로드")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/{boardId}/thumbnail")
     public ResponseEntity<Void> uploadThumbnail(@PathVariable Long boardId,
                                                 @RequestParam("file") MultipartFile file) throws Exception {
@@ -105,6 +108,7 @@ public class BoardController {
 
     // 썸네일 삭제
     @Operation(summary = "썸네일 삭제")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{boardId}/thumbnail")
     public ResponseEntity<Void> deleteThumbnail(@PathVariable Long boardId) {
         boardService.deleteThumbnail(boardId);
@@ -113,6 +117,7 @@ public class BoardController {
 
     // 첨부파일 업로드 (서식/자료 전용)
     @Operation(summary = "첨부파일 업로드")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/{boardId}/files")
     public ResponseEntity<Void> uploadFile(@PathVariable Long boardId,
                                            @RequestParam("file") MultipartFile file) throws Exception {
@@ -160,12 +165,14 @@ public class BoardController {
     }
 
     @Operation(summary = "게시판 타입 목록")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/types")
     public ResponseEntity<List<Board>> getBoardTypes() {
         return ResponseEntity.ok(boardService.getBoardTypes());
     }
 
     @Operation(summary = "게시글 등록")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping
     public ResponseEntity<Map<String, Long>> create(@Valid @RequestBody BoardCreateDto dto) {
         Long boardId = boardService.create(dto);
@@ -173,6 +180,7 @@ public class BoardController {
     }
 
     @Operation(summary = "게시글 수정")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{boardId}")
     public ResponseEntity<Void> update(@PathVariable Long boardId,
                                        @RequestBody BoardUpdateDto dto) {
@@ -181,6 +189,7 @@ public class BoardController {
     }
 
     @Operation(summary = "에디터 이미지 초기화")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{boardId}/editor-images")
     public ResponseEntity<Void> deleteEditorImages(@PathVariable Long boardId) {
         boardService.deleteEditorImages(boardId);
@@ -188,6 +197,7 @@ public class BoardController {
     }
 
     @Operation(summary = "게시글 삭제")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> delete(@PathVariable Long boardId) {
         boardService.delete(boardId);
@@ -195,6 +205,7 @@ public class BoardController {
     }
 
     @Operation(summary = "첨부파일 삭제")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/files/{fileId}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long fileId) {
         CommonFile file = boardService.getFile(fileId);

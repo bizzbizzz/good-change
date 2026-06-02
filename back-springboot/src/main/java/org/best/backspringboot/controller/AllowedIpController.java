@@ -8,6 +8,7 @@ import org.best.backspringboot.dto.allowedip.AllowedIpCreateDto;
 import org.best.backspringboot.entity.AllowedIp;
 import org.best.backspringboot.service.AllowedIpService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -21,24 +22,28 @@ public class AllowedIpController {
 
     @Operation(summary = "허용 IP 등록")
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Void> create(@Valid @RequestBody AllowedIpCreateDto dto) {
         allowedIpService.create(dto);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "허용 IP 전체 조회")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<AllowedIp>> getAll() {
         return ResponseEntity.ok(allowedIpService.getAll());
     }
 
     @Operation(summary = "허용 IP 삭제")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{ipId}")
     public ResponseEntity<Void> delete(@PathVariable Long ipId) {
         allowedIpService.delete(ipId);
         return ResponseEntity.ok().build();
     }
     @Operation(summary = "가맹점 허용 IP 단건 조회")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/merchant/{merchantId}")
     public ResponseEntity<AllowedIp> getByMerchantId(@PathVariable Long merchantId) {
         return allowedIpService.getByMerchantId(merchantId)
@@ -47,6 +52,7 @@ public class AllowedIpController {
     }
 
     @Operation(summary = "가맹점 허용 IP 수정")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PutMapping("/merchant/{merchantId}")
     public ResponseEntity<Void> updateByMerchantId(@PathVariable Long merchantId,
                                                    @RequestBody AllowedIpCreateDto dto) {

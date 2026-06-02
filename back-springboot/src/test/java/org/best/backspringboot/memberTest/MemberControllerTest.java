@@ -2,11 +2,10 @@ package org.best.backspringboot.memberTest;
 
 import org.best.backspringboot.controller.MemberController;
 import org.best.backspringboot.dto.PageResponse;
-import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.member.MemberResponseDto;
 import org.best.backspringboot.exception.GlobalExceptionHandler;
 import org.best.backspringboot.service.MemberService;
-import org.best.backspringboot.util.JwtFilter;
+import org.best.backspringboot.config.JwtFilter;
 import org.best.backspringboot.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

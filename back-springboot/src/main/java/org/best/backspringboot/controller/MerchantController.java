@@ -9,6 +9,7 @@ import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.merchant.*;
 import org.best.backspringboot.service.MerchantService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class MerchantController {
     private final MerchantService merchantService;
 
     @Operation(summary = "가맹점 등록")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody MerchantCreateDto dto) {
         merchantService.create(dto);
@@ -29,6 +31,7 @@ public class MerchantController {
     }
 
     @Operation(summary = "가맹점 + 회원 통합 등록")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody MerchantRegisterDto dto) {
         merchantService.createWithMember(dto);
@@ -36,12 +39,14 @@ public class MerchantController {
     }
 
     @Operation(summary = "가맹점 단건 조회")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
     @GetMapping("/{merchantId}")
     public ResponseEntity<MerchantResponseDto> getById(@PathVariable Long merchantId) {
         return ResponseEntity.ok(merchantService.getById(merchantId));
     }
 
     @Operation(summary = "member_id로 가맹점 조회")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
     @GetMapping("/member/{memberId}")
     public ResponseEntity<MerchantResponseDto> getByMemberId(@PathVariable Long memberId) {
         return ResponseEntity.ok(merchantService.getByMemberId(memberId));
@@ -54,6 +59,7 @@ public class MerchantController {
     }
 
     @Operation(summary = "가맹점 수정")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
     @PatchMapping("/{merchantId}")
     public ResponseEntity<Void> update(@PathVariable Long merchantId,
                                        @Valid @RequestBody MerchantUpdateDto dto) {
@@ -62,6 +68,7 @@ public class MerchantController {
     }
 
     @Operation(summary = "가맹점 삭제")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{merchantId}")
     public ResponseEntity<Void> delete(@PathVariable Long merchantId) {
         merchantService.delete(merchantId);
