@@ -25,7 +25,7 @@ spring:
       pool-name: HikariPool-GoodChange
 
 cors:
-  allowed-origins: http://localhost:8081, http://localhost:8000
+  allowed-origins: http://localhost:8081
 
 management:
   endpoints:
