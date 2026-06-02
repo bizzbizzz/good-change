@@ -9,6 +9,7 @@ import org.best.backspringboot.dto.board.BoardUpdateDto;
 import org.best.backspringboot.entity.Board;
 import org.best.backspringboot.entity.CommonFile;
 import org.best.backspringboot.mapper.BoardMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,11 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardMapper boardMapper;
+    @Value("${file.upload-path}")
+    private String UPLOAD_PATH;
+
+    @Value("${file.upload-url}")
+    private String UPLOAD_URL;
 
 
     @Transactional(readOnly = true)
@@ -148,8 +154,9 @@ public class BoardService {
 
         // PRESS 썸네일 실제 파일 삭제
         if ("press".equals(boardType) && board.getThumbnail() != null) {
-            String filePath = System.getProperty("user.dir")
-                    + "/src/main/resources" + board.getThumbnail();
+            // DB엔 URL(/uploads/board/PRESS/xxx.png)로 저장됨 → 실제 경로로 변환
+            String filePath = board.getThumbnail()
+                    .replace(UPLOAD_URL, UPLOAD_PATH);
             new File(filePath).delete();
         }
 
@@ -165,6 +172,11 @@ public class BoardService {
 
     @Transactional
     public void deleteThumbnail(Long boardId) {
+        Board board = boardMapper.findById(boardId).orElse(null);
+        if (board != null && board.getThumbnail() != null) {
+            String filePath = board.getThumbnail().replace(UPLOAD_URL, UPLOAD_PATH);
+            new File(filePath).delete();
+        }
         boardMapper.clearThumbnail(boardId);
     }
 
