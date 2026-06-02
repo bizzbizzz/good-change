@@ -206,6 +206,18 @@ CREATE TABLE allowed_ip (
 );
 
 
+
+CREATE TABLE password_reset_token (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id   BIGINT NOT NULL,
+    token       VARCHAR(255) NOT NULL UNIQUE,
+    expires_at  DATETIME NOT NULL,
+    used        TINYINT DEFAULT 0,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_prt_member FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+
 -- ============================================================
 -- 게시판 타입 마스터
 -- ============================================================
