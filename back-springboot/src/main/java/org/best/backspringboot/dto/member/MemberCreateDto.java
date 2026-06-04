@@ -1,6 +1,8 @@
 package org.best.backspringboot.dto.member;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -8,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class MemberCreateDto {
     private Long memberId;
     @NotBlank

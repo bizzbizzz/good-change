@@ -10,6 +10,7 @@ import org.best.backspringboot.dto.member.MemberRegisterDto;
 
 import java.util.List;
 
+@Setter
 @Getter
 public class MerchantRegisterDto {
     @Valid

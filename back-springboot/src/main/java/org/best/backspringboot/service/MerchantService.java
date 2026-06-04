@@ -63,6 +63,8 @@ public class MerchantService {
     public void createWithMember(MerchantRegisterDto dto) {
         // member insert
         MemberCreateDto member = dto.getMember().getMember();
+        memberMapper.findByLoginId(member.getLoginId())
+                .ifPresent(m -> { throw new IllegalArgumentException("이미 사용 중인 아이디입니다: " + member.getLoginId()); });
         member.encodePassword(passwordEncoder);
         memberMapper.insert(member);
 

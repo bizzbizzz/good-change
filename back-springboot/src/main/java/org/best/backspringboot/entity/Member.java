@@ -1,5 +1,7 @@
 package org.best.backspringboot.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
@@ -7,7 +9,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Member {
     private Long memberId;
     private String loginId;
