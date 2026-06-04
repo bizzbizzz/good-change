@@ -27,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/members/check-id",
             "/swagger-ui",
             "/api/members/password-reset",   // ← 추가
+            "/api/sse/connect",   // ← 추가
             "/v3/api-docs"
     );
 
@@ -71,6 +72,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 request.setAttribute("memberId", memberId);
                 request.setAttribute("loginId", jwtUtil.getLoginId(token));
+            }else {
+                // 토큰 불일치 = 다른 기기에서 재로그인됨 → 401 반환 후 중단
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"message\":\"다른 기기에서 로그인되었습니다.\"}");
+                return;
             }
         }
 

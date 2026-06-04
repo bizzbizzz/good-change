@@ -28,6 +28,7 @@ public class MemberService {
     private final JwtUtil jwtUtil;
     private final PasswordResetTokenMapper passwordResetTokenMapper;
     private final MailService mailService;
+    private final SseService sseService;
 
     @Value("${app.reset-base-url}")
     private String resetBaseUrl;   // 재설정 페이지 기본 URL
@@ -157,13 +158,13 @@ public class MemberService {
         if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
-
-        // ✅ 추가 - 상태 체크
         if (!member.getStatus().equals("ACTIVE")) {
             throw new IllegalArgumentException("비활성화된 계정입니다.");
         }
 
-        // ✅ 수정 - role, merchantId 추가
+        // ── 기존 기기에 강제 로그아웃 푸시 (새 토큰 발급 전) ──
+        sseService.forceLogout(member.getMemberId());
+
         String roleName = memberMapper.findRoleNameById(member.getRoleId());
         Long merchantId = null;
         if ("MERCHANT".equals(roleName)) {
