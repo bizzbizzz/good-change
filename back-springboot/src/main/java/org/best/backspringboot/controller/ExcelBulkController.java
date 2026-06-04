@@ -1,5 +1,6 @@
 package org.best.backspringboot.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.excel.ExcelUploadResultDto;
 import org.best.backspringboot.exception.BulkUploadException;
@@ -22,6 +23,7 @@ import java.nio.charset.StandardCharsets;
  *  - 가맹점(merchant) 일괄 등록
  *  - 템플릿 다운로드
  */
+@Tag(name = "엑셀파일", description = "엑셀파일 관련 API")
 @RestController
 @RequestMapping("/api/admin/excel")
 @RequiredArgsConstructor

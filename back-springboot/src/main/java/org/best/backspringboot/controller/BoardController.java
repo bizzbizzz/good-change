@@ -1,6 +1,9 @@
 package org.best.backspringboot.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +48,13 @@ public class BoardController {
 
 
     // 에디터 이미지 업로드 (공통)
-    @Operation(summary = "에디터 이미지 업로드")
+    @Operation(summary = "에디터 이미지 업로드",
+            description = "WYSIWYG 에디터용 이미지 업로드. png/jpeg/gif/webp만 허용.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "업로드 성공 (url 반환)"),
+            @ApiResponse(responseCode = "400", description = "이미지 파일이 아님", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/image")
     public ResponseEntity<Map<String, String>> uploadImage(
@@ -83,7 +92,12 @@ public class BoardController {
     }
 
     // 썸네일 업로드 (언론보도 전용)
-    @Operation(summary = "썸네일 업로드")
+    @Operation(summary = "썸네일 업로드", description = "언론보도 게시글 썸네일 업로드.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "이미지 파일이 아님", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/{boardId}/thumbnail")
     public ResponseEntity<Void> uploadThumbnail(@PathVariable Long boardId,
@@ -118,7 +132,12 @@ public class BoardController {
     }
 
     // 첨부파일 업로드 (서식/자료 전용)
-    @Operation(summary = "첨부파일 업로드")
+    @Operation(summary = "첨부파일 업로드", description = "서식/자료 게시글 첨부파일 업로드.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "허용되지 않는 파일", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping("/{boardId}/files")
     public ResponseEntity<Void> uploadFile(@PathVariable Long boardId,
@@ -161,12 +180,17 @@ public class BoardController {
     }
 
     @Operation(summary = "게시글 단건 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "게시글 없음", content = @Content)
+    })
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardResponseDto> getById(@PathVariable Long boardId) {
         return ResponseEntity.ok(boardService.getById(boardId));
     }
 
     @Operation(summary = "게시판 타입 목록")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/types")
     public ResponseEntity<List<Board>> getBoardTypes() {
@@ -174,6 +198,11 @@ public class BoardController {
     }
 
     @Operation(summary = "게시글 등록")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "등록 성공 (boardId 반환)"),
+            @ApiResponse(responseCode = "400", description = "검증 실패", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping
     public ResponseEntity<Map<String, Long>> create(@Valid @RequestBody BoardCreateDto dto) {
@@ -182,6 +211,10 @@ public class BoardController {
     }
 
     @Operation(summary = "게시글 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{boardId}")
     public ResponseEntity<Void> update(@PathVariable Long boardId,
@@ -190,7 +223,7 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "에디터 이미지 초기화")
+    @Operation(summary = "에디터 이미지 초기화", description = "게시글에 연결된 에디터 업로드 이미지를 모두 삭제합니다.")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{boardId}/editor-images")
     public ResponseEntity<Void> deleteEditorImages(@PathVariable Long boardId) {
@@ -206,7 +239,7 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "첨부파일 삭제")
+    @Operation(summary = "첨부파일 삭제", description = "파일 ID로 첨부파일을 삭제합니다 (물리 파일 + DB).")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/files/{fileId}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long fileId) {
@@ -218,7 +251,11 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "파일 다운로드")
+    @Operation(summary = "파일 다운로드", description = "파일 ID로 첨부파일을 다운로드합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다운로드 성공 (파일 스트림)"),
+            @ApiResponse(responseCode = "404", description = "파일 없음", content = @Content)
+    })
     @GetMapping("/files/{fileId}/download")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws Exception {
         CommonFile file = boardService.getFile(fileId);
