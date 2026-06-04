@@ -26,15 +26,53 @@
     </insert>
 
     <select id="selectAllInquiry" resultMap="memberInquiryResultMap">
-        SELECT *
-        FROM member_inquiry
+        SELECT * FROM member_inquiry
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                AND phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
         ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM member_inquiry
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                AND phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
     </select>
 
     <select id="selectInquiryById" parameterType="Long" resultMap="memberInquiryResultMap">
-        SELECT *
-        FROM member_inquiry
+        SELECT * FROM member_inquiry
         WHERE id = #{id}
     </select>
+
+    <update id="updateStatus" parameterType="Long">
+        UPDATE member_inquiry
+        SET status      = 'DONE',
+            answered_at = NOW()
+        WHERE id = #{id}
+    </update>
 
 </mapper>
