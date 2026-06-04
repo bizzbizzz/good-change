@@ -168,7 +168,7 @@ public class ExcelBulkService {
                     String merchantName   = getString(row, 0);
                     String businessNo     = getString(row, 1);
                     String representative = getString(row, 2);
-                    String contact        = getString(row, 3);
+                    String contact = getString(row, 3).replaceAll("[^0-9]", "");  // 숫자만 남김
                     String address        = getString(row, 4);
                     String email          = getString(row, 5);
                     long   categoryId     = getLong(row, 6);
