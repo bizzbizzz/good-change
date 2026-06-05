@@ -111,10 +111,16 @@
     </select>
 
     <select id="sumAmount" resultType="long">
-        SELECT COALESCE(SUM(p.amount), 0)
+        SELECT COALESCE(SUM(
+        CASE
+        WHEN p.status = 'SUCCESS'  THEN  p.amount
+        WHEN p.status = 'CANCELED' THEN -p.amount
+        ELSE 0
+        END
+        ), 0)
         FROM payment p
         LEFT JOIN merchant m  ON p.merchant_id = m.merchant_id
-        LEFT JOIN merchant_category mc ON m.category_id = mc.category_id  <!-- 추가 -->
+        LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
         LEFT JOIN member mb ON p.member_id = mb.member_id
         <where>
             AND p.status != 'DELETED'
@@ -140,7 +146,7 @@
                 AND p.status = #{status}
             </if>
             <if test="status == null or status == ''">
-                AND p.status = 'SUCCESS'   <!-- 전체 조회 시 승인 건만 합산 -->
+                AND p.status IN ('SUCCESS', 'CANCELED')
             </if>
             <if test="memberName != null and memberName != ''">
                 AND mb.name LIKE CONCAT('%', #{memberName}, '%')
