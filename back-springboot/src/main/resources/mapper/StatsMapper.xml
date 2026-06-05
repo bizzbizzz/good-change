@@ -4,7 +4,6 @@
 
 <mapper namespace="org.best.backspringboot.mapper.StatsMapper">
 
-    <!-- 일별 총 결제금액 -->
     <!-- 일별 결제금액 (성공/취소 분리 집계) -->
     <select id="findDailyPayment" resultType="org.best.backspringboot.dto.statistics.DailyPaymentDto">
         SELECT
