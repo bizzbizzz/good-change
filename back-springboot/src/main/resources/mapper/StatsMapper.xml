@@ -5,13 +5,26 @@
 <mapper namespace="org.best.backspringboot.mapper.StatsMapper">
 
     <!-- 일별 총 결제금액 -->
+    <!-- 일별 순 결제금액 (취소 차감, 건수도 순건수) -->
     <select id="findDailyPayment" resultType="org.best.backspringboot.dto.statistics.DailyPaymentDto">
         SELECT
             transmission_date AS date,
-            SUM(amount)        AS amount,
-            COUNT(*)           AS count
+        SUM(
+            CASE
+                WHEN status = 'SUCCESS'  THEN  amount
+                WHEN status = 'CANCELED' THEN -amount
+                ELSE 0
+            END
+        ) AS amount,
+        SUM(
+            CASE
+                WHEN status = 'SUCCESS'  THEN  1
+                WHEN status = 'CANCELED' THEN -1
+                ELSE 0
+            END
+        ) AS count
         FROM payment
-        WHERE status = 'SUCCESS'
+        WHERE status IN ('SUCCESS', 'CANCELED')
           AND transmission_date >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL #{days} DAY), '%Y%m%d')
         GROUP BY transmission_date
         ORDER BY transmission_date ASC
