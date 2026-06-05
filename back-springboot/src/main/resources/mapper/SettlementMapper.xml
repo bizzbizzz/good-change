@@ -19,7 +19,18 @@
     </resultMap>
 
     <select id="findAll" resultMap="settlementResultMap">
-        SELECT * FROM settlement
+        SELECT
+        MIN(settlement_id)      AS settlement_id,
+        merchant_id,
+        merchant_name,
+        business_number,
+        settlement_month,
+        MAX(status_changed_at)     AS status_changed_at,
+        SUM(settlement_amount)  AS settlement_amount,
+        MIN(status)             AS status,
+        MAX(created_at)         AS created_at,
+        MAX(updated_at)         AS updated_at
+        FROM settlement
         <where>
             <if test="startMonth != null and startMonth != ''">
                 AND settlement_month >= #{startMonth}
@@ -37,12 +48,15 @@
                 AND business_number = #{businessNumber}
             </if>
         </where>
+        GROUP BY merchant_id, merchant_name, business_number, settlement_month
         ORDER BY settlement_month DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="long">
-        SELECT COUNT(*) FROM settlement
+        SELECT COUNT(*) FROM (
+        SELECT merchant_id, settlement_month
+        FROM settlement
         <where>
             <if test="startMonth != null and startMonth != ''">
                 AND settlement_month >= #{startMonth}
@@ -60,6 +74,8 @@
                 AND business_number = #{businessNumber}
             </if>
         </where>
+        GROUP BY merchant_id, settlement_month
+        ) AS sub
     </select>
 
     <select id="findById" resultMap="settlementResultMap">
@@ -67,11 +83,13 @@
         WHERE settlement_id = #{settlementId}
     </select>
 
-    <update id="updateStatus">
+    <!-- 월 단위 일괄 상태 변경 -->
+    <update id="updateStatusByMonth">
         UPDATE settlement
-        SET status = #{status},
-            status_changed_at = NOW()
-        WHERE settlement_id = #{settlementId}
+        SET status = #{status}, status_changed_at = NOW()
+        WHERE merchant_id = #{merchantId}
+          AND settlement_month = #{settlementMonth}
     </update>
+
 
 </mapper>

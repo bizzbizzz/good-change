@@ -33,13 +33,14 @@ public class SettlementController {
         return ResponseEntity.ok(settlementService.getById(settlementId));
     }
 
-    @Operation(summary = "정산 상태 변경")
+    @Operation(summary = "정산 상태 월단위 변경")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @PatchMapping("/{settlementId}/status")
-    public ResponseEntity<Void> updateStatus(
-            @PathVariable Long settlementId,
+    @PatchMapping("/status")
+    public ResponseEntity<Void> updateStatusByMonth(
+            @RequestParam Long merchantId,
+            @RequestParam String settlementMonth,
             @RequestParam String status) {
-        settlementService.updateStatus(settlementId, status);
+        settlementService.updateStatus(merchantId, settlementMonth, status);
         return ResponseEntity.ok().build();
     }
 }

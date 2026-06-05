@@ -39,9 +39,7 @@ public class SettlementService {
     }
 
     @Transactional
-    public void updateStatus(Long settlementId, String status) {
-        settlementMapper.findById(settlementId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 정산내역입니다."));
-        settlementMapper.updateStatus(settlementId, status);
+    public void updateStatus(Long merchantId, String settlementMonth, String status) {
+        settlementMapper.updateStatusByMonth(merchantId, settlementMonth, status);
     }
 }
