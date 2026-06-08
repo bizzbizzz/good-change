@@ -66,6 +66,10 @@ public class MerchantService {
         memberMapper.findByLoginId(member.getLoginId())
                 .ifPresent(m -> { throw new IllegalArgumentException("이미 사용 중인 아이디입니다: " + member.getLoginId()); });
         member.encodePassword(passwordEncoder);
+        if (member.getPoint() == null) {
+            member.setPoint(0L);   // setter 필요 (아래 참고)
+        }
+
         memberMapper.insert(member);
 
         // merchant insert

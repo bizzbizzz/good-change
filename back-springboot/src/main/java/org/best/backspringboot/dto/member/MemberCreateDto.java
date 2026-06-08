@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@Setter
 @AllArgsConstructor
 public class MemberCreateDto {
     private Long memberId;
@@ -42,6 +44,7 @@ public class MemberCreateDto {
     @Size(max = 255)
     private String address;
 
+    @Builder.Default
     @Min(0)
     @Max(999999999)
     private Long point = 0L;  // 추가
