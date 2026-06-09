@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.CardListMapper">
+
+    <insert id="bulkInsert">
+        INSERT IGNORE INTO card_list (card_number)
+        VALUES
+        <foreach collection="list" item="num" separator=",">
+            (#{num})
+        </foreach>
+    </insert>
+
+    <select id="existsByCardNumber" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM card_list WHERE card_number = #{cardNumber}
+        )
+    </select>
+
+</mapper>
