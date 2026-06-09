@@ -52,33 +52,55 @@
     </update>
 
     <select id="findAll" resultMap="cardResultMap">
-        SELECT * FROM card
+        SELECT c.*
+        FROM card c
+        JOIN member m ON c.member_id = m.member_id
         <where>
-            <if test="status != null and status != ''">
-                AND status = #{status}
-            </if>
-            <if test="status == null or status == ''">
-                AND status != 'DELETED'
-            </if>
+            <choose>
+                <when test="status != null and status != ''">
+                    AND c.status = #{status}
+                </when>
+                <otherwise>
+                    AND c.status != 'DELETED'
+                </otherwise>
+            </choose>
             <if test="memberId != null">
-                AND member_id = #{memberId}
+                AND c.member_id = #{memberId}
+            </if>
+            <if test="isPrimary != null">
+                AND c.is_primary = #{isPrimary}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (c.card_number LIKE CONCAT('%', #{keyword}, '%')
+                OR m.name      LIKE CONCAT('%', #{keyword}, '%'))
             </if>
         </where>
-        ORDER BY created_at DESC
+        ORDER BY c.created_at DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="countAll" resultType="long">
-        SELECT COUNT(*) FROM card
+        SELECT COUNT(*)
+        FROM card c
+        JOIN member m ON c.member_id = m.member_id
         <where>
-            <if test="status != null and status != ''">
-                AND status = #{status}
-            </if>
-            <if test="status == null or status == ''">
-                AND status != 'DELETED'
-            </if>
+            <choose>
+                <when test="status != null and status != ''">
+                    AND c.status = #{status}
+                </when>
+                <otherwise>
+                    AND c.status != 'DELETED'
+                </otherwise>
+            </choose>
             <if test="memberId != null">
-                AND member_id = #{memberId}
+                AND c.member_id = #{memberId}
+            </if>
+            <if test="isPrimary != null">
+                AND c.is_primary = #{isPrimary}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (c.card_number LIKE CONCAT('%', #{keyword}, '%')
+                OR m.name      LIKE CONCAT('%', #{keyword}, '%'))
             </if>
         </where>
     </select>
