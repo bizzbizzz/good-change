@@ -67,6 +67,15 @@ CREATE TABLE card (
       INDEX idx_card_member_id (member_id)
 );
 
+-- 카드번호 풀(pool) 테이블
+-- 우리가 발급한 카드번호 전체를 미리 저장. 회원 가입 시 이 목록과 대조해 유효성 검증.
+CREATE TABLE `card_list` (
+  `card_list_id` BIGINT       NOT NULL AUTO_INCREMENT COMMENT '카드 목록 PK',
+  `card_number`  CHAR(16)     NOT NULL                COMMENT '카드번호 16자리 (하이픈 제외)',
+  PRIMARY KEY (`card_list_id`),
+  UNIQUE KEY `uq_card_list_number` (`card_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE merchant_category (
        category_id   BIGINT       NOT NULL AUTO_INCREMENT,
        category_name VARCHAR(50)  NOT NULL,
