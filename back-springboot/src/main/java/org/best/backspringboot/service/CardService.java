@@ -8,12 +8,17 @@ import org.best.backspringboot.dto.card.CardSearchDto;
 import org.best.backspringboot.dto.card.CardUpdateDto;
 import org.best.backspringboot.entity.Card;
 import org.best.backspringboot.entity.Member;
+import org.best.backspringboot.mapper.CardListMapper;
 import org.best.backspringboot.mapper.CardMapper;
+import org.best.backspringboot.mapper.CardReissueHistoryMapper;
 import org.best.backspringboot.mapper.MemberMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +27,8 @@ public class CardService {
 
     private final CardMapper cardMapper;
     private final MemberMapper memberMapper;
+    private final CardListMapper cardListMapper;
+    private final CardReissueHistoryService cardReissueHistoryService;
 
     @Transactional(readOnly = true)
     public CardResponseDto getByCardNumber(String cardNumber) {
@@ -114,5 +121,67 @@ public class CardService {
         }
 
         return CardResponseDto.from(card, member);
+    }
+
+    @Transactional
+    public Map<String, Object> reissue(Long cardId, String reason) {
+        // 1. 기존 카드 조회
+        Card oldCard = cardMapper.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 카드입니다."));
+
+        if ("DELETED".equals(oldCard.getStatus())) {
+            throw new RuntimeException("삭제된 카드는 재발급할 수 없습니다.");
+        }
+
+        // 2. 기존 카드 → BLOCKED + is_primary = 0
+        CardUpdateDto blockDto = new CardUpdateDto();
+        blockDto.setStatus("BLOCKED");
+        blockDto.setIsPrimary(0);
+        cardMapper.update(cardId, blockDto);
+
+        // 3. card_list에서 기존 카드번호 제거
+        cardListMapper.deleteByCardNumber(oldCard.getCardNumber());
+
+        // 4. 새 카드번호 랜덤 생성
+        String newCardNumber = generateUniqueCardNumber();
+
+        // 5. card_list에 새 번호 등록
+        cardListMapper.insertOne(newCardNumber);
+
+        // 6. card 테이블에 새 카드 등록
+        CardCreateDto newCard = new CardCreateDto();
+        newCard.setMemberId(oldCard.getMemberId());
+        newCard.setCardNumber(newCardNumber);
+        newCard.setCardAlias(oldCard.getCardAlias());
+        newCard.setIsPrimary(1);
+        cardMapper.insert(newCard);  // insert 후 newCard.getCardId()에 자동 채워짐
+
+        // 7. 재발급 이력 저장
+        cardReissueHistoryService.save(
+                oldCard.getCardId(), oldCard.getCardNumber(),
+                newCard.getCardId(), newCardNumber,
+                oldCard.getMemberId(), reason
+        );
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("oldCardNumber", oldCard.getCardNumber());
+        result.put("newCardNumber", newCardNumber);
+        result.put("memberId", oldCard.getMemberId());
+        result.put("reason", reason);
+        return result;
+    }
+
+    private String generateUniqueCardNumber() {
+        Random random = new Random();
+        for (int i = 0; i < 100; i++) {  // 최대 100번 시도
+            long rest = (long)(random.nextDouble() * 1_000_000_000_000L);
+            String cardNumber = "9876" + String.format("%012d", rest);
+
+            // card_list에 없는 번호인지 확인
+            if (!cardListMapper.existsByCardNumber(cardNumber)) {
+                return cardNumber;
+            }
+        }
+        throw new RuntimeException("카드번호 생성에 실패했습니다. 관리자에게 문의하세요.");
     }
 }

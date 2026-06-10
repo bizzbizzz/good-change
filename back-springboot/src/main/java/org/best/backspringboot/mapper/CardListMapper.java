@@ -10,4 +10,6 @@ public interface CardListMapper {
 
     int bulkInsert(@Param("list") List<String> cardNumbers);
     boolean existsByCardNumber(@Param("cardNumber") String cardNumber);
+    void deleteByCardNumber(@Param("cardNumber") String cardNumber);   // 추가
+    void insertOne(@Param("cardNumber") String cardNumber);            // 추가
 }
