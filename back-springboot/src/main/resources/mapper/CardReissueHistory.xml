@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.CardReissueHistoryMapper">
+
+    <resultMap id="historyResultMap" type="org.best.backspringboot.dto.cardHistory.CardReissueHistoryResponse">
+        <id     property="historyId"     column="history_id"/>
+        <result property="oldCardId"     column="old_card_id"/>
+        <result property="oldCardNumber" column="old_card_number"/>
+        <result property="newCardId"     column="new_card_id"/>
+        <result property="newCardNumber" column="new_card_number"/>
+        <result property="memberId"      column="member_id"/>
+        <result property="reason"        column="reason"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="memberName"    column="member_name"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="historyResultMap">
+        SELECT h.*, m.name AS member_name
+        FROM card_reissue_history h
+        JOIN member m ON h.member_id = m.member_id
+        <where>
+            <if test="dto.reason != null and dto.reason != ''">
+                AND h.reason = #{dto.reason}
+            </if>
+            <if test="dto.keyword != null and dto.keyword != ''">
+                AND (h.old_card_number LIKE CONCAT('%', #{dto.keyword}, '%')
+                OR h.new_card_number LIKE CONCAT('%', #{dto.keyword}, '%')
+                OR m.name LIKE CONCAT('%', #{dto.keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY h.created_at DESC
+        LIMIT #{dto.size} OFFSET #{dto.offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM card_reissue_history h
+        JOIN member m ON h.member_id = m.member_id
+        <where>
+            <if test="dto.reason != null and dto.reason != ''">
+                AND h.reason = #{dto.reason}
+            </if>
+            <if test="dto.keyword != null and dto.keyword != ''">
+                AND (h.old_card_number LIKE CONCAT('%', #{dto.keyword}, '%')
+                OR h.new_card_number LIKE CONCAT('%', #{dto.keyword}, '%')
+                OR m.name LIKE CONCAT('%', #{dto.keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO card_reissue_history
+        (old_card_id, old_card_number, new_card_id, new_card_number, member_id, reason)
+        VALUES
+            (#{oldCardId}, #{oldCardNumber}, #{newCardId}, #{newCardNumber}, #{memberId}, #{reason})
+    </insert>
+
+    <select id="findByMemberId" resultMap="historyResultMap">
+        SELECT * FROM card_reissue_history
+        WHERE member_id = #{memberId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findByOldCardId" resultMap="historyResultMap">
+        SELECT * FROM card_reissue_history
+        WHERE old_card_id = #{oldCardId}
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>

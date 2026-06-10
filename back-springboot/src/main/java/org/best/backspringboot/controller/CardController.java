@@ -9,12 +9,16 @@ import org.best.backspringboot.dto.card.CardCreateDto;
 import org.best.backspringboot.dto.card.CardResponseDto;
 import org.best.backspringboot.dto.card.CardSearchDto;
 import org.best.backspringboot.dto.card.CardUpdateDto;
+import org.best.backspringboot.dto.cardHistory.CardReissueHistorySearchDto;
+import org.best.backspringboot.entity.CardReissueHistory;
+import org.best.backspringboot.service.CardReissueHistoryService;
 import org.best.backspringboot.service.CardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "카드", description = "카드 관련 API")
 @RestController
@@ -23,6 +27,7 @@ import java.util.List;
 public class CardController {
 
     private final CardService cardService;
+    private final CardReissueHistoryService cardReissueHistoryService;
 
     @Operation(summary = "카드번호로 카드 조회")
     @GetMapping("/{cardNumber}")
@@ -78,5 +83,28 @@ public class CardController {
     public ResponseEntity<Void> delete(@PathVariable Long cardId) {
         cardService.delete(cardId);
         return ResponseEntity.ok().build();
+    }
+
+
+    @Operation(summary = "카드 재발급",
+            description = "기존 카드 정지 + card_list 제거 + 새 카드 랜덤 생성·발급")
+    @PostMapping("/{cardId}/reissue")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Object>> reissue(
+            @PathVariable Long cardId,
+            @RequestBody Map<String, String> body) {
+
+        String reason = body.getOrDefault("reason", "OTHER");
+        Map<String, Object> result = cardService.reissue(cardId, reason);
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "재발급 이력 목록")
+    @GetMapping("/reissue-history")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PageResponse<CardReissueHistory>> getReissueHistory(
+            CardReissueHistorySearchDto dto) {
+
+        return ResponseEntity.ok(cardReissueHistoryService.getAll(dto));
     }
 }

@@ -76,6 +76,23 @@ CREATE TABLE `card_list` (
   UNIQUE KEY `uq_card_list_number` (`card_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- 카드 재발급 사유테이블
+CREATE TABLE `card_reissue_history` (
+    `history_id`      BIGINT       NOT NULL AUTO_INCREMENT COMMENT '이력 PK',
+    `old_card_id`     BIGINT       NOT NULL                COMMENT '기존 카드 ID',
+    `old_card_number` CHAR(16)     NOT NULL                COMMENT '기존 카드번호',
+    `new_card_id`     BIGINT       NOT NULL                COMMENT '새 카드 ID',
+    `new_card_number` CHAR(16)     NOT NULL                COMMENT '새 카드번호',
+    `member_id`       BIGINT       NOT NULL                COMMENT '소유자 ID',
+    `reason`          VARCHAR(20)  NOT NULL                COMMENT '사유 (LOST/DAMAGED/STOLEN/OTHER)',
+    `created_at`      DATETIME     NOT NULL DEFAULT NOW()  COMMENT '재발급 일시',
+    PRIMARY KEY (`history_id`),
+    KEY `idx_reissue_member` (`member_id`),
+    KEY `idx_reissue_old_card` (`old_card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 CREATE TABLE merchant_category (
        category_id   BIGINT       NOT NULL AUTO_INCREMENT,
        category_name VARCHAR(50)  NOT NULL,

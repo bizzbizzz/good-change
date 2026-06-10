@@ -18,4 +18,12 @@
         )
     </select>
 
+    <delete id="deleteByCardNumber">
+        DELETE FROM card_list WHERE card_number = #{cardNumber}
+    </delete>
+
+    <insert id="insertOne">
+        INSERT INTO card_list (card_number) VALUES (#{cardNumber})
+    </insert>
+
 </mapper>

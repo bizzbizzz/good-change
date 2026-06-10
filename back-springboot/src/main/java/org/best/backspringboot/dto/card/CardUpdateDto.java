@@ -9,4 +9,5 @@ public class CardUpdateDto {
     private String cardNumber;
     private String cardAlias;
     private String status;
+    private Integer isPrimary;   // 추가 (없으면)
 }

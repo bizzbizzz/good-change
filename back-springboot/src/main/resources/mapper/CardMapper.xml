@@ -47,6 +47,7 @@
             <if test="dto.cardNumber != null">card_number = #{dto.cardNumber},</if>
             <if test="dto.cardAlias  != null">card_alias  = #{dto.cardAlias},</if>
             <if test="dto.status     != null">status      = #{dto.status},</if>
+            <if test="dto.isPrimary  != null">is_primary  = #{dto.isPrimary},</if>
         </set>
         WHERE card_id = #{cardId}
     </update>
