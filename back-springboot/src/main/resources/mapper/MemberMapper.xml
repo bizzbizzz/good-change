@@ -29,7 +29,7 @@
     <select id="findCardNumbersByMemberId" resultType="String">
         SELECT card_number FROM card
         WHERE member_id = #{memberId}
-          AND status != 'DELETED'
+          AND status != 'ACTIVE'
     </select>
 
     <select id="findByEmail" resultType="org.best.backspringboot.entity.Member">
