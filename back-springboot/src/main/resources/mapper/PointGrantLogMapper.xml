@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.PointGrantLogMapper">
+
+    <resultMap id="logResultMap" type="org.best.backspringboot.entity.PointGrantLog">
+        <id     property="logId"       column="log_id"/>
+        <result property="grantId"     column="grant_id"/>
+        <result property="title"       column="title"/>
+        <result property="grantAmount" column="grant_amount"/>
+        <result property="memberId"    column="member_id"/>
+        <result property="memberName"  column="member_name"/>
+        <result property="beforePoint" column="before_point"/>
+        <result property="afterPoint"  column="after_point"/>
+        <result property="status"      column="status"/>
+        <result property="failReason"  column="fail_reason"/>
+        <result property="grantedBy"   column="granted_by"/>
+        <result property="createdAt"   column="created_at"/>
+    </resultMap>
+
+    <resultMap id="summaryResultMap" type="org.best.backspringboot.dto.pointgrant.PointGrantLogSummaryDto">
+        <result property="grantId"       column="grant_id"/>
+        <result property="title"         column="title"/>
+        <result property="grantAmount"   column="grant_amount"/>
+        <result property="totalCount"    column="total_count"/>
+        <result property="successCount"  column="success_count"/>
+        <result property="failCount"     column="fail_count"/>
+        <result property="grantedBy"     column="granted_by"/>
+        <result property="grantedAt"     column="granted_at"/>
+    </resultMap>
+
+    <!-- 검색 조건 공통 -->
+    <sql id="searchCondition">
+        <where>
+            <if test="grantId != null and grantId != ''">
+                AND grant_id = #{grantId}
+            </if>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="memberName != null and memberName != ''">
+                AND member_name LIKE CONCAT('%', #{memberName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND DATE(created_at) >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND DATE(created_at) &lt;= #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 개별 로그 전체 조회 (페이징) -->
+    <select id="findAll" resultMap="logResultMap">
+        SELECT * FROM point_grant_log
+        <include refid="searchCondition"/>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 개별 로그 건수 -->
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM point_grant_log
+        <include refid="searchCondition"/>
+    </select>
+
+    <!-- 배치 단위 상세 조회 -->
+    <select id="findByGrantId" resultMap="logResultMap">
+        SELECT * FROM point_grant_log
+        WHERE grant_id = #{grantId}
+        ORDER BY created_at ASC
+    </select>
+
+    <!-- 배치 단위 집계 목록 -->
+    <select id="findSummaryAll" resultMap="summaryResultMap">
+        SELECT
+            grant_id,
+            title,
+            grant_amount,
+            COUNT(*)                AS total_count,
+            SUM(status = 'SUCCESS') AS success_count,
+            SUM(status = 'FAIL')    AS fail_count,
+            granted_by,
+            MIN(created_at)         AS granted_at
+        FROM point_grant_log
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND DATE(created_at) >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND DATE(created_at) &lt;= #{endDate}
+            </if>
+        </where>
+        GROUP BY grant_id, title, grant_amount, granted_by
+        ORDER BY granted_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 배치 집계 건수 -->
+    <select id="countSummaryAll" resultType="long">
+        SELECT COUNT(DISTINCT grant_id) FROM point_grant_log
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND DATE(created_at) >= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND DATE(created_at) &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 로그 등록 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO point_grant_log (
+            grant_id, title, grant_amount,
+            member_id, member_name,
+            before_point, after_point,
+            status, fail_reason, granted_by, created_at
+        ) VALUES (
+            #{grantId}, #{title}, #{grantAmount},
+            #{memberId}, #{memberName},
+            #{beforePoint}, #{afterPoint},
+            #{status}, #{failReason}, #{grantedBy}, NOW()
+        )
+    </insert>
+
+</mapper>

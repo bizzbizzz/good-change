@@ -36,6 +36,33 @@ CREATE TABLE banner (
   COLLATE=utf8mb4_unicode_ci
   COMMENT='배너 관리';
 
+
+CREATE TABLE point_grant_log (
+    log_id          BIGINT          NOT NULL AUTO_INCREMENT      COMMENT '로그 PK',
+    grant_id        VARCHAR(36)     NOT NULL                     COMMENT '배치 식별자 (UUID, 같은 일괄지급끼리 묶음)',
+    title           VARCHAR(100)    NOT NULL                     COMMENT '지급명 (예: 2026년 6월 정기지급)',
+    grant_amount    BIGINT          NOT NULL                     COMMENT '지급 포인트',
+    member_id       BIGINT          NULL                         COMMENT '수혜자 FK',
+    member_name     VARCHAR(50)     NOT NULL                     COMMENT '수혜자 이름 (스냅샷)',
+    before_point    BIGINT          NOT NULL DEFAULT 0           COMMENT '지급 전 포인트',
+    after_point     BIGINT          NOT NULL DEFAULT 0           COMMENT '지급 후 포인트',
+    status          ENUM('SUCCESS', 'FAIL')
+                                    NOT NULL DEFAULT 'SUCCESS'   COMMENT '처리 결과',
+    fail_reason     VARCHAR(255)    NULL                         COMMENT '실패 사유',
+    granted_by      BIGINT          NULL                         COMMENT '지급자 member_id (관리자)',
+    created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '처리일시',
+
+    PRIMARY KEY (log_id),
+    KEY idx_pgl_grant_id  (grant_id),
+    KEY idx_pgl_member_id (member_id),
+    KEY idx_pgl_status    (status),
+    KEY idx_pgl_created_at (created_at),
+    CONSTRAINT fk_pgl_member
+        FOREIGN KEY (member_id)  REFERENCES member (member_id) ON DELETE SET NULL,
+    CONSTRAINT fk_pgl_granted_by
+        FOREIGN KEY (granted_by) REFERENCES member (member_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='포인트 일괄지급 로그';
+
 -- 2. member 테이블
 CREATE TABLE member (
             member_id   BIGINT       NOT NULL AUTO_INCREMENT,
