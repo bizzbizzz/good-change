@@ -8,7 +8,6 @@ import org.best.backspringboot.entity.Card;
 import org.best.backspringboot.entity.Member;
 import org.best.backspringboot.mapper.CardMapper;
 import org.best.backspringboot.mapper.MemberMapper;
-import org.best.backspringboot.service.CardService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
