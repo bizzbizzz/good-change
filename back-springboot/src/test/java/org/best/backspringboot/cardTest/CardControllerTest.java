@@ -3,7 +3,6 @@ package org.best.backspringboot.cardTest;
 import org.best.backspringboot.controller.CardController;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.card.CardResponseDto;
-import org.best.backspringboot.service.CardService;
 import org.best.backspringboot.config.JwtFilter;
 import org.best.backspringboot.util.JwtUtil;
 import org.junit.jupiter.api.*;

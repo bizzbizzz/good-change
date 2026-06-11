@@ -1,6 +1,6 @@
-# 🌱 Good Change
+# 🌱 Good Change - 백엔드
 
-> 좋은변화 - 희망바우처 온라인 결제 시스템
+> 좋은변화 희망바우처 온라인 결제 시스템 REST API 서버
 
 ---
 
@@ -46,10 +46,10 @@ Apache (80)
 
 | 경로 | 설명 |
 |------|------|
-| `/home/bizline/springboot/` | Spring Boot JAR |
+| `~/springboot/` | Spring Boot JAR |
 | `/var/lib/tomcat10/webapps/ROOT` | JSP 프론트 WAR |
-| `/home/bizline/springboot/uploads/board/` | 업로드 파일 |
-| `/home/bizline/good_batch/` | 배치 서버 |
+| `~/springboot/uploads/board/` | 업로드 파일 |
+| `~/good_batch/` | 배치 서버 |
 
 ---
 
@@ -60,14 +60,19 @@ role              # 권한 (SUPER_ADMIN, ADMIN, MERCHANT, USER)
 member            # 회원
 member_token      # JWT 토큰 저장 (로그아웃/중복로그인 방지)
 card              # 카드 (is_primary: 고유카드 여부)
+card_list         # 카드번호 풀 (등록 가능한 카드번호 목록)
+card_reissue_history # 카드 재발급 이력
 merchant          # 가맹점
 merchant_category # 가맹점 업종
 payment           # 결제 내역 (파티셔닝 - 일별)
 settlement        # 정산 내역 (파티셔닝 - 월별)
 allowed_ip        # 허용 IP
-site_config       # 사이트 설정 (URL, 이미지 등)
+site_config       # 사이트 설정 (URL, 전화번호 등)
+banner            # 메인 슬라이드 배너
 board             # 게시판 (공지/서식자료/언론보도)
 common_file       # 공통 파일 (게시판 첨부/에디터 이미지)
+member_inquiry    # 회원가입 문의
+password_reset_token # 비밀번호 재설정 토큰
 ```
 
 ### 파티션 테이블
@@ -99,14 +104,16 @@ src/main/java/org/best/backspringboot
 │   ├── member
 │   ├── merchant
 │   ├── card
+│   ├── cardHistory
 │   ├── payment
 │   ├── settlement
 │   ├── board
+│   ├── banner
 │   ├── statistics
 │   ├── allowedip
 │   └── file
 ├── exception       # GlobalExceptionHandler
-├── util            # JwtUtil, JwtFilter
+└── util            # JwtUtil, JwtFilter
 
 src/main/resources
 ├── mapper                  # MyBatis XML
@@ -128,8 +135,10 @@ src/main/resources
 | GET | /api/members/check-id | 아이디 중복체크 |
 | GET | /api/members | 전체 조회 (페이징) |
 | GET | /api/members/{memberId} | 단건 조회 |
-| PATCH | /api/members/{memberId} | 수정 |
+| PATCH | /api/members/{memberId} | 수정 (비밀번호 변경 포함) |
 | DELETE | /api/members/{memberId} | 삭제 |
+| POST | /api/members/password-reset/request | 비밀번호 재설정 요청 |
+| POST | /api/members/password-reset/confirm | 비밀번호 재설정 확인 |
 
 ### 카드 `/api/cards`
 | Method | URL | 설명 |
@@ -170,6 +179,16 @@ src/main/resources
 | GET | /api/settlements/{settlementId} | 단건 조회 |
 | PATCH | /api/settlements/{settlementId}/status | 상태 변경 |
 
+### 배너 `/api/banners`
+| Method | URL | 설명 |
+|--------|-----|------|
+| GET | /api/banners | 전체 조회 (검색+페이징) |
+| GET | /api/banners?useYn=Y | 노출 배너만 (프론트용) |
+| GET | /api/banners/{bannerId} | 단건 조회 |
+| POST | /api/banners | 등록 (이미지 업로드) |
+| PATCH | /api/banners/{bannerId} | 수정 (이미지 선택적 교체) |
+| DELETE | /api/banners/{bannerId} | 삭제 (서버 파일 함께 삭제) |
+
 ### 게시판 `/api/boards`
 | Method | URL | 설명 |
 |--------|-----|------|
@@ -183,7 +202,6 @@ src/main/resources
 | POST | /api/boards/{boardId}/thumbnail | 썸네일 업로드 |
 | DELETE | /api/boards/{boardId}/thumbnail | 썸네일 삭제 |
 | POST | /api/boards/{boardId}/files | 첨부파일 업로드 |
-| DELETE | /api/boards/{boardId}/editor-images | 에디터 이미지 삭제 |
 | DELETE | /api/boards/files/{fileId} | 첨부파일 삭제 |
 | GET | /api/boards/files/{fileId}/download | 첨부파일 다운로드 |
 
@@ -267,6 +285,59 @@ src/main/resources
 
 ---
 
+## 📌 브랜치 전략
+
+| 브랜치 | 역할 | 설명 |
+|--------|------|------|
+| `feature/기능명` | 기능 개발 | 기능 단위로 분기하여 작업 |
+| `fix/버그명` | 버그 수정 | 버그 수정 전용 브랜치 |
+| `main` | 임시 버퍼 | feature/fix 브랜치를 머지하는 통합 브랜치 |
+| `RELEASE` | **배포 브랜치** | main → RELEASE 머지 시 자동 배포 |
+
+> ⚠️ **RELEASE 브랜치 push는 퇴근 전(저녁)에만 진행합니다.**
+> 배포 후 문제 발생 시 즉시 대응이 어려우므로 업무시간 중 배포를 지양합니다.
+
+### 작업 흐름
+
+```
+feature/기능명 브랜치 생성
+       ↓
+개발 완료 후 main으로 PR 머지
+       ↓
+검증 완료 후 퇴근 전 RELEASE로 머지
+       ↓
+GitHub Actions 자동 배포 ✅
+```
+
+```bash
+# 브랜치 생성 및 작업
+git checkout main && git pull
+git switch -c feature/기능명
+
+# 작업 후 커밋
+git add . && git commit -m "feat: 기능명 추가"
+git push origin feature/기능명
+
+# PR → main 머지 → 검증 → 퇴근 전 RELEASE 머지
+git checkout RELEASE && git merge main
+git push origin RELEASE
+```
+
+---
+
+## 📌 커밋 메시지 규칙
+
+| 태그 | 설명 |
+|------|------|
+| `feat` | 새 기능 추가 |
+| `fix` | 버그 수정 |
+| `refactor` | 코드 리팩토링 |
+| `docs` | 문서 수정 |
+| `chore` | 설정 변경 |
+| `test` | 테스트 코드 |
+
+---
+
 ## 📌 CI/CD (GitHub Actions)
 
 ### 백엔드 배포 흐름 (gradle.yml)
@@ -283,20 +354,6 @@ GitHub Actions
 배포 완료 ✅
 ```
 
-### 프론트 배포 흐름 (frontend.yml)
-
-```
-RELEASE 브랜치 push
-       ↓
-GitHub Actions
-  1. JDK 17 세팅
-  2. Maven WAR 빌드
-  3. SCP → ~/frontend_temp/
-  4. SSH → ~/frontend/start.sh 실행
-       ↓
-Tomcat 재시작 → ROOT.war 배포 ✅
-```
-
 ### GitHub Secrets
 
 | Secret | 값 |
@@ -306,15 +363,6 @@ Tomcat 재시작 → ROOT.war 배포 ✅
 | `SSH_PRIVATE_KEY` | PEM 개인키 전체 내용 |
 | `SSH_PORT` | `22` |
 
-### SSH 키 생성 (최초 1회)
-
-```bash
-# 서버에서 실행
-ssh-keygen -t rsa -b 4096 -C "github-actions" -f ~/.ssh/github_actions -N ""
-cat ~/.ssh/github_actions.pub >> ~/.ssh/authorized_keys
-cat ~/.ssh/github_actions  # → GitHub Secret SSH_PRIVATE_KEY에 등록
-```
-
 ### 서버 디렉토리 구조
 
 ```
@@ -323,20 +371,40 @@ cat ~/.ssh/github_actions  # → GitHub Secret SSH_PRIVATE_KEY에 등록
 ├── application-prod.yml    ← git 제외, 서버에 직접 관리
 ├── start.sh
 └── logs/
-
-~/frontend/
-└── start.sh                ← Tomcat 배포 스크립트
-
-~/frontend_temp/
-└── *.war                   ← CI/CD로 전송된 WAR
-
-/home/bizline/good_batch/   ← 배치 서버 (Spring Batch + H2 인메모리)
 ```
 
 ### sudoers 설정
 
 ```
 bizline ALL=(ALL) NOPASSWD: /usr/bin/systemctl, /bin/rm, /bin/cp, /bin/chown
+```
+
+---
+
+## 📌 실행 방법
+
+### 로컬 실행
+
+```bash
+./gradlew bootRun
+```
+
+### 서버 수동 재시작
+
+```bash
+~/springboot/start.sh
+```
+
+### 로그 확인
+
+```bash
+tail -f ~/springboot/logs/logs-$(date '+%Y%m%d')*.log
+```
+
+### API 문서
+
+```
+http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
@@ -349,7 +417,7 @@ jwt:
   expiration: 14400000  # 4시간
 
 file:
-  upload-path: /home/bizline/springboot/uploads/board/  # prod
+  upload-path: /home/bizline/springboot/uploads/board/
   upload-url: /uploads/board/
 
 spring:
@@ -371,92 +439,3 @@ spring:
 | CORS | allowed-origins 설정 |
 | 로그아웃 | member_token 테이블 토큰 삭제 |
 | API 로그 | AOP + MongoDB 저장 |
-
-### JWT 화이트리스트 (인증 불필요)
-```
-/api/members/login
-/api/members/check-id
-/api/members (회원가입)
-/api/cards
-/api/merchants
-/api/settlements
-/api/payments
-/api/allowed-ips
-/api/site-config
-/api/stats
-/api/boards
-/api/logs
-/swagger-ui
-/v3/api-docs
-```
-
----
-
-## 📌 브랜치 전략
-
-| 브랜치 | 설명 |
-|--------|------|
-| `main` | 개발 브랜치 |
-| `RELEASE` | 배포 브랜치 (push 시 자동 배포) |
-| `feature/기능명` | 기능 개발 |
-| `fix/버그명` | 버그 수정 |
-
-```bash
-git checkout main && git pull
-git switch -c feature/기능명
-git add . && git commit -m "feat: 기능명 추가"
-git push origin feature/기능명
-# PR → 리뷰 → main 머지 → RELEASE 머지 → 자동 배포
-```
-
----
-
-## 📌 커밋 메시지 규칙
-
-| 태그 | 설명 |
-|------|------|
-| `feat` | 새 기능 추가 |
-| `fix` | 버그 수정 |
-| `refactor` | 코드 리팩토링 |
-| `docs` | 문서 수정 |
-| `chore` | 설정 변경 |
-| `test` | 테스트 코드 |
-
----
-
-## 📌 실행 방법
-
-### 로컬 실행
-
-```bash
-./gradlew bootRun
-```
-
-### 서버 배포
-
-```bash
-# RELEASE 브랜치 push 시 자동 배포
-git push origin RELEASE
-
-# 수동 백엔드 재시작
-~/springboot/start.sh
-
-# 수동 프론트 재시작
-~/frontend/start.sh
-```
-
-### 로그 확인
-
-```bash
-# Spring Boot 로그
-tail -f ~/springboot/logs/logs-$(date '+%Y%m%d')*.log
-
-# Tomcat 로그
-sudo tail -f /var/log/tomcat10/catalina.out
-```
-
-### API 문서
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
