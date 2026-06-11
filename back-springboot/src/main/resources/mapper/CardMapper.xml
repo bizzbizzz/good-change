@@ -32,7 +32,7 @@
     <select id="countByMemberId" resultType="long">
         SELECT COUNT(*) FROM card
         WHERE member_id = #{memberId}
-          AND status != 'DELETED'
+          AND status = 'ACTIVE'
     </select>
 
     <update id="delete">
@@ -109,7 +109,7 @@
     <select id="findByMemberId" resultMap="cardResultMap">
         SELECT * FROM card
         WHERE member_id = #{memberId}
-          AND status != 'DELETED'
+          AND status = 'ACTIVE'
         ORDER BY created_at DESC
     </select>
 
