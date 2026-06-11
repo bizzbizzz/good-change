@@ -19,6 +19,22 @@ CREATE TABLE member_token (
     PRIMARY KEY (member_id)
 );
 
+CREATE TABLE banner (
+    banner_id   BIGINT          NOT NULL AUTO_INCREMENT   COMMENT '배너 PK',
+    title       VARCHAR(100)    NOT NULL                  COMMENT '배너 제목 (관리용)',
+    image_url   VARCHAR(500)    NOT NULL                  COMMENT '이미지 경로',
+    link_url    VARCHAR(500)    NULL                      COMMENT '클릭 시 이동 URL',
+    sort_no     INT             NOT NULL DEFAULT 1        COMMENT '노출 순서',
+    use_yn      CHAR(1)         NOT NULL DEFAULT 'Y'      COMMENT '노출 여부 (Y/N)',
+    created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '등록일',
+    updated_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                ON UPDATE CURRENT_TIMESTAMP          COMMENT '수정일',
+
+    PRIMARY KEY (banner_id)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci
+  COMMENT='배너 관리';
 
 -- 2. member 테이블
 CREATE TABLE member (
