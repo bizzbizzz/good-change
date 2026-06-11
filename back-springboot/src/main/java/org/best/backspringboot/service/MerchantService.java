@@ -144,9 +144,13 @@ public class MerchantService {
 
     @Transactional
     public void delete(Long merchantId) {
-        merchantMapper.findById(merchantId)
+        Merchant merchant = merchantMapper.findById(merchantId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+
         merchantMapper.delete(merchantId);
+        if (merchant.getMemberId() != null) {
+            memberMapper.delete(merchant.getMemberId());
+        }
     }
 
     @Transactional(readOnly = true)
