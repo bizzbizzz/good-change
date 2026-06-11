@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.mapper.BannerMapper">
+
+    <resultMap id="bannerResultMap" type="org.best.backspringboot.entity.Banner">
+        <id     property="bannerId"  column="banner_id"/>
+        <result property="title"     column="title"/>
+        <result property="imageUrl"  column="image_url"/>
+        <result property="linkUrl"   column="link_url"/>
+        <result property="sortNo"    column="sort_no"/>
+        <result property="useYn"     column="use_yn"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 검색 조건 공통 -->
+    <sql id="searchCondition">
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="useYn != null and useYn != ''">
+                AND use_yn = #{useYn}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 전체 조회 (검색 + 페이징) -->
+    <select id="findAll" resultMap="bannerResultMap">
+        SELECT * FROM banner
+        <include refid="searchCondition"/>
+        ORDER BY sort_no ASC, banner_id ASC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 전체 건수 -->
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM banner
+        <include refid="searchCondition"/>
+    </select>
+
+    <!-- 단건 조회 -->
+    <select id="findById" resultMap="bannerResultMap">
+        SELECT * FROM banner WHERE banner_id = #{bannerId}
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="bannerId">
+        INSERT INTO banner (title, image_url, link_url, sort_no, use_yn, created_at)
+        VALUES (#{title}, #{imageUrl}, #{linkUrl}, #{sortNo}, #{useYn}, NOW())
+    </insert>
+
+    <!-- 수정 -->
+    <update id="update">
+        UPDATE banner
+        <set>
+            <if test="title    != null">title     = #{title},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="linkUrl  != null">link_url  = #{linkUrl},</if>
+            <if test="sortNo   != null">sort_no   = #{sortNo},</if>
+            <if test="useYn    != null">use_yn    = #{useYn},</if>
+        </set>
+        WHERE banner_id = #{bannerId}
+    </update>
+
+    <!-- 삭제 -->
+    <delete id="delete">
+        DELETE FROM banner WHERE banner_id = #{bannerId}
+    </delete>
+
+</mapper>
