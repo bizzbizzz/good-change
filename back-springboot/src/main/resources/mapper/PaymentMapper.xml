@@ -97,8 +97,8 @@
             <if test="memberId != null">
                 AND p.member_id = #{memberId}
             </if>
-            <if test="tab != null and tab != '' and tab != 'all'">
-                AND mc.category_name = #{tab}
+            <if test="categoryId != null and categoryId != ''">
+                AND m.category_id = #{categoryId}
             </if>
             <if test="cardNumber != null and cardNumber != ''">
                 AND p.card_number LIKE CONCAT('%', #{cardNumber}, '%')
@@ -139,8 +139,8 @@
             <if test="memberId != null">
                 AND p.member_id = #{memberId}
             </if>
-            <if test="tab != null and tab != '' and tab != 'all'">
-                AND mc.category_name = #{tab}
+            <if test="categoryId != null and categoryId != ''">
+                AND m.category_id = #{categoryId}
             </if>
             <if test="status != null and status != ''">
                 AND p.status = #{status}
@@ -171,8 +171,8 @@
             <if test="memberId != null">
                 AND p.member_id = #{memberId}
             </if>
-            <if test="tab != null and tab != '' and tab != 'all'">
-                AND mc.category_name = #{tab}
+            <if test="categoryId != null and categoryId != ''">
+                AND m.category_id = #{categoryId}
             </if>
             <if test="endDate != null and endDate != ''">
                 AND p.transmission_date &lt;= #{endDate}
