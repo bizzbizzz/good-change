@@ -12,6 +12,7 @@ import org.best.backspringboot.dto.merchant.MerchantRegisterDto;
 import org.best.backspringboot.entity.Member;
 import org.best.backspringboot.entity.Merchant;
 import org.best.backspringboot.exception.BulkUploadException;
+import org.best.backspringboot.mapper.CardListMapper;
 import org.best.backspringboot.mapper.CardMapper;
 import org.best.backspringboot.mapper.MemberMapper;
 import org.best.backspringboot.mapper.MerchantMapper;
@@ -32,6 +33,7 @@ public class ExcelBulkService {
 
     private final MemberService          memberService;
     private final MerchantService        merchantService;
+    private final CardListMapper cardListMapper;
 
     // ============================================================
     //  수혜자 일괄 등록
@@ -68,6 +70,9 @@ public class ExcelBulkService {
                     if (name.isEmpty()) throw new IllegalArgumentException("이름 누락");
                     if (cardNumber.isEmpty() || cardNumber.length() != 16)
                         throw new IllegalArgumentException("카드번호 16자리 오류");
+
+                    if (!cardListMapper.existsByCardNumber(cardNumber))
+                        throw new IllegalArgumentException("card_list에 없는 카드번호");
 
                     String last4   = cardNumber.substring(12);
                     String loginId = last4;

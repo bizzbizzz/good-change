@@ -27,6 +27,14 @@ public class CardListController {
         return ResponseEntity.ok(cardListService.bulkInsert(dto.getCardNumbers()));
     }
 
+    @Operation(summary = "카드번호 랜덤 생성 및 등록",
+               description = "지정한 개수만큼 랜덤 카드번호를 생성해 card_list에 등록. SUPER_ADMIN 전용")
+    @PostMapping("/generate")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Object>> generate(@RequestParam int count) {
+        return ResponseEntity.ok(cardListService.generateAndInsert(count));
+    }
+
     @Operation(summary = "카드번호 유효성 검증 (발급된 카드인지)")
     @GetMapping("/verify")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
