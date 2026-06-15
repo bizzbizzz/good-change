@@ -22,7 +22,6 @@ public class MerchantCategoryController {
 
     @Operation(summary = "카테고리 전체 조회")
     @GetMapping
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<MerchantCategory>> getAll() {
         return ResponseEntity.ok(merchantCategoryService.getAll());
     }
