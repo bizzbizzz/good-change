@@ -20,6 +20,7 @@ public class MemberInquiryResponseDto {
     private String memberInquiryTitle;
     private String memberInquiryContent;
     private String memberInquiryStatus;
+    private String memberInquiryType;  // USER / MERCHANT
     private LocalDateTime createDate;
     private LocalDateTime answeredDate;
 
@@ -32,6 +33,7 @@ public class MemberInquiryResponseDto {
                 .memberInquiryTitle(entity.getMemberInquiryTitle())
                 .memberInquiryContent(entity.getMemberInquiryContent())
                 .memberInquiryStatus(entity.getMemberInquiryStatus())
+                .memberInquiryType(entity.getMemberInquiryType()) 
                 .createDate(entity.getCreateDate())
                 .answeredDate(entity.getAnsweredDate())
                 .build();

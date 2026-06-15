@@ -15,6 +15,8 @@ public class MemberInquiry {
     private String memberInquiryTitle;
     private String memberInquiryContent;
     private String memberInquiryStatus;
+    private String memberInquiryType;      // 수혜자 / 가맹점
+
     private LocalDateTime createDate;    // 가입신청일자
     private LocalDateTime answeredDate;  // 가입승인일자
 

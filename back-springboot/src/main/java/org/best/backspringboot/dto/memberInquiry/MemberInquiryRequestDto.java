@@ -11,5 +11,6 @@ public class MemberInquiryRequestDto {
     private String memberInquiryPhone;
     private String memberInquiryTitle;
     private String memberInquiryContent;
+    private String memberInquiryType;  // USER / MERCHANT
 
 }
