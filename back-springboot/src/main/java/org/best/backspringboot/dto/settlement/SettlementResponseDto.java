@@ -18,6 +18,8 @@ public class SettlementResponseDto {
     private String status;
     private LocalDateTime statusChangedAt;
     private LocalDateTime createdAt;
+    private Integer successCount;
+    private Integer cancelCount;
 
     public static SettlementResponseDto from(Settlement settlement) {
         return SettlementResponseDto.builder()
@@ -31,6 +33,8 @@ public class SettlementResponseDto {
                 .status(settlement.getStatus())
                 .statusChangedAt(settlement.getStatusChangedAt())
                 .createdAt(settlement.getCreatedAt())
+                .successCount(settlement.getSuccessCount())
+                .cancelCount(settlement.getCancelCount())
                 .build();
     }
 }

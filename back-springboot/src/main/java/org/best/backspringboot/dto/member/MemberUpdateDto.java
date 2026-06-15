@@ -48,6 +48,8 @@ public class MemberUpdateDto {
     @Size(max = 255)
     private String detailAddress;
 
+    private String memo;
+
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }

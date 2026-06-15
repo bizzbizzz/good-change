@@ -12,4 +12,5 @@ public class SettlementSearchDto extends SearchBase {
     private String status;        // 정산상태 (PENDING/COMPLETED/FAILED)
     private String businessNumber; // 사업자번호
     private String merchantName;  // 가맹점명
+    private Long merchantId;   // ✅ 추가
 }

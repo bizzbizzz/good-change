@@ -42,6 +42,7 @@ public class Payment {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String memberName;
+    private String category;        // 업종명 (merchant_category.category_name)
     private String birthDate;
     private String organization;
     private String gender;

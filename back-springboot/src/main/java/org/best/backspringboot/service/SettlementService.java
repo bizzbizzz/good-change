@@ -28,6 +28,11 @@ public class SettlementService {
 
         long totalCount = settlementMapper.countAll(dto);
         pageResponse.setPageInfo(content, totalCount);
+
+        // ✅ 정산금액 합계 추가
+        long totalAmount = settlementMapper.sumAmount(dto);
+        pageResponse.setTotalAmount(totalAmount);
+
         return pageResponse;
     }
 

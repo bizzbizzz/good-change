@@ -8,14 +8,16 @@ import org.best.backspringboot.dto.SearchBase;
 @Setter
 public class PaymentSearchDto extends SearchBase {
     private String startDate;
-    private Long memberId;      // 추가
-    private String categoryId;
+    private Long memberId;
+    private String categoryId;      // category_id (1/2/3) 으로 필터링
     private String endDate;
     private String transactionType;
     private String merchantName;
     private Long merchantId;
     private String approvalNumber;
     private String status;
-    private String memberName;   // 추가
-    private String cardNumber;   // 추가
+    private String memberName;
+    private String cardNumber;
+    private String searchType;      // address / name / approval
+    private String keyword;         // 검색어
 }

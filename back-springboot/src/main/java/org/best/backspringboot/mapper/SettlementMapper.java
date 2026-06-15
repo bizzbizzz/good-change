@@ -15,4 +15,5 @@ public interface SettlementMapper {
     void updateStatusByMonth(@Param("merchantId") Long merchantId,
                              @Param("settlementMonth") String settlementMonth,
                              @Param("status") String status);
+    long sumAmount(SettlementSearchDto dto);
 }

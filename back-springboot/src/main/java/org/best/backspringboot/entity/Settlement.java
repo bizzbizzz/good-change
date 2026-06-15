@@ -18,4 +18,6 @@ public class Settlement {
     private LocalDateTime statusChangedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer successCount;
+    private Integer cancelCount;
 }
