@@ -1,5 +1,9 @@
 package org.best.backspringboot.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.excel.ExcelUploadResultDto;
@@ -32,7 +36,14 @@ public class ExcelBulkController {
     private final ExcelBulkService excelBulkService;
 
 
-    // ── 수혜자 일괄 등록 ─────────────────────────────────────
+    @Operation(summary = "수혜자 일괄 등록",
+            description = "엑셀 파일로 수혜자를 일괄 등록. 하나라도 실패 시 전체 롤백")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "전체 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "유효성 오류 (에러 목록 반환, 전체 롤백)", content = @Content),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음 (SUPER_ADMIN만 가능)", content = @Content)
+    })
     @PostMapping("/members")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ExcelUploadResultDto> uploadMembers(
@@ -45,7 +56,14 @@ public class ExcelBulkController {
     }
 
 
-    // ── 가맹점 일괄 등록 ─────────────────────────────────────
+    @Operation(summary = "가맹점 일괄 등록",
+            description = "엑셀 파일로 가맹점을 일괄 등록. 하나라도 실패 시 전체 롤백")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "전체 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "유효성 오류 (에러 목록 반환, 전체 롤백)", content = @Content),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음 (SUPER_ADMIN만 가능)", content = @Content)
+    })
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PostMapping("/merchants")
     public ResponseEntity<ExcelUploadResultDto> uploadMerchants(
@@ -58,7 +76,13 @@ public class ExcelBulkController {
     }
 
 
-    // ── 수혜자 템플릿 다운로드 ───────────────────────────────
+    @Operation(summary = "수혜자 일괄등록 템플릿 다운로드",
+            description = "수혜자 엑셀 등록용 템플릿 파일 다운로드")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다운로드 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음 (SUPER_ADMIN만 가능)", content = @Content)
+    })
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/members/template")
     public ResponseEntity<Resource> downloadMemberTemplate() throws Exception {
@@ -67,7 +91,13 @@ public class ExcelBulkController {
     }
 
 
-    // ── 가맹점 템플릿 다운로드 ───────────────────────────────
+    @Operation(summary = "가맹점 일괄등록 템플릿 다운로드",
+            description = "가맹점 엑셀 등록용 템플릿 파일 다운로드")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "다운로드 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음 (SUPER_ADMIN만 가능)", content = @Content)
+    })
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/merchants/template")
     public ResponseEntity<Resource> downloadMerchantTemplate() throws Exception {
