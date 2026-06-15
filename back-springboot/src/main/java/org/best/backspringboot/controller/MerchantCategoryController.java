@@ -1,6 +1,9 @@
 package org.best.backspringboot.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.entity.MerchantCategory;
@@ -21,13 +24,22 @@ public class MerchantCategoryController {
     private final MerchantCategoryService merchantCategoryService;
 
     @Operation(summary = "카테고리 전체 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
     @GetMapping
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<MerchantCategory>> getAll() {
         return ResponseEntity.ok(merchantCategoryService.getAll());
     }
 
     @Operation(summary = "카테고리 등록")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "등록 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
     @PostMapping
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Void> create(@RequestBody Map<String, String> body) {
@@ -36,6 +48,13 @@ public class MerchantCategoryController {
     }
 
     @Operation(summary = "카테고리 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "카테고리 없음", content = @Content)
+    })
     @PatchMapping("/{categoryId}")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Void> update(@PathVariable Long categoryId,
@@ -45,6 +64,12 @@ public class MerchantCategoryController {
     }
 
     @Operation(summary = "카테고리 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "카테고리 없음", content = @Content)
+    })
     @DeleteMapping("/{categoryId}")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long categoryId) {

@@ -1,6 +1,9 @@
 package org.best.backspringboot.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
@@ -20,6 +23,11 @@ public class SettlementController {
     private final SettlementService settlementService;
 
     @Operation(summary = "정산 내역 조회 (페이징 + 검색)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<PageResponse<SettlementResponseDto>> getAll(SettlementSearchDto dto) {
@@ -27,6 +35,12 @@ public class SettlementController {
     }
 
     @Operation(summary = "정산 단건 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "정산 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/{settlementId}")
     public ResponseEntity<SettlementResponseDto> getById(@PathVariable Long settlementId) {
@@ -34,6 +48,13 @@ public class SettlementController {
     }
 
     @Operation(summary = "정산 상태 월단위 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "변경 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 상태값", content = @Content),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "정산 없음", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/status")
     public ResponseEntity<Void> updateStatusByMonth(
