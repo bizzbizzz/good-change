@@ -11,17 +11,19 @@
         <result property="memberInquiryTitle"   column="title"/>
         <result property="memberInquiryContent" column="content"/>
         <result property="memberInquiryStatus"  column="status"/>
+        <result property="memberInquiryType"    column="type"/>       <%-- ✅ 추가 --%>
         <result property="createDate"           column="created_at"/>
         <result property="answeredDate"         column="answered_at"/>
     </resultMap>
 
     <insert id="insertInquiry" parameterType="org.best.backspringboot.dto.memberInquiry.MemberInquiryRequestDto">
-        INSERT INTO member_inquiry (name, phone, title, content)
+        INSERT INTO member_inquiry (name, phone, title, content, type)
         VALUES (
                    #{memberInquiryName},
                    #{memberInquiryPhone},
                    #{memberInquiryTitle},
-                   #{memberInquiryContent}
+                   #{memberInquiryContent},
+                   #{memberInquiryType}
                )
     </insert>
 
