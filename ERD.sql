@@ -78,6 +78,7 @@ CREATE TABLE member (
             point       BIGINT       NOT NULL DEFAULT 0,
             status      VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
             referrer_id BIGINT       NULL,
+            memo TEXT DEFAULT NULL,
             apply_date    DATETIME NULL,
             approve_date  DATETIME NULL,
             created_at DATETIME NOT NULL DEFAULT NOW(),

@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member {
+    private String memo;
     private Long memberId;
     private String loginId;
     private Long roleId;

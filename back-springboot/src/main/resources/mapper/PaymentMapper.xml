@@ -41,26 +41,28 @@
         <result property="birthDate"             column="birth_date"/>
         <result property="organization"          column="organization"/>
         <result property="gender"                column="gender"/>
+        <result property="category"              column="category"/>
     </resultMap>
 
     <select id="findAll" resultMap="paymentResultMap">
         SELECT p.payment_id, p.member_id, p.merchant_id, p.koces_cd,
-               p.message_number, p.institution_code, p.transmission_date,
-               p.trace_number, p.merchant_number,
-               p.card_number, p.track_data, p.key_in, p.input_method,
-               p.amount, p.transaction_type, p.approval_number,
-               p.response_code, p.cancel_code, p.original_trade_date,
-               p.original_approval_number, p.original_amount, p.remaining_point,
-               p.filter_value, p.status, p.created_at, p.updated_at,
-               COALESCE(m.merchant_name,  p.merchant_name)  AS merchant_name,
-               m.business_number                            AS business_number,
-               COALESCE(m.representative, p.representative) AS representative,
-               COALESCE(m.contact,        p.phone)          AS phone,
-               COALESCE(m.address,        p.address)        AS address,
-               COALESCE(m.terminal_id,    p.terminal_id)    AS terminal_id,
-               mb.name                                      AS member_name,
-               mb.birth_date                                AS birth_date,
-               mb.gender                                    AS gender
+        p.message_number, p.institution_code, p.transmission_date,
+        p.trace_number, p.merchant_number,
+        p.card_number, p.track_data, p.key_in, p.input_method,
+        p.amount, p.transaction_type, p.approval_number,
+        p.response_code, p.cancel_code, p.original_trade_date,
+        p.original_approval_number, p.original_amount, p.remaining_point,
+        p.filter_value, p.status, p.created_at, p.updated_at,
+        COALESCE(m.merchant_name,  p.merchant_name)  AS merchant_name,
+        m.business_number                            AS business_number,
+        COALESCE(m.representative, p.representative) AS representative,
+        COALESCE(m.contact,        p.phone)          AS phone,
+        COALESCE(m.address,        p.address)        AS address,
+        COALESCE(m.terminal_id,    p.terminal_id)    AS terminal_id,
+        mb.name                                      AS member_name,
+        mb.birth_date                                AS birth_date,
+        mb.gender                                    AS gender,
+        mc.category_name                             AS category
         FROM payment p
         LEFT JOIN merchant m  ON p.merchant_id = m.merchant_id
         LEFT JOIN member   mb ON p.member_id   = mb.member_id
@@ -100,13 +102,22 @@
             <if test="categoryId != null and categoryId != ''">
                 AND m.category_id = #{categoryId}
             </if>
+            <if test="searchType == 'address' and keyword != null and keyword != ''">
+                AND COALESCE(m.address, p.address) LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="searchType == 'name' and keyword != null and keyword != ''">
+                AND COALESCE(m.merchant_name, p.merchant_name) LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="searchType == 'approval' and keyword != null and keyword != ''">
+                AND p.approval_number = #{keyword}
+            </if>
             <if test="cardNumber != null and cardNumber != ''">
                 AND p.card_number LIKE CONCAT('%', #{cardNumber}, '%')
             </if>
         </where>
         ORDER BY
-            CASE WHEN p.status = 'SUCCESS' THEN 0 ELSE 1 END ASC,
-            p.created_at DESC, p.payment_id DESC
+        CASE WHEN p.status = 'SUCCESS' THEN 0 ELSE 1 END ASC,
+        p.created_at DESC, p.payment_id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
@@ -174,6 +185,15 @@
             <if test="categoryId != null and categoryId != ''">
                 AND m.category_id = #{categoryId}
             </if>
+            <if test="searchType == 'address' and keyword != null and keyword != ''">
+                AND COALESCE(m.address, p.address) LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="searchType == 'name' and keyword != null and keyword != ''">
+                AND COALESCE(m.merchant_name, p.merchant_name) LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="searchType == 'approval' and keyword != null and keyword != ''">
+                AND p.approval_number = #{keyword}
+            </if>
             <if test="endDate != null and endDate != ''">
                 AND p.transmission_date &lt;= #{endDate}
             </if>
@@ -224,8 +244,8 @@
                mem.organization AS organization,
                mem.gender       AS gender
         FROM payment p
-        LEFT JOIN merchant mer ON p.merchant_id = mer.merchant_id
-        LEFT JOIN member   mem ON p.member_id   = mem.member_id
+                 LEFT JOIN merchant mer ON p.merchant_id = mer.merchant_id
+                 LEFT JOIN member   mem ON p.member_id   = mem.member_id
         WHERE p.payment_id = #{paymentId}
           AND p.transmission_date = #{transmissionDate}
     </select>

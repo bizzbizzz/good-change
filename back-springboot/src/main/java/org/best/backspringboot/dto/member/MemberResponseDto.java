@@ -28,6 +28,7 @@ public class MemberResponseDto {
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;
     private String detailAddress;
+    private String memo;
 
 
     public static MemberResponseDto from(Member member) {
@@ -49,6 +50,7 @@ public class MemberResponseDto {
                 .cardNumbers(member.getCardNumbers())
                 .organization(member.getOrganization())
                 .createdAt(member.getCreatedAt())
+                .memo(member.getMemo())
                 .build();
     }
 }

@@ -45,11 +45,11 @@
         INSERT INTO member (
             role_id, login_id, password, name, birth_date,
             gender, address, organization, email, point, status,
-            referrer_id, apply_date, approve_date, created_at
+            referrer_id, apply_date, approve_date, created_at, memo
         ) VALUES (
                      #{roleId}, #{loginId}, #{password}, #{name}, #{birthDate},
                      #{gender}, #{address}, #{organization}, #{email}, #{point}, 'ACTIVE',
-                     #{referrerId}, #{applyDate}, #{approveDate}, NOW()
+                     #{referrerId}, #{applyDate}, #{approveDate}, NOW(), #{memo}
                  )
     </insert>
 
@@ -164,6 +164,9 @@
             <if test="dto.referrerId   != null">referrer_id  = #{dto.referrerId},</if>
             <if test="dto.password     != null and dto.password != ''">
                 password = #{dto.password},
+            </if>
+            <if test="memo != null">
+                memo = #{memo},
             </if>
             <if test="dto.detailAddress != null">detail_address = #{dto.detailAddress},</if>
         </set>

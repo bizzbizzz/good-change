@@ -44,6 +44,7 @@ public class PaymentResponseDto {
     private String birthDate;
     private String organization;
     private String gender;
+    private String category;        // 업종명 (merchant_category.category_name)
 
     // 조회용 (card, member 없이)
     public static PaymentResponseDto from(Payment payment) {
@@ -80,6 +81,7 @@ public class PaymentResponseDto {
                 .birthDate(payment.getBirthDate())
                 .organization(payment.getOrganization())
                 .gender(payment.getGender())
+                .category(payment.getCategory())
                 .status(payment.getStatus())
                 .createdAt(payment.getCreatedAt())
                 .build();

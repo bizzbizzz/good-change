@@ -16,6 +16,8 @@
         <result property="statusChangedAt"   column="status_changed_at"/>
         <result property="createdAt"         column="created_at"/>
         <result property="updatedAt"         column="updated_at"/>
+        <result property="successCount"      column="success_count"/>
+        <result property="cancelCount"       column="cancel_count"/>
     </resultMap>
 
     <select id="findAll" resultMap="settlementResultMap">
@@ -25,12 +27,20 @@
         merchant_name,
         business_number,
         settlement_month,
-        MAX(status_changed_at)     AS status_changed_at,
+        MAX(status_changed_at)  AS status_changed_at,
         SUM(settlement_amount)  AS settlement_amount,
         MIN(status)             AS status,
         MAX(created_at)         AS created_at,
-        MAX(updated_at)         AS updated_at
-        FROM settlement
+        MAX(updated_at)         AS updated_at,
+        (SELECT COUNT(*) FROM payment p
+        WHERE p.merchant_id = s.merchant_id
+        AND DATE_FORMAT(p.transmission_date, '%Y-%m') = s.settlement_month
+        AND p.status = 'SUCCESS')  AS success_count,
+        (SELECT COUNT(*) FROM payment p
+        WHERE p.merchant_id = s.merchant_id
+        AND DATE_FORMAT(p.transmission_date, '%Y-%m') = s.settlement_month
+        AND p.status = 'CANCELED') AS cancel_count
+        FROM settlement s
         <where>
             <if test="startMonth != null and startMonth != ''">
                 AND settlement_month >= #{startMonth}
@@ -46,6 +56,9 @@
             </if>
             <if test="businessNumber != null and businessNumber != ''">
                 AND business_number = #{businessNumber}
+            </if>
+            <if test="merchantId != null">
+                AND merchant_id = #{merchantId}
             </if>
         </where>
         GROUP BY merchant_id, merchant_name, business_number, settlement_month
@@ -73,6 +86,9 @@
             <if test="businessNumber != null and businessNumber != ''">
                 AND business_number = #{businessNumber}
             </if>
+            <if test="merchantId != null">
+                AND merchant_id = #{merchantId}
+            </if>
         </where>
         GROUP BY merchant_id, settlement_month
         ) AS sub
@@ -90,6 +106,31 @@
         WHERE merchant_id = #{merchantId}
           AND settlement_month = #{settlementMonth}
     </update>
+
+    <select id="sumAmount" resultType="long">
+        SELECT COALESCE(SUM(settlement_amount), 0)
+        FROM settlement
+        <where>
+            <if test="merchantId != null">
+                AND merchant_id = #{merchantId}
+            </if>
+            <if test="startMonth != null and startMonth != ''">
+                AND settlement_month >= #{startMonth}
+            </if>
+            <if test="endMonth != null and endMonth != ''">
+                AND settlement_month &lt;= #{endMonth}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="businessNumber != null and businessNumber != ''">
+                AND business_number = #{businessNumber}
+            </if>
+        </where>
+    </select>
 
 
 </mapper>
