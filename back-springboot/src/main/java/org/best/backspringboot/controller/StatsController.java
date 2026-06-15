@@ -2,6 +2,9 @@ package org.best.backspringboot.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.statistics.DailyPaymentDto;
@@ -28,6 +31,10 @@ public class StatsController {
     // ── 일반 REST API ──────────────────────────────────────────
 
     @Operation(summary = "일별 결제금액")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content)
+    })
     @GetMapping("/daily-payment")
     public ResponseEntity<List<DailyPaymentDto>> getDailyPayment(
             @RequestParam(defaultValue = "30") int days) {
@@ -35,6 +42,10 @@ public class StatsController {
     }
 
     @Operation(summary = "월별 정산금액")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content)
+    })
     @GetMapping("/monthly-settlement")
     public ResponseEntity<List<MonthlySettlementDto>> getMonthlySettlement(
             @RequestParam(defaultValue = "12") int months) {
@@ -44,6 +55,9 @@ public class StatsController {
     // ── SSE ───────────────────────────────────────────────────
 
     @Operation(summary = "통계 SSE 스트림")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "연결 성공 (text/event-stream)")
+    })
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream() {
         SseEmitter emitter = new SseEmitter(60_000L); // 60초 타임아웃
@@ -79,6 +93,9 @@ public class StatsController {
     // ── 주기적 갱신 SSE (30초마다) ────────────────────────────
 
     @Operation(summary = "통계 실시간 SSE (30초 갱신)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "연결 성공 (text/event-stream)")
+    })
     @GetMapping(value = "/stream/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamLive() {
         SseEmitter emitter = new SseEmitter(300_000L); // 5분

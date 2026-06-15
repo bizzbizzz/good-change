@@ -188,4 +188,36 @@ public class MemberService {
                 .map(Member::getName)
                 .orElse(loginId);
     }
+
+    // ── 수혜자 비밀번호 초기화 (고유카드번호 + !) ──────────────
+    @Transactional
+    public void resetPasswordForMember(Long memberId) {
+        memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 고유카드(isPrimary=1) 번호 조회
+        String cardNumber = cardMapper.findPrimaryCardNumberByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("등록된 고유카드가 없습니다."));
+
+        String newPassword = passwordEncoder.encode(cardNumber + "!");
+        memberMapper.updatePassword(memberId, newPassword);
+    }
+
+    // ── 가맹점 비밀번호 초기화 (사업자번호 + !) ─────────────────
+    @Transactional
+    public void resetPasswordForMerchant(Long memberId) {
+        memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 가맹점 사업자번호 조회
+        String businessNumber = merchantMapper.findByMemberId(memberId)
+                .map(m -> m.getBusinessNumber())
+                .orElseThrow(() -> new IllegalArgumentException("연결된 가맹점이 없습니다."));
+
+        String newPassword = passwordEncoder.encode(businessNumber + "!");
+        memberMapper.updatePassword(memberId, newPassword);
+    }
+
+
+
 }

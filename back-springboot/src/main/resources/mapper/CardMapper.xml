@@ -117,4 +117,12 @@
         SELECT * FROM card WHERE card_id = #{cardId}
     </select>
 
+    <select id="findPrimaryCardNumberByMemberId" resultType="String">
+        SELECT card_number FROM card
+        WHERE member_id = #{memberId}
+          AND is_primary = 1
+          AND status = 'ACTIVE'
+            LIMIT 1
+    </select>
+
 </mapper>

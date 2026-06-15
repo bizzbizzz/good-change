@@ -171,4 +171,32 @@ public class MemberController {
         memberService.confirmPasswordReset(body.get("token"), body.get("newPassword"));
         return ResponseEntity.ok(Map.of("message", "비밀번호가 변경되었습니다."));
     }
+
+    @Operation(summary = "수혜자 비밀번호 초기화", description = "고유카드번호 + ! 로 초기화 (ADMIN 이상)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "초기화 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 또는 카드 없음", content = @Content)
+    })
+    @PostMapping("/{memberId}/reset-password/member")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Map<String, String>> resetPasswordForMember(@PathVariable Long memberId) {
+        memberService.resetPasswordForMember(memberId);
+        return ResponseEntity.ok(Map.of("message", "비밀번호가 초기화되었습니다. (카드번호 + !)"));
+    }
+
+    @Operation(summary = "가맹점 비밀번호 초기화", description = "사업자번호 + ! 로 초기화 (ADMIN 이상)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "초기화 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 또는 가맹점 없음", content = @Content)
+    })
+    @PostMapping("/{memberId}/reset-password/merchant")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Map<String, String>> resetPasswordForMerchant(@PathVariable Long memberId) {
+        memberService.resetPasswordForMerchant(memberId);
+        return ResponseEntity.ok(Map.of("message", "비밀번호가 초기화되었습니다. (사업자번호 + !)"));
+    }
 }

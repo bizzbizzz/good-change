@@ -20,4 +20,5 @@ public interface CardMapper {
     long countByMemberId(Long memberId);
     void delete(Long cardId);
     void update(Long cardId, CardUpdateDto dto);
+    Optional<String> findPrimaryCardNumberByMemberId(Long memberId);
 }
