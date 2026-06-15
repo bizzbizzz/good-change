@@ -58,6 +58,7 @@ public class MemberCreateDto {
 
     private LocalDateTime applyDate;
     private LocalDateTime approveDate;
+    private String memo;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);

@@ -165,8 +165,8 @@
             <if test="dto.password     != null and dto.password != ''">
                 password = #{dto.password},
             </if>
-            <if test="memo != null">
-                memo = #{memo},
+            <if test="dto.memo != null">
+                memo = #{dto.memo},
             </if>
             <if test="dto.detailAddress != null">detail_address = #{dto.detailAddress},</if>
         </set>
