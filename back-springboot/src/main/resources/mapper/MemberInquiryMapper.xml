@@ -11,7 +11,7 @@
         <result property="memberInquiryTitle"   column="title"/>
         <result property="memberInquiryContent" column="content"/>
         <result property="memberInquiryStatus"  column="status"/>
-        <result property="memberInquiryType"    column="type"/>       <%-- ✅ 추가 --%>
+        <result property="memberInquiryType"    column="type"/>
         <result property="createDate"           column="created_at"/>
         <result property="answeredDate"         column="answered_at"/>
     </resultMap>
