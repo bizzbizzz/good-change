@@ -11,4 +11,5 @@ public class MemberInquirySearchDto extends SearchBase {
     private String phone;
     private String title;
     private String status;
+    private String type;   // ✅ 추가
 }
