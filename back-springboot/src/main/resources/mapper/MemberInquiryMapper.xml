@@ -5,26 +5,24 @@
 <mapper namespace="org.best.backspringboot.mapper.MemberInquiryMapper">
 
     <resultMap id="memberInquiryResultMap" type="org.best.backspringboot.entity.MemberInquiry">
-        <id     property="memberInquiryId"      column="id"/>
-        <result property="memberInquiryName"    column="name"/>
-        <result property="memberInquiryPhone"   column="phone"/>
-        <result property="memberInquiryTitle"   column="title"/>
+        <id property="memberInquiryId" column="id"/>
+        <result property="memberInquiryName" column="name"/>
+        <result property="memberInquiryPhone" column="phone"/>
+        <result property="memberInquiryTitle" column="title"/>
         <result property="memberInquiryContent" column="content"/>
-        <result property="memberInquiryStatus"  column="status"/>
-        <result property="memberInquiryType"    column="type"/>
-        <result property="createDate"           column="created_at"/>
-        <result property="answeredDate"         column="answered_at"/>
+        <result property="memberInquiryStatus" column="status"/>
+        <result property="memberInquiryType" column="type"/>
+        <result property="createDate" column="created_at"/>
+        <result property="answeredDate" column="answered_at"/>
     </resultMap>
 
     <insert id="insertInquiry" parameterType="org.best.backspringboot.dto.memberInquiry.MemberInquiryRequestDto">
         INSERT INTO member_inquiry (name, phone, title, content, type)
-        VALUES (
-                   #{memberInquiryName},
-                   #{memberInquiryPhone},
-                   #{memberInquiryTitle},
-                   #{memberInquiryContent},
-                   #{memberInquiryType}
-               )
+        VALUES (#{memberInquiryName},
+                #{memberInquiryPhone},
+                #{memberInquiryTitle},
+                #{memberInquiryContent},
+                #{memberInquiryType})
     </insert>
 
     <select id="selectAllInquiry" resultMap="memberInquiryResultMap">
@@ -41,6 +39,9 @@
             </if>
             <if test="status != null and status != ''">
                 AND status = #{status}
+            </if>
+            <if test="type != null and type != ''">
+                AND type = #{type}
             </if>
         </where>
         ORDER BY created_at DESC
@@ -62,11 +63,15 @@
             <if test="status != null and status != ''">
                 AND status = #{status}
             </if>
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
         </where>
     </select>
 
     <select id="selectInquiryById" parameterType="Long" resultMap="memberInquiryResultMap">
-        SELECT * FROM member_inquiry
+        SELECT *
+        FROM member_inquiry
         WHERE id = #{id}
     </select>
 
