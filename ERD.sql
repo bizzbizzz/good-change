@@ -92,24 +92,38 @@ CREATE TABLE member (
                 FOREIGN KEY (referrer_id) REFERENCES member (member_id) ON DELETE SET NULL
 );
 
+CREATE TABLE bank (
+    bank_id   BIGINT       NOT NULL AUTO_INCREMENT,
+    bank_name VARCHAR(50)  NOT NULL COMMENT '은행명',
+    bank_code VARCHAR(10)  NOT NULL COMMENT '은행코드',
+    status    VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE' COMMENT 'ACTIVE/INACTIVE',
+    created_at DATETIME    NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (bank_id)
+) COMMENT '은행 정보';
+
 -- 3. card 테이블
 CREATE TABLE card (
       card_id     BIGINT      NOT NULL AUTO_INCREMENT,
       member_id   BIGINT      NOT NULL,
+      bank_id     BIGINT      NULL COMMENT '은행 FK',
       card_number CHAR(16)    NOT NULL,
       card_alias  VARCHAR(50) NULL,
       is_primary  TINYINT     NOT NULL DEFAULT 0,
-      card_type VARCHAR(255)  NOT NULL,
+      card_type   VARCHAR(255) NOT NULL,
       status      ENUM('ACTIVE', 'BLOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-      created_at DATETIME NOT NULL DEFAULT NOW(),
+      created_at  DATETIME    NOT NULL DEFAULT NOW(),
       updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
+ 
       PRIMARY KEY (card_id),
       UNIQUE KEY uq_card_number (card_number),
       CONSTRAINT fk_card_member
           FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE RESTRICT,
-      INDEX idx_card_member_id (member_id)
+      CONSTRAINT fk_card_bank
+          FOREIGN KEY (bank_id) REFERENCES bank (bank_id) ON DELETE SET NULL,
+      INDEX idx_card_member_id (member_id),
+      INDEX idx_card_bank_id (bank_id)
 );
+
 
 -- 카드번호 풀(pool) 테이블
 -- 우리가 발급한 카드번호 전체를 미리 저장. 회원 가입 시 이 목록과 대조해 유효성 검증.
