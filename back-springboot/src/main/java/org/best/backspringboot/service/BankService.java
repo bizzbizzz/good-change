@@ -24,4 +24,27 @@ public class BankService {
         return bankMapper.findById(bankId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행입니다."));
     }
+
+    @Transactional
+    public void create(String bankName, String bankCode) {
+        if (bankName == null || bankName.isBlank())
+            throw new IllegalArgumentException("은행명은 필수입니다.");
+        if (bankCode == null || bankCode.isBlank())
+            throw new IllegalArgumentException("은행코드는 필수입니다.");
+        bankMapper.insert(bankName, bankCode);
+    }
+
+    @Transactional
+    public void update(Long bankId, String bankName, String bankCode, String status) {
+        bankMapper.findById(bankId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행입니다."));
+        bankMapper.update(bankId, bankName, bankCode, status);
+    }
+
+    @Transactional
+    public void delete(Long bankId) {
+        bankMapper.findById(bankId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행입니다."));
+        bankMapper.delete(bankId);
+    }
 }

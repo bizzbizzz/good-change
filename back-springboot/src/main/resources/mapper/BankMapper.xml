@@ -12,14 +12,38 @@
         <result property="createdAt"  column="created_at"/>
     </resultMap>
 
+    <!-- 전체 조회 (ACTIVE만) -->
     <select id="findAll" resultMap="bankResultMap">
         SELECT * FROM bank
         WHERE status = 'ACTIVE'
         ORDER BY bank_id ASC
     </select>
 
+    <!-- 단건 조회 -->
     <select id="findById" resultMap="bankResultMap">
         SELECT * FROM bank WHERE bank_id = #{bankId}
     </select>
+
+    <!-- 등록 -->
+    <insert id="insert">
+        INSERT INTO bank (bank_name, bank_code, status, created_at)
+        VALUES (#{bankName}, #{bankCode}, 'ACTIVE', NOW())
+    </insert>
+
+    <!-- 수정 -->
+    <update id="update">
+        UPDATE bank
+        <set>
+            <if test="bankName != null and bankName != ''">bank_name = #{bankName},</if>
+            <if test="bankCode != null and bankCode != ''">bank_code = #{bankCode},</if>
+            <if test="status   != null and status   != ''">status    = #{status},</if>
+        </set>
+        WHERE bank_id = #{bankId}
+    </update>
+
+    <!-- 삭제 (INACTIVE 처리) -->
+    <update id="delete">
+        UPDATE bank SET status = 'INACTIVE' WHERE bank_id = #{bankId}
+    </update>
 
 </mapper>
