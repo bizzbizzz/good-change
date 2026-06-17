@@ -6,14 +6,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class Card {
-    private Long cardId;
-    private Long memberId;
+public class Bank {
     private Long bankId;
-    private String cardNumber;
-    private String cardAlias;
-    private Integer isPrimary;
+    private String bankName;
+    private String bankCode;
     private String status;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
