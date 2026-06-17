@@ -13,6 +13,7 @@ import lombok.*;
 public class CardCreateDto {
 
     private Long cardId;
+    private Long bankId;
 
     @NotNull
     private Long memberId;
