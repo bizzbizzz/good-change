@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.settlement.SettlementResponseDto;
 import org.best.backspringboot.dto.settlement.SettlementSearchDto;
+import org.best.backspringboot.dto.settlement.SettlementSummaryDto;
 import org.best.backspringboot.mapper.SettlementMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +32,6 @@ public class SettlementService {
         long totalCount = settlementMapper.countAll(dto);
         pageResponse.setPageInfo(content, totalCount);
 
-        // ✅ 정산금액 합계 추가
         long totalAmount = settlementMapper.sumAmount(dto);
         pageResponse.setTotalAmount(totalAmount);
 
@@ -46,5 +48,23 @@ public class SettlementService {
     @Transactional
     public void updateStatus(Long merchantId, String settlementMonth, String status) {
         settlementMapper.updateStatusByMonth(merchantId, settlementMonth, status);
+    }
+
+    // ✅ 당월/전월 정산금액 조회
+    @Transactional(readOnly = true)
+    public SettlementSummaryDto getSummary(Long merchantId) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM");
+        LocalDate now = LocalDate.now();
+
+        String thisMonth = now.format(fmt);
+        String lastMonth = now.minusMonths(1).format(fmt);
+
+        long thisMonthAmount = settlementMapper.sumAmountByMonth(merchantId, thisMonth);
+        long lastMonthAmount = settlementMapper.sumAmountByMonth(merchantId, lastMonth);
+
+        return SettlementSummaryDto.builder()
+                .thisMonthAmount(thisMonthAmount)
+                .lastMonthAmount(lastMonthAmount)
+                .build();
     }
 }
