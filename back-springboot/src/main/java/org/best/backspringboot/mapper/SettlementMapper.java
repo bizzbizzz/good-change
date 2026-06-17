@@ -16,4 +16,8 @@ public interface SettlementMapper {
                              @Param("settlementMonth") String settlementMonth,
                              @Param("status") String status);
     long sumAmount(SettlementSearchDto dto);
+
+    // ✅ 당월/전월 정산금액 조회
+    long sumAmountByMonth(@Param("merchantId") Long merchantId,
+                          @Param("settlementMonth") String settlementMonth);
 }

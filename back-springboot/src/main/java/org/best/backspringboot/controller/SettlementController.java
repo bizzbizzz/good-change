@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.dto.PageResponse;
 import org.best.backspringboot.dto.settlement.SettlementResponseDto;
 import org.best.backspringboot.dto.settlement.SettlementSearchDto;
+import org.best.backspringboot.dto.settlement.SettlementSummaryDto;
 import org.best.backspringboot.service.SettlementService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +46,19 @@ public class SettlementController {
     @GetMapping("/{settlementId}")
     public ResponseEntity<SettlementResponseDto> getById(@PathVariable Long settlementId) {
         return ResponseEntity.ok(settlementService.getById(settlementId));
+    }
+
+    // ✅ 당월/전월 정산금액 요약 조회
+    @Operation(summary = "당월/전월 정산금액 요약 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @GetMapping("/summary")
+    public ResponseEntity<SettlementSummaryDto> getSummary(@RequestParam Long merchantId) {
+        return ResponseEntity.ok(settlementService.getSummary(merchantId));
     }
 
     @Operation(summary = "정산 상태 월단위 변경")
