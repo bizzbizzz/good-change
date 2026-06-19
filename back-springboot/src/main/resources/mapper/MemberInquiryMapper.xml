@@ -82,4 +82,29 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateStatusByIds">
+        UPDATE member_inquiry
+        SET status = 'DONE', answered_at = NOW()
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateStatusToWaitByIds">
+        UPDATE member_inquiry
+        SET status = 'WAIT', answered_at = NULL
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="deleteByIds">
+        DELETE FROM member_inquiry
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

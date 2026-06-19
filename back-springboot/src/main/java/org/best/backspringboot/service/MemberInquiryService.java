@@ -56,4 +56,19 @@ public class MemberInquiryService {
         }
         memberInquiryMapper.updateStatus(id);
     }
+
+    @Transactional
+    public void updateStatusByIds(List<Long> ids) {
+        memberInquiryMapper.updateStatusByIds(ids);
+    }
+
+    @Transactional
+    public void updateStatusToWaitByIds(List<Long> ids) {
+        memberInquiryMapper.updateStatusToWaitByIds(ids);
+    }
+
+    @Transactional
+    public void deleteByIds(List<Long> ids) {
+        memberInquiryMapper.deleteByIds(ids);
+    }
 }

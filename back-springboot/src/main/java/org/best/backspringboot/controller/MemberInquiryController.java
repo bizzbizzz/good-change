@@ -13,6 +13,9 @@ import org.best.backspringboot.dto.memberInquiry.MemberInquirySearchDto;
 import org.best.backspringboot.service.MemberInquiryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @Tag(name = "회원가입 문의", description = "회원가입 문의 관련 API")
 @RestController
 @RequestMapping("/api/inquiry")
@@ -65,6 +68,27 @@ public class MemberInquiryController {
     @PatchMapping("/{id:\\d+}/status")
     public ResponseEntity<Void> updateStatus(@PathVariable Long id) {
         memberInquiryService.updateStatus(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "문의 일괄 완료처리")
+    @PatchMapping("/status/bulk")
+    public ResponseEntity<Void> updateStatusByIds(@RequestBody List<Long> ids) {
+        memberInquiryService.updateStatusByIds(ids);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "문의 일괄 대기처리")
+    @PatchMapping("/status/bulk-wait")
+    public ResponseEntity<Void> updateStatusToWaitByIds(@RequestBody List<Long> ids) {
+        memberInquiryService.updateStatusToWaitByIds(ids);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "문의 일괄 삭제")
+    @DeleteMapping
+    public ResponseEntity<Void> deleteByIds(@RequestBody List<Long> ids) {
+        memberInquiryService.deleteByIds(ids);
         return ResponseEntity.ok().build();
     }
 }
