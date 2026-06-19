@@ -20,4 +20,8 @@ public interface MemberInquiryMapper {
     MemberInquiry selectInquiryById(Long id);
 
     void updateStatus(Long id);
+
+    void updateStatusByIds(List<Long> ids);
+    void updateStatusToWaitByIds(List<Long> ids);
+    void deleteByIds(List<Long> ids);
 }
