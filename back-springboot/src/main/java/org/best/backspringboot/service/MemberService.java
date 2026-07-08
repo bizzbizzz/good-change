@@ -218,6 +218,10 @@ public class MemberService {
         memberMapper.updatePassword(memberId, newPassword);
     }
 
-
-
+    @Transactional(readOnly = true)
+    public List<MemberResponseDto> getAllList(MemberSearchDto searchDto) {
+        return memberMapper.findAllNoPaging(searchDto).stream()
+                .map(MemberResponseDto::from)
+                .collect(Collectors.toList());
+    }
 }

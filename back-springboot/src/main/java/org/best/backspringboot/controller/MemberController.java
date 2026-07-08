@@ -199,4 +199,16 @@ public class MemberController {
         memberService.resetPasswordForMerchant(memberId);
         return ResponseEntity.ok(Map.of("message", "비밀번호가 초기화되었습니다. (사업자번호 + !)"));
     }
+
+    @Operation(summary = "회원 전체 조회 (페이징 없음)", description = "조건에 맞는 회원 전체를 한 번에 반환. 목록이 커질 수 있는 화면(예: 일괄지급 대상 선택)에서 사용")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<List<MemberResponseDto>> getAllWithoutPaging(MemberSearchDto searchDto) {
+        return ResponseEntity.ok(memberService.getAllList(searchDto));
+    }
 }

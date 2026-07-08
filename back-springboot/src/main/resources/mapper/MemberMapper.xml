@@ -179,4 +179,37 @@
         WHERE member_id = #{memberId}
     </update>
 
+
+    <!-- findAll과 조건절은 완전히 동일하되 LIMIT/OFFSET만 뺀 버전 -->
+    <select id="findAllNoPaging" resultMap="memberResultMap">
+        SELECT m.* FROM member m
+        LEFT JOIN card c ON c.member_id = m.member_id
+        WHERE m.role_id = 2
+        <if test="name != null and name != ''">
+            AND m.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="birthDate != null and birthDate != ''">
+            AND DATE_FORMAT(m.birth_date, '%Y-%m-%d') LIKE CONCAT('%', #{birthDate}, '%')
+        </if>
+        <if test="cardNumber != null and cardNumber != ''">
+            AND c.card_number LIKE CONCAT('%', #{cardNumber}, '%')
+        </if>
+        <if test="organization != null and organization != ''">
+            AND m.organization LIKE CONCAT('%', #{organization}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND m.status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+            m.name LIKE CONCAT('%', #{keyword}, '%')
+            OR DATE_FORMAT(m.birth_date, '%Y-%m-%d') LIKE CONCAT('%', #{keyword}, '%')
+            OR c.card_number LIKE CONCAT('%', #{keyword}, '%')
+            OR m.organization LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        GROUP BY m.member_id
+        ORDER BY m.created_at DESC, m.member_id DESC
+    </select>
+
 </mapper>
