@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.best.backspringboot.dto.SearchBase;
 import org.best.backspringboot.dto.member.MemberCreateDto;
+import org.best.backspringboot.dto.member.MemberResponseDto;
 import org.best.backspringboot.dto.member.MemberSearchDto;
 import org.best.backspringboot.dto.member.MemberUpdateDto;
 import org.best.backspringboot.entity.Member;
@@ -26,4 +27,6 @@ public interface MemberMapper {
 
     Optional<Member> findByEmail(String email);
     void updatePassword(@Param("memberId") Long memberId, @Param("password") String password);
+
+    List<Member> findAllNoPaging(MemberSearchDto searchDto);
 }
