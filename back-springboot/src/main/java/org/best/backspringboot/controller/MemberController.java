@@ -209,6 +209,8 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<MemberResponseDto>> getAllWithoutPaging(MemberSearchDto searchDto) {
+
+
         return ResponseEntity.ok(memberService.getAllList(searchDto));
     }
 }
