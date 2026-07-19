@@ -1,11 +1,11 @@
 package org.best.backspringboot.settlementTest;
 
-import org.best.backspringboot.dto.PageResponse;
-import org.best.backspringboot.dto.settlement.SettlementResponseDto;
-import org.best.backspringboot.dto.settlement.SettlementSearchDto;
-import org.best.backspringboot.entity.Settlement;
-import org.best.backspringboot.mapper.SettlementMapper;
-import org.best.backspringboot.service.SettlementService;
+import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.settlement.dto.settlement.SettlementResponseDto;
+import org.best.backspringboot.settlement.dto.settlement.SettlementSearchDto;
+import org.best.backspringboot.settlement.entity.Settlement;
+import org.best.backspringboot.settlement.mapper.SettlementMapper;
+import org.best.backspringboot.settlement.service.SettlementService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)

@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.best.backspringboot.mapper.CardMapper">
+<mapper namespace="org.best.backspringboot.card.mapper.CardMapper">
 
-    <resultMap id="cardResultMap" type="org.best.backspringboot.entity.Card">
+    <resultMap id="cardResultMap" type="org.best.backspringboot.card.entity.Card">
         <id  property="cardId"     column="card_id"/>
         <result property="memberId"   column="member_id"/>
         <result property="bankId"     column="bank_id"/>

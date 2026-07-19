@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.best.backspringboot.mapper.CardReissueHistoryMapper">
+<mapper namespace="org.best.backspringboot.card.mapper.CardReissueHistoryMapper">
 
-    <resultMap id="historyResultMap" type="org.best.backspringboot.dto.cardHistory.CardReissueHistoryResponse">
+    <resultMap id="historyResultMap" type="org.best.backspringboot.card.dto.card.cardHistory.CardReissueHistoryResponse">
         <id     property="historyId"     column="history_id"/>
         <result property="oldCardId"     column="old_card_id"/>
         <result property="oldCardNumber" column="old_card_number"/>

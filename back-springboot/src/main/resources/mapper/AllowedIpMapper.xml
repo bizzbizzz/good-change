@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.best.backspringboot.mapper.AllowedIpMapper">
+<mapper namespace="org.best.backspringboot.merchant.mapper.AllowedIpMapper">
 
-    <resultMap id="allowedIpResultMap" type="org.best.backspringboot.entity.AllowedIp">
+    <resultMap id="allowedIpResultMap" type="org.best.backspringboot.merchant.entity.AllowedIp">
         <id  property="ipId"       column="ip_id"/>
         <result property="ipAddress"  column="ip_address"/>
         <result property="merchantId" column="merchant_id"/>

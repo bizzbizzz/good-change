@@ -1,12 +1,11 @@
 package org.best.backspringboot.merchantTest;
 
-import org.best.backspringboot.dto.merchant.MerchantCreateDto;
-import org.best.backspringboot.dto.merchant.MerchantResponseDto;
-import org.best.backspringboot.dto.merchant.MerchantSearchDto;
-import org.best.backspringboot.dto.merchant.MerchantUpdateDto;
-import org.best.backspringboot.entity.Merchant;
-import org.best.backspringboot.mapper.MerchantMapper;
-import org.best.backspringboot.service.MerchantService;
+import org.best.backspringboot.merchant.dto.merchant.MerchantCreateDto;
+import org.best.backspringboot.merchant.dto.merchant.MerchantResponseDto;
+import org.best.backspringboot.merchant.dto.merchant.MerchantUpdateDto;
+import org.best.backspringboot.merchant.entity.Merchant;
+import org.best.backspringboot.merchant.mapper.MerchantMapper;
+import org.best.backspringboot.merchant.service.MerchantService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
