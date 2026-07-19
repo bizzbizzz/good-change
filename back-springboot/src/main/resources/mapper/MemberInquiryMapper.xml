@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.best.backspringboot.mapper.MemberInquiryMapper">
+<mapper namespace="org.best.backspringboot.member.mapper.MemberInquiryMapper">
 
-    <resultMap id="memberInquiryResultMap" type="org.best.backspringboot.entity.MemberInquiry">
+    <resultMap id="memberInquiryResultMap" type="org.best.backspringboot.member.entity.MemberInquiry">
         <id property="memberInquiryId" column="id"/>
         <result property="memberInquiryName" column="name"/>
         <result property="memberInquiryPhone" column="phone"/>
@@ -16,7 +16,7 @@
         <result property="answeredDate" column="answered_at"/>
     </resultMap>
 
-    <insert id="insertInquiry" parameterType="org.best.backspringboot.dto.memberInquiry.MemberInquiryRequestDto">
+    <insert id="insertInquiry" parameterType="org.best.backspringboot.member.dto.memberInquiry.MemberInquiryRequestDto">
         INSERT INTO member_inquiry (name, phone, title, content, type)
         VALUES (#{memberInquiryName},
                 #{memberInquiryPhone},

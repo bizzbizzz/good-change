@@ -1,10 +1,10 @@
 package org.best.backspringboot.settlementTest;
 
-import org.best.backspringboot.controller.SettlementController;
-import org.best.backspringboot.dto.PageResponse;
-import org.best.backspringboot.dto.settlement.SettlementResponseDto;
+import org.best.backspringboot.settlement.controller.SettlementController;
+import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.settlement.dto.settlement.SettlementResponseDto;
 import org.best.backspringboot.exception.GlobalExceptionHandler;
-import org.best.backspringboot.service.SettlementService;
+import org.best.backspringboot.settlement.service.SettlementService;
 import org.best.backspringboot.config.JwtFilter;
 import org.best.backspringboot.util.JwtUtil;
 import org.junit.jupiter.api.*;

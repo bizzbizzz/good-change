@@ -1,15 +1,15 @@
 package org.best.backspringboot.paymentTest;
 
-import org.best.backspringboot.dto.payment.PaymentCreateDto;
-import org.best.backspringboot.dto.payment.PaymentResponseDto;
-import org.best.backspringboot.dto.payment.PaymentSearchDto;
-import org.best.backspringboot.entity.Card;
-import org.best.backspringboot.entity.Member;
-import org.best.backspringboot.entity.Payment;
-import org.best.backspringboot.mapper.CardMapper;
-import org.best.backspringboot.mapper.MemberMapper;
-import org.best.backspringboot.mapper.PaymentMapper;
-import org.best.backspringboot.service.PaymentService;
+import org.best.backspringboot.payment.dto.payment.PaymentCreateDto;
+import org.best.backspringboot.payment.dto.payment.PaymentResponseDto;
+import org.best.backspringboot.payment.dto.payment.PaymentSearchDto;
+import org.best.backspringboot.card.entity.Card;
+import org.best.backspringboot.member.entity.Member;
+import org.best.backspringboot.payment.entity.Payment;
+import org.best.backspringboot.card.mapper.CardMapper;
+import org.best.backspringboot.member.mapper.MemberMapper;
+import org.best.backspringboot.payment.mapper.PaymentMapper;
+import org.best.backspringboot.payment.service.PaymentService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

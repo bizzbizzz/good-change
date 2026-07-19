@@ -1,15 +1,15 @@
 package org.best.backspringboot.memberTest;
 
-import org.best.backspringboot.dto.PageResponse;
-import org.best.backspringboot.dto.SearchBase;
-import org.best.backspringboot.dto.member.MemberCreateDto;
-import org.best.backspringboot.dto.member.MemberLoginDto;
-import org.best.backspringboot.dto.member.MemberResponseDto;
-import org.best.backspringboot.dto.member.MemberUpdateDto;
-import org.best.backspringboot.entity.Member;
-import org.best.backspringboot.mapper.MemberMapper;
-import org.best.backspringboot.mapper.MerchantMapper;
-import org.best.backspringboot.service.MemberService;
+import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.commonDTO.SearchBase;
+import org.best.backspringboot.member.dto.member.MemberCreateDto;
+import org.best.backspringboot.member.dto.member.MemberLoginDto;
+import org.best.backspringboot.member.dto.member.MemberResponseDto;
+import org.best.backspringboot.member.dto.member.MemberUpdateDto;
+import org.best.backspringboot.member.entity.Member;
+import org.best.backspringboot.member.mapper.MemberMapper;
+import org.best.backspringboot.merchant.mapper.MerchantMapper;
+import org.best.backspringboot.member.service.MemberService;
 import org.best.backspringboot.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;

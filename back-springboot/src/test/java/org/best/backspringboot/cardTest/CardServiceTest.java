@@ -1,13 +1,13 @@
 package org.best.backspringboot;
 
-import org.best.backspringboot.dto.PageResponse;
-import org.best.backspringboot.dto.card.CardCreateDto;
-import org.best.backspringboot.dto.card.CardResponseDto;
-import org.best.backspringboot.dto.card.CardSearchDto;
-import org.best.backspringboot.entity.Card;
-import org.best.backspringboot.entity.Member;
-import org.best.backspringboot.mapper.CardMapper;
-import org.best.backspringboot.mapper.MemberMapper;
+import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.card.dto.card.CardCreateDto;
+import org.best.backspringboot.card.dto.card.CardResponseDto;
+import org.best.backspringboot.card.dto.card.CardSearchDto;
+import org.best.backspringboot.card.entity.Card;
+import org.best.backspringboot.member.entity.Member;
+import org.best.backspringboot.card.mapper.CardMapper;
+import org.best.backspringboot.member.mapper.MemberMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

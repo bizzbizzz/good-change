@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.best.backspringboot.mapper.StatsMapper">
+<mapper namespace="org.best.backspringboot.statistics.mapper.StatsMapper">
 
     <!-- 일별 결제금액 (성공/취소 분리 집계) -->
-    <select id="findDailyPayment" resultType="org.best.backspringboot.dto.statistics.DailyPaymentDto">
+    <select id="findDailyPayment" resultType="org.best.backspringboot.statistics.dto.statistics.DailyPaymentDto">
         SELECT
             transmission_date AS date,
         SUM(CASE WHEN status = 'SUCCESS'  THEN  amount
@@ -26,7 +26,7 @@
     </select>
 
     <!-- 월별 총 정산금액 -->
-    <select id="findMonthlySettlement" resultType="org.best.backspringboot.dto.statistics.MonthlySettlementDto">
+    <select id="findMonthlySettlement" resultType="org.best.backspringboot.statistics.dto.statistics.MonthlySettlementDto">
         SELECT
             settlement_month AS month,
             SUM(settlement_amount) AS amount,

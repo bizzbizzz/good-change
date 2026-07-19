@@ -1,10 +1,10 @@
 package org.best.backspringboot.merchantTest;
 
-import org.best.backspringboot.controller.MerchantController;
-import org.best.backspringboot.dto.PageResponse;
-import org.best.backspringboot.dto.merchant.MerchantResponseDto;
+import org.best.backspringboot.merchant.controller.MerchantController;
+import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.merchant.dto.merchant.MerchantResponseDto;
 import org.best.backspringboot.exception.GlobalExceptionHandler;
-import org.best.backspringboot.service.MerchantService;
+import org.best.backspringboot.merchant.service.MerchantService;
 import org.best.backspringboot.config.JwtFilter;
 import org.best.backspringboot.util.JwtUtil;
 import org.junit.jupiter.api.*;

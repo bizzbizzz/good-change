@@ -1,7 +1,7 @@
 package org.best.backspringboot.exception;
 
 import lombok.Getter;
-import org.best.backspringboot.dto.excel.ExcelUploadResultDto;
+import org.best.backspringboot.excel.dto.excel.ExcelUploadResultDto;
 
 @Getter
 public class BulkUploadException extends RuntimeException {
