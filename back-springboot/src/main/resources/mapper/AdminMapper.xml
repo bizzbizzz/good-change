@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.best.backspringboot.member.mapper.AdminMapper">
+
+    <!--
+      member 테이블을 그대로 사용하고 role_id 로 관리자 여부를 구분함.
+      role_id 코드 (role 테이블 기준): 1 = ADMIN(운영자), 2 = USER(수혜자), 3 = MERCHANT(가맹점 관리자), 9999 = SUPER_ADMIN
+      이 매퍼는 roleFixed 파라미터로 항상 'ADMIN'(role_id=1) 만 조회하도록 서비스단에서 강제 고정.
+      (SUPER_ADMIN 은 이 API/매퍼로 절대 조회되지 않음)
+    -->
+
+    <resultMap id="adminMemberResultMap" type="org.best.backspringboot.member.entity.Member">
+        <id     property="memberId"    column="member_id"/>
+        <result property="loginId"     column="login_id"/>
+        <result property="roleId"      column="role_id"/>
+        <result property="name"        column="name"/>
+        <result property="email"       column="email"/>
+        <result property="status"      column="status"/>
+        <result property="organization" column="organization"/>
+        <result property="createdAt"   column="created_at"/>
+        <result property="updatedAt"   column="updated_at"/>
+        <result property="applyDate"   column="apply_date"/>
+        <result property="approveDate" column="approve_date"/>
+    </resultMap>
+
+    <sql id="adminSearchCondition">
+        WHERE m.role_id = ( CASE #{roleFixed} WHEN 'SUPER_ADMIN' THEN 9999 ELSE 1 END )
+        <if test="search.searchType == 'name' and search.keyword != null and search.keyword != ''">
+            AND m.name LIKE CONCAT('%', #{search.keyword}, '%')
+        </if>
+        <if test="search.searchType == 'loginId' and search.keyword != null and search.keyword != ''">
+            AND m.login_id LIKE CONCAT('%', #{search.keyword}, '%')
+        </if>
+        <if test="search.searchType == 'email' and search.keyword != null and search.keyword != ''">
+            AND m.email LIKE CONCAT('%', #{search.keyword}, '%')
+        </if>
+        <if test="(search.searchType == null or search.searchType == '') and search.keyword != null and search.keyword != ''">
+            AND (
+            m.name LIKE CONCAT('%', #{search.keyword}, '%')
+            OR m.login_id LIKE CONCAT('%', #{search.keyword}, '%')
+            OR m.email LIKE CONCAT('%', #{search.keyword}, '%')
+            )
+        </if>
+        <if test="search.status != null and search.status != ''">
+            AND m.status = #{search.status}
+        </if>
+    </sql>
+
+    <select id="selectAllAdmin" resultMap="adminMemberResultMap">
+        SELECT m.member_id, m.login_id, m.role_id, m.name, m.email, m.status,
+        m.organization, m.created_at, m.updated_at, m.apply_date, m.approve_date
+        FROM member m
+        <include refid="adminSearchCondition"/>
+        <choose>
+            <when test="search.sortField != null and search.sortField != ''">
+                ORDER BY
+                <choose>
+                    <when test="search.sortField == 'name'">m.name</when>
+                    <when test="search.sortField == 'loginId'">m.login_id</when>
+                    <when test="search.sortField == 'email'">m.email</when>
+                    <when test="search.sortField == 'status'">m.status</when>
+                    <when test="search.sortField == 'regDate'">m.created_at</when>
+                    <when test="search.sortField == 'approveDate'">m.approve_date</when>
+                    <otherwise>m.member_id</otherwise>
+                </choose>
+                <if test="search.sortDirection == 'desc'">DESC</if>
+                <if test="search.sortDirection != 'desc'">ASC</if>
+                , m.member_id DESC
+            </when>
+            <otherwise>
+                ORDER BY m.created_at DESC, m.member_id DESC
+            </otherwise>
+        </choose>
+        LIMIT #{search.size} OFFSET #{search.offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM member m
+        <include refid="adminSearchCondition"/>
+    </select>
+
+    <select id="selectAdminById" resultMap="adminMemberResultMap">
+        SELECT m.member_id, m.login_id, m.role_id, m.name, m.email, m.status,
+        m.organization, m.created_at, m.updated_at, m.apply_date, m.approve_date
+        FROM member m
+        WHERE m.member_id = #{memberId}
+        AND m.role_id IN (1, 9999)
+    </select>
+
+    <update id="updateRole">
+        UPDATE member
+        SET role_id = ( CASE #{role} WHEN 'SUPER_ADMIN' THEN 9999 ELSE 1 END )
+        WHERE member_id = #{memberId}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE member
+        SET status = #{status}
+        WHERE member_id = #{memberId}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE member
+        SET password = #{password}
+        WHERE member_id = #{memberId}
+    </update>
+
+    <delete id="deleteAdmin">
+        DELETE FROM member
+        WHERE member_id = #{memberId}
+    </delete>
+
+</mapper>
