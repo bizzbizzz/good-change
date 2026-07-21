@@ -27,4 +27,5 @@ public interface MemberMapper {
     void updatePassword(@Param("memberId") Long memberId, @Param("password") String password);
 
     List<Member> findAllNoPaging(MemberSearchDto searchDto);
+    void updateStatusById(@Param("memberId") Long memberId, @Param("status") String status); // ✅ 추가
 }

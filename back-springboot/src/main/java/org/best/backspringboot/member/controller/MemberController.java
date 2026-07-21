@@ -115,17 +115,31 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "회원 삭제")
+    @Operation(summary = "회원 비활성화")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "200", description = "비활성화 성공"),
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @DeleteMapping("/{memberId:\\d+}")
-    public ResponseEntity<Void> delete(@PathVariable Long memberId) {
-        memberService.delete(memberId);
+    @PatchMapping("/{memberId:\\d+}/disable")
+    public ResponseEntity<Void> disable(@PathVariable Long memberId) {
+        memberService.disable(memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "회원 활성화")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "활성화 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PatchMapping("/{memberId:\\d+}/activate")
+    public ResponseEntity<Void> activate(@PathVariable Long memberId) {
+        memberService.activate(memberId);
         return ResponseEntity.ok().build();
     }
 
@@ -210,5 +224,13 @@ public class MemberController {
 
 
         return ResponseEntity.ok(memberService.getAllList(searchDto));
+    }
+
+    @PatchMapping("/{memberId:\\d+}/activate")
+    public ResponseEntity<Void> activate(
+            @PathVariable Long memberId,
+            @RequestBody Map<String, String> body) {
+        memberService.activate(memberId, body.get("cardNumber"));
+        return ResponseEntity.ok().build();
     }
 }

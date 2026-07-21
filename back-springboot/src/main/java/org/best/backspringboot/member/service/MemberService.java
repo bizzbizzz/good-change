@@ -230,4 +230,40 @@ public class MemberService {
                 .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void disable(Long memberId) {
+        memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        memberMapper.updateStatusById(memberId, "DISABLED");  // ✅
+        cardMapper.disableByMemberId(memberId);
+    }
+
+    @Transactional
+    public void activate(Long memberId) {
+        memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        memberMapper.updateStatusById(memberId, "ACTIVE");    // ✅
+    }
+
+    @Transactional
+    public void activate(Long memberId, String cardNumber) {
+        memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 카드번호 중복 체크
+        cardMapper.findByCardNumber(cardNumber)
+                .ifPresent(c -> { throw new IllegalArgumentException("이미 사용 중인 카드번호입니다."); });
+
+        // 회원 활성화
+        memberMapper.updateStatusById(memberId, "ACTIVE");
+
+        // 새 카드 등록
+        CardCreateDto cardDto = CardCreateDto.builder()
+                .memberId(memberId)
+                .cardNumber(cardNumber)
+                .isPrimary(1)
+                .build();
+        cardMapper.insert(cardDto);
+    }
 }
