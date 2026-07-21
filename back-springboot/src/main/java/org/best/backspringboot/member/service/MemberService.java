@@ -146,6 +146,7 @@ public class MemberService {
         memberMapper.findById(memberId)  // findByLoginId → findById
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         memberMapper.delete(memberId);
+        cardMapper.disableByMemberId(memberId);
     }
 
     // 아이디 중복체크 (true = 사용가능, false = 중복)

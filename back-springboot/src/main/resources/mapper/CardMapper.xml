@@ -42,6 +42,12 @@
         WHERE card_id = #{cardId}
     </update>
 
+    <update id="disableByMemberId">
+        UPDATE card
+        SET status = 'DISABLED'
+        WHERE member_id = #{memberId}
+    </update>
+
     <update id="update">
         UPDATE card
         <set>
