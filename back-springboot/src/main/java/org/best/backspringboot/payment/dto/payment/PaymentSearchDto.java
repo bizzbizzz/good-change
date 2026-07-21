@@ -2,7 +2,7 @@ package org.best.backspringboot.payment.dto.payment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.best.backspringboot.commonDTO.SearchBase;
+import org.best.backspringboot.global.commonDTO.SearchBase;
 
 @Getter
 @Setter

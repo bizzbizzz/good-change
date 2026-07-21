@@ -1,7 +1,7 @@
 package org.best.backspringboot.merchant.service;
 
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.merchant.dto.allowedip.AllowedIpCreateDto;
 import org.best.backspringboot.member.dto.member.MemberCreateDto;
 import org.best.backspringboot.member.dto.member.MemberUpdateDto;

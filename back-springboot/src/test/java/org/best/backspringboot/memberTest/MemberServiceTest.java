@@ -1,7 +1,7 @@
 package org.best.backspringboot.memberTest;
 
-import org.best.backspringboot.commonDTO.PageResponse;
-import org.best.backspringboot.commonDTO.SearchBase;
+import org.best.backspringboot.global.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.SearchBase;
 import org.best.backspringboot.member.dto.member.MemberCreateDto;
 import org.best.backspringboot.member.dto.member.MemberLoginDto;
 import org.best.backspringboot.member.dto.member.MemberResponseDto;
@@ -10,7 +10,7 @@ import org.best.backspringboot.member.entity.Member;
 import org.best.backspringboot.member.mapper.MemberMapper;
 import org.best.backspringboot.merchant.mapper.MerchantMapper;
 import org.best.backspringboot.member.service.MemberService;
-import org.best.backspringboot.util.JwtUtil;
+import org.best.backspringboot.global.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

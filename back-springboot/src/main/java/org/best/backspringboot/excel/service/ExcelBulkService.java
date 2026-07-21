@@ -9,7 +9,7 @@ import org.best.backspringboot.member.dto.member.MemberCreateDto;
 import org.best.backspringboot.member.dto.member.MemberRegisterDto;
 import org.best.backspringboot.merchant.dto.merchant.MerchantCreateDto;
 import org.best.backspringboot.merchant.dto.merchant.MerchantRegisterDto;
-import org.best.backspringboot.exception.BulkUploadException;
+import org.best.backspringboot.global.exception.BulkUploadException;
 import org.best.backspringboot.card.mapper.CardListMapper;
 import org.best.backspringboot.member.service.MemberService;
 import org.best.backspringboot.merchant.service.MerchantService;

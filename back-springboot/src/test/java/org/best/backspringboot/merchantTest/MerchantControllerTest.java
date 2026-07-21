@@ -1,12 +1,12 @@
 package org.best.backspringboot.merchantTest;
 
 import org.best.backspringboot.merchant.controller.MerchantController;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.merchant.dto.merchant.MerchantResponseDto;
-import org.best.backspringboot.exception.GlobalExceptionHandler;
+import org.best.backspringboot.global.exception.GlobalExceptionHandler;
 import org.best.backspringboot.merchant.service.MerchantService;
-import org.best.backspringboot.config.JwtFilter;
-import org.best.backspringboot.util.JwtUtil;
+import org.best.backspringboot.global.config.JwtFilter;
+import org.best.backspringboot.global.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;

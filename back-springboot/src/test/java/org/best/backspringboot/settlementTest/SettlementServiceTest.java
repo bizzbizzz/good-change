@@ -1,6 +1,6 @@
 package org.best.backspringboot.settlementTest;
 
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.settlement.dto.settlement.SettlementResponseDto;
 import org.best.backspringboot.settlement.dto.settlement.SettlementSearchDto;
 import org.best.backspringboot.settlement.entity.Settlement;

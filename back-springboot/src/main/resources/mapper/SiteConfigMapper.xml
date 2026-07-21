@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.best.backspringboot.siteConfig.mapper.SiteConfigMapper">
+<mapper namespace="org.best.backspringboot.site.mapper.SiteConfigMapper">
 
-    <resultMap id="siteConfigResultMap" type="org.best.backspringboot.siteConfig.entity.SiteConfig">
+    <resultMap id="siteConfigResultMap" type="org.best.backspringboot.site.entity.SiteConfig">
         <id  property="configNo"  column="config_no"/>
         <result property="configKey" column="config_key"/>
         <result property="configVal" column="config_val"/>

@@ -1,10 +1,10 @@
 package org.best.backspringboot.cardTest;
 
 import org.best.backspringboot.card.controller.CardController;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.card.dto.card.CardResponseDto;
-import org.best.backspringboot.config.JwtFilter;
-import org.best.backspringboot.util.JwtUtil;
+import org.best.backspringboot.global.config.JwtFilter;
+import org.best.backspringboot.global.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
