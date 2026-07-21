@@ -129,19 +129,6 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "회원 활성화")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "활성화 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
-            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
-            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
-    })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @PatchMapping("/{memberId:\\d+}/activate")
-    public ResponseEntity<Void> activate(@PathVariable Long memberId) {
-        memberService.activate(memberId);
-        return ResponseEntity.ok().build();
-    }
 
     @Operation(summary = "로그아웃")
     @ApiResponses({
@@ -226,11 +213,21 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getAllList(searchDto));
     }
 
+    @Operation(summary = "회원 활성화")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "활성화 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{memberId:\\d+}/activate")
     public ResponseEntity<Void> activate(
             @PathVariable Long memberId,
-            @RequestBody Map<String, String> body) {
-        memberService.activate(memberId, body.get("cardNumber"));
+            @RequestBody Map<String, Object> body) {
+        boolean useExistingCard = Boolean.TRUE.equals(body.get("useExistingCard"));
+        String cardNumber = (String) body.get("cardNumber");
+        memberService.activate(memberId, useExistingCard, cardNumber);
         return ResponseEntity.ok().build();
     }
 }

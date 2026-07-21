@@ -68,6 +68,16 @@ public class CardService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<CardResponseDto> getAllByMemberId(Long memberId) {
+        return cardMapper.findAllByMemberId(memberId).stream()
+                .map(card -> {
+                    Member member = memberMapper.findById(card.getMemberId()).orElse(null);
+                    return CardResponseDto.from(card, member);
+                })
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public void create(CardCreateDto dto) {
         // 카드번호 중복 체크
