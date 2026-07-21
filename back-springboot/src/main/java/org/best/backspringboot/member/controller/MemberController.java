@@ -224,8 +224,10 @@ public class MemberController {
     @PatchMapping("/{memberId:\\d+}/activate")
     public ResponseEntity<Void> activate(
             @PathVariable Long memberId,
-            @RequestBody Map<String, String> body) {
-        memberService.activate(memberId, body.get("cardNumber"));
+            @RequestBody Map<String, Object> body) {
+        boolean useExistingCard = Boolean.TRUE.equals(body.get("useExistingCard"));
+        String cardNumber = (String) body.get("cardNumber");
+        memberService.activate(memberId, useExistingCard, cardNumber);
         return ResponseEntity.ok().build();
     }
 }

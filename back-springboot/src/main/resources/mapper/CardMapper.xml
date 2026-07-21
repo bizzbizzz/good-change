@@ -51,8 +51,20 @@
 
     <update id="disableByMemberId">
         UPDATE card
-        SET status = 'DISABLED'
+        SET status = 'BLOCKED'
         WHERE member_id = #{memberId}
+    </update>
+
+    <delete id="deleteBlockedByMemberId">
+        DELETE FROM card
+        WHERE member_id = #{memberId}
+          AND status = 'BLOCKED'
+    </delete>
+
+    <update id="activateByMemberId">
+        UPDATE card SET status = 'ACTIVE'
+        WHERE member_id = #{memberId}
+          AND status = 'BLOCKED'
     </update>
 
     <update id="update">

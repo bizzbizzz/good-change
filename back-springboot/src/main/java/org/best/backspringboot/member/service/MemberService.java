@@ -1,6 +1,7 @@
 package org.best.backspringboot.member.service;
 
 import lombok.RequiredArgsConstructor;
+import org.best.backspringboot.card.mapper.CardListMapper;
 import org.best.backspringboot.card.mapper.CardMapper;
 import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.card.dto.card.CardCreateDto;
@@ -34,6 +35,7 @@ public class MemberService {
     private final PasswordResetTokenMapper passwordResetTokenMapper;
     private final MailService mailService;
     private final SseService sseService;
+    private final CardListMapper cardListMapper;
 
     @Value("${app.reset-base-url}")
     private String resetBaseUrl;   // 재설정 페이지 기본 URL
@@ -247,23 +249,36 @@ public class MemberService {
     }
 
     @Transactional
-    public void activate(Long memberId, String cardNumber) {
+    public void activate(Long memberId, boolean useExistingCard, String cardNumber) {
         memberMapper.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        // 카드번호 중복 체크
-        cardMapper.findByCardNumber(cardNumber)
-                .ifPresent(c -> { throw new IllegalArgumentException("이미 사용 중인 카드번호입니다."); });
+        if (useExistingCard) {
+            // 기존 BLOCKED 카드 ACTIVE
+            cardMapper.activateByMemberId(memberId);
+        } else {
+            // 기존 BLOCKED 카드 DELETED
+            cardMapper.deleteBlockedByMemberId(memberId);
+
+            // card_list 유효성 체크
+            if (!cardListMapper.existsByCardNumber(cardNumber)) {
+                throw new IllegalArgumentException("유효하지 않은 카드번호입니다.");
+            }
+
+            // 카드번호 중복 체크
+            cardMapper.findByCardNumber(cardNumber)
+                    .ifPresent(c -> { throw new IllegalArgumentException("이미 사용 중인 카드번호입니다."); });
+
+            // 새 카드 등록
+            CardCreateDto cardDto = CardCreateDto.builder()
+                    .memberId(memberId)
+                    .cardNumber(cardNumber)
+                    .isPrimary(1)
+                    .build();
+            cardMapper.insert(cardDto);
+        }
 
         // 회원 활성화
         memberMapper.updateStatusById(memberId, "ACTIVE");
-
-        // 새 카드 등록
-        CardCreateDto cardDto = CardCreateDto.builder()
-                .memberId(memberId)
-                .cardNumber(cardNumber)
-                .isPrimary(1)
-                .build();
-        cardMapper.insert(cardDto);
     }
 }
