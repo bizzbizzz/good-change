@@ -1,7 +1,7 @@
 package org.best.backspringboot.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.member.dto.admin.AdminResponseDto;
 import org.best.backspringboot.member.dto.admin.AdminSearchDto;
 import org.best.backspringboot.member.entity.Member;
