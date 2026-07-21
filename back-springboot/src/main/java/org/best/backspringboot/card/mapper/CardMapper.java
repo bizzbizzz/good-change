@@ -22,4 +22,5 @@ public interface CardMapper {
     void update(Long cardId, CardUpdateDto dto);
     Optional<String> findPrimaryCardNumberByMemberId(Long memberId);
     void disableByMemberId(Long memberId);  // ✅ 추가
+    List<Card> findAllByMemberId(Long memberId);        // ✅ 추가 (전체)
 }

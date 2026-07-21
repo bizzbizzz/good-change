@@ -70,6 +70,19 @@ public class CardController {
         return ResponseEntity.ok(cardService.getByMemberId(memberId));
     }
 
+    @Operation(summary = "회원별 카드 전체 조회 (관리자용)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
+    })
+    @GetMapping("/member/{memberId}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<List<CardResponseDto>> getAllByMemberId(@PathVariable Long memberId) {
+        return ResponseEntity.ok(cardService.getAllByMemberId(memberId));
+    }
+
     @Operation(summary = "카드 등록")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "등록 성공"),
