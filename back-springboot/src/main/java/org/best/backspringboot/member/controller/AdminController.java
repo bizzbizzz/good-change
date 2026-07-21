@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.member.dto.admin.AdminResponseDto;
 import org.best.backspringboot.member.dto.admin.AdminRoleChangeDto;
 import org.best.backspringboot.member.dto.admin.AdminSearchDto;

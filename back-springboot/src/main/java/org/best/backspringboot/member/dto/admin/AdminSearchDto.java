@@ -3,11 +3,12 @@ package org.best.backspringboot.member.dto.admin;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.best.backspringboot.global.commonDTO.SearchBase;
 
 @Getter
 @Setter
 @Schema(description = "관리자 목록 검색 조건")
-public class AdminSearchDto extends org.best.backspringboot.commonDTO.SearchBase {
+public class AdminSearchDto extends SearchBase {
 
     @Schema(description = "검색 조건 (name/loginId/email)", example = "name")
     private String searchType;
