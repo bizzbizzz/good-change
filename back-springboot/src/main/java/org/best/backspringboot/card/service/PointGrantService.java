@@ -2,7 +2,7 @@ package org.best.backspringboot.card.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.card.dto.point.PointGrantLogResponseDto;
 import org.best.backspringboot.card.dto.point.PointGrantLogSearchDto;
 import org.best.backspringboot.card.dto.point.PointGrantLogSummaryDto;

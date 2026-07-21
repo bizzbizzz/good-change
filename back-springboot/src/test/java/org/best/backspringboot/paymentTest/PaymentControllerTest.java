@@ -1,10 +1,10 @@
 package org.best.backspringboot.paymentTest;
 
 import org.best.backspringboot.payment.controller.PaymentController;
-import org.best.backspringboot.exception.GlobalExceptionHandler;
+import org.best.backspringboot.global.exception.GlobalExceptionHandler;
 import org.best.backspringboot.payment.service.PaymentService;
-import org.best.backspringboot.config.JwtFilter;
-import org.best.backspringboot.util.JwtUtil;
+import org.best.backspringboot.global.config.JwtFilter;
+import org.best.backspringboot.global.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;

@@ -1,7 +1,7 @@
 package org.best.backspringboot.card.service;
 
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.card.dto.card.cardHistory.CardReissueHistorySearchDto;
 import org.best.backspringboot.card.entity.CardReissueHistory;
 import org.best.backspringboot.card.mapper.CardReissueHistoryMapper;

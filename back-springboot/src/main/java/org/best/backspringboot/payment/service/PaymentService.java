@@ -1,7 +1,7 @@
 package org.best.backspringboot.payment.service;
 
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.payment.dto.payment.PaymentCreateDto;
 import org.best.backspringboot.payment.dto.payment.PaymentResponseDto;
 import org.best.backspringboot.payment.dto.payment.PaymentSearchDto;

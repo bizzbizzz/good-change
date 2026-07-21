@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.excel.dto.excel.ExcelUploadResultDto;
-import org.best.backspringboot.exception.BulkUploadException;
+import org.best.backspringboot.global.exception.BulkUploadException;
 import org.best.backspringboot.excel.service.ExcelBulkService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;

@@ -1,7 +1,7 @@
 package org.best.backspringboot.board.service;
 
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.board.dto.board.BoardCreateDto;
 import org.best.backspringboot.board.dto.board.BoardResponseDto;
 import org.best.backspringboot.board.dto.board.BoardSearchDto;

@@ -2,7 +2,7 @@ package org.best.backspringboot.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.card.mapper.CardMapper;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.card.dto.card.CardCreateDto;
 import org.best.backspringboot.member.dto.member.*;
 import org.best.backspringboot.member.entity.Member;
@@ -13,7 +13,7 @@ import org.best.backspringboot.member.mapper.TokenMapper;
 import org.best.backspringboot.merchant.mapper.MerchantMapper;
 import org.best.backspringboot.mail.service.MailService;
 import org.best.backspringboot.SSE.service.SseService;
-import org.best.backspringboot.util.JwtUtil;
+import org.best.backspringboot.global.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

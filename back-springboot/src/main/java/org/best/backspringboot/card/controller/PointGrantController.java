@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.card.dto.point.PointGrantLogResponseDto;
 import org.best.backspringboot.card.dto.point.PointGrantLogSearchDto;
 import org.best.backspringboot.card.dto.point.PointGrantLogSummaryDto;

@@ -1,6 +1,6 @@
 package org.best.backspringboot.jwtTest;
 
-import org.best.backspringboot.util.JwtUtil;
+import org.best.backspringboot.global.util.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.test.util.ReflectionTestUtils;
 

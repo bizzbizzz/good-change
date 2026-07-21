@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.commonDTO.PageResponse;
+import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.member.dto.memberInquiry.MemberInquiryRequestDto;
 import org.best.backspringboot.member.dto.memberInquiry.MemberInquiryResponseDto;
 import org.best.backspringboot.member.dto.memberInquiry.MemberInquirySearchDto;
