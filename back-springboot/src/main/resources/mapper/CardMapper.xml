@@ -64,6 +64,23 @@
         ORDER BY created_at DESC
     </select>
 
+    <update id="disableByMemberId">
+        UPDATE card SET status = 'BLOCKED'
+        WHERE member_id = #{memberId}
+    </update>
+
+    <update id="activateByMemberId">
+        UPDATE card SET status = 'ACTIVE'
+        WHERE member_id = #{memberId}
+          AND status = 'BLOCKED'
+    </update>
+
+    <delete id="deleteBlockedByMemberId">
+        DELETE FROM card
+        WHERE member_id = #{memberId}
+          AND status = 'BLOCKED'
+    </delete>
+
     <select id="findAll" resultMap="cardResultMap">
         SELECT c.*
         FROM card c

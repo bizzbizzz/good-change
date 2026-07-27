@@ -25,4 +25,8 @@ public interface CardMapper {
     List<Card> findAllByMemberId(Long memberId);
 
     void deleteAllByMemberId(Long memberId);
+    void disableByMemberId(Long memberId);
+
+    void activateByMemberId(Long memberId);
+    void deleteBlockedByMemberId(Long memberId);
 }
