@@ -58,6 +58,12 @@
         WHERE card_id = #{cardId}
     </update>
 
+    <select id="findAllByMemberId" resultMap="cardResultMap">
+        SELECT * FROM card
+        WHERE member_id = #{memberId}
+        ORDER BY created_at DESC
+    </select>
+
     <select id="findAll" resultMap="cardResultMap">
         SELECT c.*
         FROM card c

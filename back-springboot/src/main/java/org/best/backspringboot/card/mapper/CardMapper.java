@@ -22,5 +22,7 @@ public interface CardMapper {
     void update(Long cardId, CardUpdateDto dto);
     Optional<String> findPrimaryCardNumberByMemberId(Long memberId);
 
+    List<Card> findAllByMemberId(Long memberId);
+
     void deleteAllByMemberId(Long memberId);
 }
