@@ -20,13 +20,6 @@
         SELECT * FROM card WHERE card_number = #{cardNumber}
     </select>
 
-    <!-- ✅ 추가 (전체) -->
-    <select id="findAllByMemberId" resultMap="cardResultMap">
-        SELECT * FROM card
-        WHERE member_id = #{memberId}
-        ORDER BY created_at DESC
-    </select>
-
     <insert id="insert" useGeneratedKeys="true" keyProperty="cardId">
         INSERT INTO card (
             member_id, bank_id, card_number, card_alias,
@@ -49,23 +42,10 @@
         WHERE card_id = #{cardId}
     </update>
 
-    <update id="disableByMemberId">
-        UPDATE card
-        SET status = 'BLOCKED'
-        WHERE member_id = #{memberId}
-    </update>
-
-    <delete id="deleteBlockedByMemberId">
+    <delete id="deleteAllByMemberId">
         DELETE FROM card
         WHERE member_id = #{memberId}
-          AND status = 'BLOCKED'
     </delete>
-
-    <update id="activateByMemberId">
-        UPDATE card SET status = 'ACTIVE'
-        WHERE member_id = #{memberId}
-          AND status = 'BLOCKED'
-    </update>
 
     <update id="update">
         UPDATE card
@@ -77,6 +57,12 @@
         </set>
         WHERE card_id = #{cardId}
     </update>
+
+    <select id="findAllByMemberId" resultMap="cardResultMap">
+        SELECT * FROM card
+        WHERE member_id = #{memberId}
+        ORDER BY created_at DESC
+    </select>
 
     <select id="findAll" resultMap="cardResultMap">
         SELECT c.*
