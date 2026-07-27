@@ -68,6 +68,7 @@ public class MemberController {
         response.put("token",   token);
         response.put("loginId", jwtUtil.getLoginId(token));
         response.put("role",    jwtUtil.getRole(token));
+        response.put("memberId",    jwtUtil.getMemberId(token));
         response.put("name",    memberService.getNameByLoginId(jwtUtil.getLoginId(token)));
         response.put("merchantName", merchantService.getMerchantNameByMemberId(jwtUtil.getMemberId(token)));
 
@@ -117,18 +118,34 @@ public class MemberController {
 
     @Operation(summary = "회원 비활성화")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "비활성화 성공"),
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @PatchMapping("/{memberId:\\d+}/disable")
-    public ResponseEntity<Void> disable(@PathVariable Long memberId) {
-        memberService.disable(memberId);
+    @DeleteMapping("/{memberId:\\d+}")
+    public ResponseEntity<Void> delete(@PathVariable Long memberId) {
+        memberService.delete(memberId);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "회원 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
+    })
+    @DeleteMapping("/{memberId:\\d+}/withdraw")
+    public ResponseEntity<Void> withdraw(
+            @PathVariable Long memberId,
+            @RequestBody Map<String, String> body) {
+        String password = body.get("password");
+        String reason   = body.get("reason");
+        memberService.withdraw(memberId, password, reason);
+        return ResponseEntity.ok().build();
+    }
 
     @Operation(summary = "로그아웃")
     @ApiResponses({
@@ -211,23 +228,5 @@ public class MemberController {
 
 
         return ResponseEntity.ok(memberService.getAllList(searchDto));
-    }
-
-    @Operation(summary = "회원 활성화")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "활성화 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
-            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
-            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
-    })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    @PatchMapping("/{memberId:\\d+}/activate")
-    public ResponseEntity<Void> activate(
-            @PathVariable Long memberId,
-            @RequestBody Map<String, Object> body) {
-        boolean useExistingCard = Boolean.TRUE.equals(body.get("useExistingCard"));
-        String cardNumber = (String) body.get("cardNumber");
-        memberService.activate(memberId, useExistingCard, cardNumber);
-        return ResponseEntity.ok().build();
     }
 }

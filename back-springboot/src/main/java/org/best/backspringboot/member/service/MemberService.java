@@ -1,14 +1,15 @@
 package org.best.backspringboot.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.best.backspringboot.card.mapper.CardListMapper;
 import org.best.backspringboot.card.mapper.CardMapper;
 import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.card.dto.card.CardCreateDto;
 import org.best.backspringboot.member.dto.member.*;
 import org.best.backspringboot.member.entity.Member;
+import org.best.backspringboot.member.entity.MemberWithdrawLog;
 import org.best.backspringboot.member.entity.PasswordResetToken;
 import org.best.backspringboot.member.mapper.MemberMapper;
+import org.best.backspringboot.member.mapper.MemberWithdrawLogMapper;
 import org.best.backspringboot.member.mapper.PasswordResetTokenMapper;
 import org.best.backspringboot.member.mapper.TokenMapper;
 import org.best.backspringboot.merchant.mapper.MerchantMapper;
@@ -35,7 +36,7 @@ public class MemberService {
     private final PasswordResetTokenMapper passwordResetTokenMapper;
     private final MailService mailService;
     private final SseService sseService;
-    private final CardListMapper cardListMapper;
+    private final MemberWithdrawLogMapper memberWithdrawLogMapper;
 
     @Value("${app.reset-base-url}")
     private String resetBaseUrl;   // 재설정 페이지 기본 URL
@@ -148,7 +149,32 @@ public class MemberService {
         memberMapper.findById(memberId)  // findByLoginId → findById
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         memberMapper.delete(memberId);
-        cardMapper.disableByMemberId(memberId);
+    }
+
+    @Transactional
+    public void withdraw(Long memberId, String password, String reason) {
+        Member member = memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // ✅ 비밀번호 확인
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 탈퇴 로그 저장
+        MemberWithdrawLog log = MemberWithdrawLog.builder()
+                .memberId(member.getMemberId())
+                .loginId(member.getLoginId())
+                .name(member.getName())
+                .reason(reason)
+                .build();
+        memberWithdrawLogMapper.insert(log);
+
+        // card 삭제
+        cardMapper.deleteAllByMemberId(memberId);
+
+        // member 삭제
+        memberMapper.withdraw(memberId);
     }
 
     // 아이디 중복체크 (true = 사용가능, false = 중복)
@@ -231,54 +257,5 @@ public class MemberService {
         return memberMapper.findAllNoPaging(searchDto).stream()
                 .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void disable(Long memberId) {
-        memberMapper.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        memberMapper.updateStatusById(memberId, "DISABLED");  // ✅
-        cardMapper.disableByMemberId(memberId);
-    }
-
-    @Transactional
-    public void activate(Long memberId) {
-        memberMapper.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        memberMapper.updateStatusById(memberId, "ACTIVE");    // ✅
-    }
-
-    @Transactional
-    public void activate(Long memberId, boolean useExistingCard, String cardNumber) {
-        memberMapper.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-
-        if (useExistingCard) {
-            // 기존 BLOCKED 카드 ACTIVE
-            cardMapper.activateByMemberId(memberId);
-        } else {
-            // 기존 BLOCKED 카드 DELETED
-            cardMapper.deleteBlockedByMemberId(memberId);
-
-            // card_list 유효성 체크
-            if (!cardListMapper.existsByCardNumber(cardNumber)) {
-                throw new IllegalArgumentException("유효하지 않은 카드번호입니다.");
-            }
-
-            // 카드번호 중복 체크
-            cardMapper.findByCardNumber(cardNumber)
-                    .ifPresent(c -> { throw new IllegalArgumentException("이미 사용 중인 카드번호입니다."); });
-
-            // 새 카드 등록
-            CardCreateDto cardDto = CardCreateDto.builder()
-                    .memberId(memberId)
-                    .cardNumber(cardNumber)
-                    .isPrimary(1)
-                    .build();
-            cardMapper.insert(cardDto);
-        }
-
-        // 회원 활성화
-        memberMapper.updateStatusById(memberId, "ACTIVE");
     }
 }

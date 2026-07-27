@@ -92,6 +92,19 @@ CREATE TABLE member (
                 FOREIGN KEY (referrer_id) REFERENCES member (member_id) ON DELETE SET NULL
 );
 
+CREATE TABLE member_withdraw_log (
+    log_id      BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id   BIGINT       NOT NULL,
+    login_id    VARCHAR(50)  NOT NULL,
+    name        VARCHAR(50)  NOT NULL,
+    reason      VARCHAR(255) NULL      COMMENT '탈퇴 사유',
+    created_at  DATETIME     NOT NULL  DEFAULT NOW(),
+
+    PRIMARY KEY (log_id),
+    INDEX idx_withdraw_member_id (member_id),
+    INDEX idx_withdraw_created_at (created_at)
+) COMMENT '회원 탈퇴 로그';
+
 CREATE TABLE bank (
     bank_id   BIGINT       NOT NULL AUTO_INCREMENT,
     bank_name VARCHAR(50)  NOT NULL COMMENT '은행명',

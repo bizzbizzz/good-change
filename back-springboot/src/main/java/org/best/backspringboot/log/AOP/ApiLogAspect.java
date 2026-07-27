@@ -23,7 +23,7 @@ public class ApiLogAspect {
     private final MongoTemplate mongoTemplate;
 
     // 모든 Controller 메서드에 적용
-    @Around("execution(* org.best.backspringboot.controller..*(..))")
+    @Around("execution(* org.best.backspringboot..controller..*(..))")
     public Object logging(ProceedingJoinPoint joinPoint) throws Throwable {
 
         long startTime = System.currentTimeMillis();

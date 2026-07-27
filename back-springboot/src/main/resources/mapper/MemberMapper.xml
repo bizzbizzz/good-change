@@ -179,11 +179,9 @@
         WHERE member_id = #{memberId}
     </update>
 
-    <update id="updateStatusById">
-        UPDATE member SET status = #{status}
-        WHERE member_id = #{memberId}
-    </update>
-
+    <delete id="withdraw">
+        DELETE FROM member WHERE member_id = #{memberId}
+    </delete>
 
     <!-- findAll과 조건절은 완전히 동일하되 LIMIT/OFFSET만 뺀 버전 -->
     <select id="findAllNoPaging" resultMap="memberResultMap">
