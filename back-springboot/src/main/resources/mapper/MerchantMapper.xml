@@ -38,6 +38,11 @@
         )
     </insert>
 
+    <update id="updateStatus">
+        UPDATE merchant SET status = #{status}
+        WHERE merchant_id = #{merchantId}
+    </update>
+
     <select id="findMerchantIdByMemberId" resultType="Long">
         SELECT merchant_id FROM merchant WHERE member_id = #{memberId}
     </select>
@@ -89,7 +94,9 @@
         LEFT JOIN member mb ON m.member_id = mb.member_id
         LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
         <where>
-            AND m.status = 'ACTIVE'
+            <if test="status != null and status != ''">
+                AND m.status = #{status}
+            </if>
             <if test="merchantName != null and merchantName != ''">
                 AND m.merchant_name LIKE CONCAT('%', #{merchantName}, '%')
             </if>
@@ -140,7 +147,9 @@
         FROM merchant m
         LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
         <where>
-            AND m.status = 'ACTIVE'
+            <if test="status != null and status != ''">
+                AND m.status = #{status}
+            </if>
             <if test="categoryName != null and categoryName != ''">
                 AND mc.category_name = #{categoryName}
             </if>
@@ -186,5 +195,9 @@
         UPDATE merchant SET status = 'DISABLED'
         WHERE merchant_id = #{merchantId}
     </update>
+
+    <delete id="withdraw">
+        DELETE FROM merchant WHERE merchant_id = #{merchantId}
+    </delete>
 
 </mapper>

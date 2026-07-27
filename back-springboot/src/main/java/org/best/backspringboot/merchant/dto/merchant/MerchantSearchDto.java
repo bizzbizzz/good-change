@@ -16,4 +16,5 @@ public class MerchantSearchDto extends SearchBase {
     private String keyword;  // 전체 검색용
     private String searchType;  // name/address
     private Long categoryId;
+    private String status;
 }

@@ -215,4 +215,9 @@
         ORDER BY m.created_at DESC, m.member_id DESC
     </select>
 
+    <update id="updateStatusById">
+        UPDATE member SET status = #{status}
+        WHERE member_id = #{memberId}
+    </update>
+
 </mapper>

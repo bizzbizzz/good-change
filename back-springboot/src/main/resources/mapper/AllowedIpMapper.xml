@@ -43,4 +43,8 @@
         DELETE FROM allowed_ip WHERE ip_id = #{ipId}
     </delete>
 
+    <delete id="deleteByMerchantId">
+        DELETE FROM allowed_ip WHERE merchant_id = #{merchantId}
+    </delete>
+
 </mapper>

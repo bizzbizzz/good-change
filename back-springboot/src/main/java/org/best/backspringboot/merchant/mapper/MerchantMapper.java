@@ -1,6 +1,7 @@
 package org.best.backspringboot.merchant.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.best.backspringboot.merchant.dto.merchant.MerchantCreateDto;
 import org.best.backspringboot.merchant.dto.merchant.MerchantSearchDto;
 import org.best.backspringboot.merchant.dto.merchant.MerchantUpdateDto;
@@ -21,4 +22,6 @@ public interface MerchantMapper {
     Long findMerchantIdByMemberId(Long memberId);
     List<String> findAllCategories();
     String findCategoryNameById(Long categoryId);
+    void updateStatus(@Param("merchantId") Long merchantId, @Param("status") String status);
+    void withdraw(Long merchantId);  // ✅ 있는지 확인
 }

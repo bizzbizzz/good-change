@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.global.commonDTO.PageResponse;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "가맹점", description = "가맹점 관련 API")
 @RestController
@@ -35,6 +37,35 @@ public class MerchantController {
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody MerchantCreateDto dto) {
         merchantService.create(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PatchMapping("/{merchantId}/disable")
+    public ResponseEntity<Void> disable(@PathVariable Long merchantId) {
+        merchantService.disable(merchantId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PatchMapping("/{merchantId}/activate")
+    public ResponseEntity<Void> activate(@PathVariable Long merchantId) {
+        merchantService.activate(merchantId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "가맹점 탈퇴")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "탈퇴 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "404", description = "가맹점 없음", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('MERCHANT')")
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<Void> withdraw(
+            @RequestAttribute("memberId") Long memberId,
+            @RequestBody MerchantWithdrawDto dto) {
+        merchantService.withdraw(memberId, dto.getPassword(), dto.getReason());
         return ResponseEntity.ok().build();
     }
 

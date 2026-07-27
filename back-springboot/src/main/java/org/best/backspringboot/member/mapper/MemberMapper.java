@@ -28,4 +28,5 @@ public interface MemberMapper {
 
     List<Member> findAllNoPaging(MemberSearchDto searchDto);
     void withdraw(Long memberId);  // ✅ 회원탈퇴 전용
+    void updateStatusById(@Param("memberId") Long memberId, @Param("status") String status); // ✅ 추가
 }

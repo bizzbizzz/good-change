@@ -52,6 +52,38 @@ public class MemberController {
         return ResponseEntity.ok(memberService.isLoginIdAvailable(loginId));
     }
 
+    @Operation(summary = "회원 비활성화")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "비활성화 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PatchMapping("/{memberId:\\d+}/disable")
+    public ResponseEntity<Void> disable(@PathVariable Long memberId) {
+        memberService.disable(memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "회원 활성화")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "활성화 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
+            @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
+            @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PatchMapping("/{memberId:\\d+}/activate")
+    public ResponseEntity<Void> activate(
+            @PathVariable Long memberId,
+            @RequestBody Map<String, Object> body) {
+        boolean useExistingCard = Boolean.TRUE.equals(body.get("useExistingCard"));
+        String cardNumber = (String) body.get("cardNumber");
+        memberService.activate(memberId, useExistingCard, cardNumber);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "로그인", description = "JWT 토큰 반환")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공 (JWT 토큰 반환)"),

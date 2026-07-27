@@ -15,4 +15,5 @@ public interface AllowedIpMapper {
     void deleteById(Long ipId);
     Optional<AllowedIp> findByMerchantId(Long merchantId);
     void updateByMerchantId(@Param("merchantId") Long merchantId, @Param("ipAddress") String ipAddress);
+    void deleteByMerchantId(Long merchantId);
 }

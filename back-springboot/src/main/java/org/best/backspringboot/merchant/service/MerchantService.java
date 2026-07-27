@@ -1,7 +1,12 @@
 package org.best.backspringboot.merchant.service;
 
 import lombok.RequiredArgsConstructor;
+import org.best.backspringboot.card.mapper.CardMapper;
 import org.best.backspringboot.global.commonDTO.PageResponse;
+import org.best.backspringboot.member.entity.Member;
+import org.best.backspringboot.member.entity.MemberWithdrawLog;
+import org.best.backspringboot.member.mapper.MemberWithdrawLogMapper;
+import org.best.backspringboot.member.mapper.TokenMapper;
 import org.best.backspringboot.merchant.dto.allowedip.AllowedIpCreateDto;
 import org.best.backspringboot.member.dto.member.MemberCreateDto;
 import org.best.backspringboot.member.dto.member.MemberUpdateDto;
@@ -24,6 +29,33 @@ public class MerchantService {
     private final PasswordEncoder passwordEncoder;
     private final MemberMapper memberMapper;
     private final AllowedIpMapper allowedIpMapper;
+    private final MemberWithdrawLogMapper memberWithdrawLogMapper;
+    private final CardMapper cardMapper;
+    private final TokenMapper tokenMapper;
+
+    @Transactional
+    public void disable(Long merchantId) {
+        Merchant merchant = merchantMapper.findById(merchantId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+
+        // 가맹점 비활성화
+        merchantMapper.updateStatus(merchantId, "DISABLED");
+
+        // ✅ 연결된 member도 비활성화
+        memberMapper.updateStatusById(merchant.getMemberId(), "DISABLED");
+    }
+
+    @Transactional
+    public void activate(Long merchantId) {
+        Merchant merchant = merchantMapper.findById(merchantId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+
+        // 가맹점 활성화
+        merchantMapper.updateStatus(merchantId, "ACTIVE");
+
+        // ✅ 연결된 member도 활성화
+        memberMapper.updateStatusById(merchant.getMemberId(), "ACTIVE");
+    }
 
     @Transactional
     public void create(MerchantCreateDto dto) {
@@ -99,6 +131,33 @@ public class MerchantService {
         long totalCount = merchantMapper.countAll();
         pageResponse.setPageInfo(content, totalCount);
         return pageResponse;
+    }
+
+    @Transactional
+    public void withdraw(Long memberId, String password, String reason) {
+        Member member = memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        Merchant merchant = merchantMapper.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+
+        // 탈퇴 로그 저장
+        MemberWithdrawLog log = MemberWithdrawLog.builder()
+                .memberId(memberId)
+                .loginId(member.getLoginId())
+                .name(merchant.getMerchantName())
+                .reason(reason)
+                .build();
+        memberWithdrawLogMapper.insert(log);
+
+        // ✅ 수정된 순서
+        tokenMapper.deleteByMemberId(memberId);           // 1. member_token 삭제
+        merchantMapper.withdraw(merchant.getMerchantId());  // 2. merchant 삭제 (allowed_ip는 자동 NULL)
+        memberMapper.withdraw(memberId);                  // 3. member 삭제 (맨 마지막!)
     }
 
     @Transactional(readOnly = true)
