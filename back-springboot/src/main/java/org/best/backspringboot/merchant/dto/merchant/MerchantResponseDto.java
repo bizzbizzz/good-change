@@ -32,7 +32,6 @@ public class MerchantResponseDto {
     public static MerchantResponseDto from(Merchant merchant, List<String> categories) {
         return MerchantResponseDto.builder()
                 .merchantId(merchant.getMerchantId())
-                .memberId(merchant.getMemberId())
                 .merchantName(merchant.getMerchantName())
                 .representative(merchant.getRepresentative())
                 .businessNumber(merchant.getBusinessNumber())

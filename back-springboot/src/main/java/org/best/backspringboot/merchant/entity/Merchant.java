@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Merchant {
     private Long merchantId;
-    private Long memberId;          // ✅ loginId, password 제거 → memberId 추가
     private String merchantName;
     private String representative;
     private String businessNumber;

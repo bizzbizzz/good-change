@@ -10,6 +10,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.best.backspringboot.global.commonDTO.PageResponse;
 import org.best.backspringboot.merchant.dto.merchant.*;
+import org.best.backspringboot.merchant.dto.merchantMember.MerchantAddMemberDto;
+import org.best.backspringboot.merchant.dto.merchantMember.MerchantMemberResponseDto;
+import org.best.backspringboot.merchant.dto.merchantMember.MerchantMemberSearchDto;
 import org.best.backspringboot.merchant.service.MerchantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,14 +46,14 @@ public class MerchantController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{merchantId}/disable")
     public ResponseEntity<Void> disable(@PathVariable Long merchantId) {
-        merchantService.disable(merchantId);
+        merchantService.statusChange(merchantId, "DISABLED");
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{merchantId}/activate")
     public ResponseEntity<Void> activate(@PathVariable Long merchantId) {
-        merchantService.activate(merchantId);
+        merchantService.statusChange(merchantId, "ACTIVE");
         return ResponseEntity.ok().build();
     }
 
@@ -60,7 +63,7 @@ public class MerchantController {
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
             @ApiResponse(responseCode = "404", description = "가맹점 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('MERCHANT')")
+    @PreAuthorize("hasAnyRole('OWNER', 'STAFF')")
     @DeleteMapping("/withdraw")
     public ResponseEntity<Void> withdraw(
             @RequestAttribute("memberId") Long memberId,
@@ -90,7 +93,7 @@ public class MerchantController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "가맹점 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @GetMapping("/{merchantId}")
     public ResponseEntity<MerchantResponseDto> getById(@PathVariable Long merchantId) {
         return ResponseEntity.ok(merchantService.getById(merchantId));
@@ -103,10 +106,28 @@ public class MerchantController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "가맹점 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @GetMapping("/member/{memberId}")
     public ResponseEntity<MerchantResponseDto> getByMemberId(@PathVariable Long memberId) {
         return ResponseEntity.ok(merchantService.getByMemberId(memberId));
+    }
+
+    @GetMapping("/members/{merchantId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<PageResponse<MerchantMemberResponseDto>> getMerchantMembers(
+            @PathVariable Long merchantId,
+            MerchantMemberSearchDto searchDto) {
+        searchDto.setMerchantId(merchantId);
+        return ResponseEntity.ok(merchantService.getMerchantMembers(searchDto));
+    }
+
+    @PostMapping("/{merchantId}/members")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<Void> addMember(
+            @PathVariable Long merchantId,
+            @RequestBody MerchantAddMemberDto dto) {
+        merchantService.addMember(merchantId, dto);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "가맹점 전체 조회 (페이징)")
@@ -126,7 +147,7 @@ public class MerchantController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "가맹점 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @PatchMapping("/{merchantId}")
     public ResponseEntity<Void> update(@PathVariable Long merchantId,
                                        @Valid @RequestBody MerchantUpdateDto dto) {
@@ -134,7 +155,7 @@ public class MerchantController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "가맹점 삭제")
+    @Operation(summary = "가맹점 탈퇴")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),

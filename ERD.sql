@@ -78,6 +78,7 @@ CREATE TABLE member (
             point       BIGINT       NOT NULL DEFAULT 0,
             status      VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
             referrer_id BIGINT       NULL,
+            organization VARCHAR(100) NULL,
             memo TEXT DEFAULT NULL,
             apply_date    DATETIME NULL,
             approve_date  DATETIME NULL,
@@ -174,6 +175,20 @@ CREATE TABLE merchant_category (
        UNIQUE KEY uq_category_name (category_name)
 );
 
+
+CREATE TABLE merchant_member (
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    merchant_id BIGINT NOT NULL,
+    member_id   BIGINT NOT NULL UNIQUE,
+    role_id     BIGINT NOT NULL,                    -- ✅ role 테이블 FK
+    created_at  DATETIME NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (merchant_id) REFERENCES merchant (merchant_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id)   REFERENCES member (member_id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id)     REFERENCES role (role_id) ON DELETE RESTRICT
+);
+
+
 -- 4. merchant 테이블
 CREATE TABLE merchant (
     merchant_id     BIGINT       NOT NULL AUTO_INCREMENT,
@@ -203,6 +218,9 @@ CREATE TABLE merchant (
     CONSTRAINT fk_merchant_category
         FOREIGN KEY (category_id) REFERENCES merchant_category (category_id) ON DELETE SET NULL
 );
+
+ALTER TABLE merchant DROP FOREIGN KEY fk_merchant_member;
+ALTER TABLE merchant DROP COLUMN member_id;
 
 -- 5. payment 테이블
 CREATE TABLE payment (
@@ -271,7 +289,7 @@ CREATE TABLE settlement (
     created_at DATETIME NOT NULL DEFAULT NOW(),
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (settlement_id, settlement_date),
+    PRIMARY KEY (settlement_id, settlement_date)
 )
 PARTITION BY RANGE COLUMNS (settlement_date) (
     PARTITION p202605 VALUES LESS THAN ('202605'),
@@ -407,6 +425,9 @@ CREATE TABLE site_config (
     PRIMARY KEY (config_no),
     UNIQUE KEY uk_config_key (config_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사이트 설정';
+
+
+
 
 ---------------------------------------------------------
 1. 프로시저 생성 (CREATE PROCEDURE)

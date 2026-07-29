@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.member.mapper.RoleMapper">
+
+    <resultMap id="roleResultMap" type="org.best.backspringboot.member.entity.Role">
+        <id     property="roleId"      column="role_id"/>
+        <result property="roleName"    column="role_name"/>
+        <result property="description" column="description"/>
+        <result property="createdAt"   column="created_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="roleResultMap">
+        SELECT * FROM role ORDER BY role_id ASC
+    </select>
+
+    <select id="findById" resultMap="roleResultMap">
+        SELECT * FROM role WHERE role_id = #{roleId}
+    </select>
+
+    <select id="findByRoleName" resultMap="roleResultMap">
+        SELECT * FROM role WHERE role_name = #{roleName}
+    </select>
+
+</mapper>
