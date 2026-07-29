@@ -6,7 +6,6 @@
 
     <resultMap id="merchantResultMap" type="org.best.backspringboot.merchant.entity.Merchant">
         <id  property="merchantId"      column="merchant_id"/>
-        <result property="memberId"       column="member_id"/>
         <result property="merchantName"   column="merchant_name"/>
         <result property="representative" column="representative"/>
         <result property="businessNumber" column="business_number"/>
@@ -26,12 +25,12 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="merchantId">
         INSERT INTO merchant (
-        member_id, category_id, merchant_name, representative,
+        category_id, merchant_name, representative,
         business_number, contact, contact2, address, email,
         <if test="terminalId != null and terminalId != ''">terminal_id,</if>
         status, created_at
         ) VALUES (
-        #{memberId}, #{categoryId}, #{merchantName}, #{representative},
+        #{categoryId}, #{merchantName}, #{representative},
         #{businessNumber}, #{contact}, #{contact2}, #{address}, #{email},
         <if test="terminalId != null and terminalId != ''">#{terminalId},</if>
         'ACTIVE', NOW()
@@ -43,9 +42,6 @@
         WHERE merchant_id = #{merchantId}
     </update>
 
-    <select id="findMerchantIdByMemberId" resultType="Long">
-        SELECT merchant_id FROM merchant WHERE member_id = #{memberId}
-    </select>
 
     <select id="findCategoryNameById" resultType="String">
         SELECT category_name FROM merchant_category
@@ -72,14 +68,9 @@
     </select>
 
     <select id="findById" resultMap="merchantResultMap">
-        SELECT m.*, mb.login_id AS login_id
+        SELECT m.*
         FROM merchant m
-                 LEFT JOIN member mb ON m.member_id = mb.member_id
         WHERE m.merchant_id = #{merchantId}
-    </select>
-
-    <select id="findByMemberId" resultMap="merchantResultMap">
-        SELECT * FROM merchant WHERE member_id = #{memberId}
     </select>
 
     <select id="findByBusinessNumber" resultMap="merchantResultMap">
@@ -88,10 +79,8 @@
 
     <select id="findAll" resultMap="merchantResultMap">
         SELECT m.*,
-        mb.login_id     AS login_id,
         mc.category_name AS category_name
         FROM merchant m
-        LEFT JOIN member mb ON m.member_id = mb.member_id
         LEFT JOIN merchant_category mc ON m.category_id = mc.category_id
         <where>
             <if test="status != null and status != ''">

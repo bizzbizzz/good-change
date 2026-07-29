@@ -40,7 +40,6 @@ public class MemberCreateDto {
     @Pattern(regexp = "MALE|FEMALE")
     private String gender;
 
-    @NotBlank
     @Size(max = 255)
     private String address;
 

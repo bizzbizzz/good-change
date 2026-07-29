@@ -13,10 +13,12 @@ import org.best.backspringboot.member.mapper.MemberMapper;
 import org.best.backspringboot.member.mapper.MemberWithdrawLogMapper;
 import org.best.backspringboot.member.mapper.PasswordResetTokenMapper;
 import org.best.backspringboot.member.mapper.TokenMapper;
+import org.best.backspringboot.merchant.entity.MerchantMember;
 import org.best.backspringboot.merchant.mapper.MerchantMapper;
 import org.best.backspringboot.mail.service.MailService;
 import org.best.backspringboot.SSE.service.SseService;
 import org.best.backspringboot.global.util.JwtUtil;
+import org.best.backspringboot.merchant.mapper.MerchantMemberMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,10 +41,19 @@ public class MemberService {
     private final SseService sseService;
     private final MemberWithdrawLogMapper memberWithdrawLogMapper;
     private final CardListMapper cardListMapper;
+    private final MerchantMemberMapper merchantMemberMapper;
 
     @Value("${app.reset-base-url}")
     private String resetBaseUrl;   // 재설정 페이지 기본 URL
 
+    @Transactional
+    public void updatePassword(Long memberId, String newPassword) {
+        memberMapper.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        String encoded = passwordEncoder.encode(newPassword);
+        memberMapper.updatePassword(memberId, encoded);
+    }
 
     @Transactional
     public void requestPasswordReset(String email) {
@@ -237,17 +248,33 @@ public class MemberService {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
         if (!member.getStatus().equals("ACTIVE")) {
-            throw new IllegalArgumentException("비활성화된 계정입니다.");
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        // ── 기존 기기에 강제 로그아웃 푸시 (새 토큰 발급 전) ──
         sseService.forceLogout(member.getMemberId());
 
         String roleName = memberMapper.findRoleNameById(member.getRoleId());
-        Long merchantId = null;
-        if ("MERCHANT".equals(roleName)) {
-            merchantId = merchantMapper.findMerchantIdByMemberId(member.getMemberId());
+
+        // ✅ 탭에 따라 role 체크
+        if ("MERCHANT".equals(dto.getRole())) {
+            if (!"OWNER".equals(roleName) && !"STAFF".equals(roleName)) {
+                throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
+            }
         }
+
+        if ("USER".equals(dto.getRole())) {
+            if (!"USER".equals(roleName)) {
+                throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
+            }
+        }
+
+        Long merchantId = null;
+        if ("OWNER".equals(roleName) || "STAFF".equals(roleName)) {
+            merchantId = merchantMemberMapper.findByMemberId(member.getMemberId())
+                    .map(MerchantMember::getMerchantId)
+                    .orElse(null);
+        }
+
         String token = jwtUtil.generateToken(member.getMemberId(), member.getLoginId(), roleName, merchantId);
         tokenMapper.upsert(member.getMemberId(), token);
 
@@ -287,10 +314,14 @@ public class MemberService {
         memberMapper.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        // 가맹점 사업자번호 조회
-        String businessNumber = merchantMapper.findByMemberId(memberId)
-                .map(m -> m.getBusinessNumber())
+        // ✅ MerchantMemberMapper로 merchantId 조회 후 merchant 조회
+        Long merchantId = merchantMemberMapper.findByMemberId(memberId)
+                .map(mm -> mm.getMerchantId())
                 .orElseThrow(() -> new IllegalArgumentException("연결된 가맹점이 없습니다."));
+
+        String businessNumber = merchantMapper.findById(merchantId)
+                .map(m -> m.getBusinessNumber())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
 
         String newPassword = passwordEncoder.encode(businessNumber + "!");
         memberMapper.updatePassword(memberId, newPassword);

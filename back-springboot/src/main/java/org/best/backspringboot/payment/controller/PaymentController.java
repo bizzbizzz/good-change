@@ -35,7 +35,7 @@ public class PaymentController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "카드 또는 가맹점 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @PostMapping
     public ResponseEntity<PaymentResponseDto> pay(@Valid @RequestBody PaymentCreateDto dto) {
         return ResponseEntity.ok(paymentService.pay(dto));
@@ -47,7 +47,7 @@ public class PaymentController {
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     @GetMapping
     public ResponseEntity<PageResponse<PaymentResponseDto>> getAll(PaymentSearchDto searchDto,
                                                                    HttpServletRequest request) {
@@ -73,7 +73,7 @@ public class PaymentController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "결제 내역 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     @GetMapping("/{paymentId}")
     public ResponseEntity<PaymentResponseDto> getById(@PathVariable Long paymentId, @RequestParam String transmissionDate) {
         return ResponseEntity.ok(paymentService.getById(paymentId, transmissionDate));
@@ -87,21 +87,21 @@ public class PaymentController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "결제 내역 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @PatchMapping("/{paymentId}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long paymentId, @RequestParam String transmissionDate) {
         paymentService.cancel(paymentId, transmissionDate);
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "결제 내역 삭제 (관리자용)")
+    @Operation(summary = "결제 내역 삭제 (가맹점관리자)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "결제 내역 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('OWNER', 'STAFF')")
     @DeleteMapping("/{paymentId}")
     public ResponseEntity<Void> delete(@PathVariable Long paymentId, @RequestParam String transmissionDate) {
         paymentService.delete(paymentId, transmissionDate);

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.best.backspringboot.merchant.mapper.MerchantMemberMapper">
+
+    <resultMap id="merchantMemberResultMap" type="org.best.backspringboot.merchant.entity.MerchantMember">
+        <id     property="id"         column="id"/>
+        <result property="merchantId" column="merchant_id"/>
+        <result property="memberId"   column="member_id"/>
+        <result property="roleId"     column="role_id"/>
+        <result property="roleName"   column="role_name"/>
+        <result property="createdAt"  column="created_at"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO merchant_member (merchant_id, member_id, role_id, created_at)
+        VALUES (#{merchantId}, #{memberId}, #{roleId}, NOW())
+    </insert>
+
+    <select id="findByMemberId" resultMap="merchantMemberResultMap">
+        SELECT mm.*, r.role_name
+        FROM merchant_member mm
+                 LEFT JOIN role r ON mm.role_id = r.role_id
+        WHERE mm.member_id = #{memberId}
+            LIMIT 1
+    </select>
+
+    <select id="findByMerchantId" resultMap="merchantMemberResultMap">
+        SELECT * FROM merchant_member WHERE merchant_id = #{merchantId}
+    </select>
+
+    <delete id="deleteByMerchantId">
+        DELETE FROM merchant_member WHERE merchant_id = #{merchantId}
+    </delete>
+
+    <delete id="deleteByMemberId">
+        DELETE FROM merchant_member WHERE member_id = #{memberId}
+    </delete>
+
+    <select id="findAll" resultMap="merchantMemberResultMap">
+        SELECT mm.*
+        FROM merchant_member mm
+        LEFT JOIN member m   ON mm.member_id   = m.member_id
+        LEFT JOIN merchant mc ON mm.merchant_id = mc.merchant_id
+        <where>
+            <if test="role != null and role != ''">
+                AND mm.role_id = #{roleId}
+            </if>
+            <if test="status != null and status != ''">
+                AND m.status = #{status}
+            </if>
+            <if test="merchantId != null">
+                AND mm.merchant_id = #{merchantId}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND mc.merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND m.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="loginId != null and loginId != ''">
+                AND m.login_id LIKE CONCAT('%', #{loginId}, '%')
+            </if>
+        </where>
+        ORDER BY mm.created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM merchant_member mm
+        LEFT JOIN member m    ON mm.member_id   = m.member_id
+        LEFT JOIN merchant mc ON mm.merchant_id = mc.merchant_id
+        <where>
+            <if test="role != null and role != ''">
+                AND mm.role_id = #{roleId}
+            </if>
+            <if test="status != null and status != ''">
+                AND m.status = #{status}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND mc.merchant_name LIKE CONCAT('%', #{merchantName}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND m.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="loginId != null and loginId != ''">
+                AND m.login_id LIKE CONCAT('%', #{loginId}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

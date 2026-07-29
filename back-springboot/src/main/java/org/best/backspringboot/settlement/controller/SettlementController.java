@@ -29,7 +29,7 @@ public class SettlementController {
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @GetMapping
     public ResponseEntity<PageResponse<SettlementResponseDto>> getAll(SettlementSearchDto dto) {
         return ResponseEntity.ok(settlementService.getAll(dto));
@@ -42,7 +42,7 @@ public class SettlementController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "정산 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @GetMapping("/{settlementId}")
     public ResponseEntity<SettlementResponseDto> getById(@PathVariable Long settlementId) {
         return ResponseEntity.ok(settlementService.getById(settlementId));
@@ -55,7 +55,7 @@ public class SettlementController {
             @ApiResponse(responseCode = "401", description = "인증 안 됨", content = @Content),
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'OWNER', 'STAFF')")
     @GetMapping("/summary")
     public ResponseEntity<SettlementSummaryDto> getSummary(@RequestParam Long merchantId) {
         return ResponseEntity.ok(settlementService.getSummary(merchantId));
