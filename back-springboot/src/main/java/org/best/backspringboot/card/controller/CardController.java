@@ -65,7 +65,7 @@ public class CardController {
             @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
     })
     @GetMapping("/member/{memberId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     public ResponseEntity<List<CardResponseDto>> getByMemberId(@PathVariable Long memberId) {
         return ResponseEntity.ok(cardService.getByMemberId(memberId));
     }
@@ -91,7 +91,7 @@ public class CardController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content)
     })
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     public ResponseEntity<Void> create(@Valid @RequestBody CardCreateDto dto) {
         cardService.create(dto);
         return ResponseEntity.ok().build();
@@ -106,7 +106,7 @@ public class CardController {
             @ApiResponse(responseCode = "404", description = "카드 없음", content = @Content)
     })
     @GetMapping("/info")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     public ResponseEntity<CardResponseDto> getCardInfo(
             @RequestParam String cardNumber,
             @RequestParam String memberName,
@@ -123,7 +123,7 @@ public class CardController {
             @ApiResponse(responseCode = "404", description = "카드 없음", content = @Content)
     })
     @PatchMapping("/{cardId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     public ResponseEntity<Void> update(@PathVariable Long cardId,
                                        @RequestBody CardUpdateDto dto) {
         cardService.update(cardId, dto);
@@ -138,7 +138,7 @@ public class CardController {
             @ApiResponse(responseCode = "404", description = "카드 없음", content = @Content)
     })
     @DeleteMapping("/{cardId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     public ResponseEntity<Void> delete(@PathVariable Long cardId) {
         cardService.delete(cardId);
         return ResponseEntity.ok().build();
