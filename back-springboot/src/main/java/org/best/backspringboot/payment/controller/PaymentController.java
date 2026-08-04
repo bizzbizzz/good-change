@@ -57,7 +57,7 @@ public class PaymentController {
             String token = authHeader.replace("Bearer ", "");
             String role  = jwtUtil.getRole(token);
 
-            if ("MERCHANT".equals(role)) {
+            if ("OWNER".equals(role) || "STAFF".equals(role)) {
                 Long merchantId = jwtUtil.getMerchantId(token);
                 searchDto.setMerchantId(merchantId);
             }
