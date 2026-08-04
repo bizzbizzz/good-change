@@ -116,7 +116,7 @@ public class MemberController {
             @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content),
             @ApiResponse(responseCode = "404", description = "회원 없음", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'MERCHANT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'USER', 'OWNER', 'STAFF')")
     @GetMapping("/{memberId:\\d+}")
     public ResponseEntity<MemberResponseDto> getById(@PathVariable Long memberId) {
         return ResponseEntity.ok(memberService.getById(memberId));
